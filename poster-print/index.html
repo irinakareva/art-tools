@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Art Reference Enlarger v10 — Mobile Crop & Page Selection</title>
+<title>Art Reference Enlarger v12 — Clear guides and print preview</title>
 <style>
 :root{--bg:#f6f5f1;--paper:#fff;--ink:#253330;--sub:#596763;--accent:#17655a;--line:#d9ddd7;--pale:#eaf1ee}*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -98,122 +98,145 @@ input[readonly]{background:#f4f6f4;color:#52615c}#circleControls[hidden],#standa
  #layoutCanvas{max-width:100%}
  .modeToolbar button{font-size:12px;padding:10px 5px}
 }
+
+/* v11 simplified interface */
+:root{--accent:#17655a}
+header{padding:18px max(18px,calc((100vw - 1120px)/2))} header h1{font-size:clamp(23px,3vw,29px)}header p{font-size:13px}
+main.app-layout{grid-template-columns:minmax(260px,325px) minmax(0,1fr);gap:15px;max-width:1250px;align-items:start}
+.compact{padding:15px;margin-bottom:11px}.compact h2{font-size:16px;margin-bottom:12px}.compact .formrow{margin:10px 0}
+.smallHelp{font-size:12px;color:var(--sub);line-height:1.45;margin:7px 0 0}
+.mini-pair{align-items:end}.mini-pair button{padding:9px 7px;font-size:12px;width:100%}
+.settingsAdvanced{background:#fff;border:1px solid var(--line);border-radius:10px;margin:0 0 13px;overflow:hidden}
+.settingsAdvanced>summary{padding:13px 15px;cursor:pointer;font-weight:650;font-size:13px;color:#325a4d}
+.advancedInner{padding:0 14px 14px;border-top:1px solid var(--line)}.advancedInner label.check{font-size:13px;margin:7px 0}
+.advancedInner .nudgePanel{margin:10px 0;padding:7px}.advancedInner .nudgePanel>details>summary{cursor:pointer;font-weight:650;font-size:13px;padding:8px 0}
+.legacyHidden,.sr-only{position:absolute!important;left:-99999px!important;width:1px!important;height:1px!important;overflow:hidden!important;visibility:hidden!important}
+#output.preview-col{position:static}#output section.previewSection{padding:16px}.previewSection h2{font-size:18px;margin-bottom:6px}
+.artworkBadge{border-radius:8px;background:#eaf2ee;color:#245544;padding:9px 11px;margin:4px 0 12px;font-weight:650;font-size:13px;line-height:1.45}
+.fitTools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}.fitTools button{font-size:12px;padding:8px 9px}
+.fitTools button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toolCaption{font-size:12px;color:var(--sub);font-weight:650}
+.cropPresets{margin:5px 0 10px;gap:5px}.cropPresets button{font-size:11px;padding:6px 9px}
+#cropShapeBar{max-width:250px;margin:5px 0 8px}
+.canvasWrap{border:1px solid #becdc3;border-radius:9px;overflow:hidden;background:#f0f0ee}
+#layoutCanvas{border-radius:0;cursor:grab;touch-action:none;width:100%;display:block}
+#layoutCanvas:active{cursor:grabbing}
+.previewHint{font-size:12px;color:#486559;background:#f0f5f1;padding:9px;border-radius:7px;margin:7px 0}
+.previewBottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin:5px 0 13px}
+.previewBottom button{padding:8px 10px;font-size:12px}
+.selectBar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px;background:#f8faf8;border:1px solid #d6e4da;border-radius:9px}
+.selectBar strong{font-size:13px}.selectBar .smallHelp{font-size:11px}
+.selectActions{display:flex;gap:5px}.selectActions button{font-size:12px;padding:7px}
+#stats{margin:10px 0}.stat{min-width:85px;padding:7px 9px}.stat strong{font-size:16px}.stat span{font-size:11px}
+#output>section.help{padding:8px 15px;margin:12px 0}.assemblyFold summary{font-size:13px;font-weight:650;color:var(--accent);padding:7px;cursor:pointer}
+#output>section.help details>p,#output>section.help details>ol{font-size:12px;line-height:1.45}
+#cropActions{display:none!important}
+@media(max-width:800px){main.app-layout{display:block;padding:10px}.compact{padding:13px}.previewSection{margin:0 0 12px}#output.preview-col{display:block}.settings-col{display:contents}.settings-col .compact:nth-child(1){order:0}.settings-col .compact:nth-child(2){order:1}.settings-col .compact:nth-child(3){order:2}.settings-col .settingsAdvanced{order:4}main.app-layout{display:flex;flex-direction:column;gap:0}.preview-col{order:3;width:100%}.selectBar{align-items:stretch}.selectActions{width:100%}.selectActions button{flex:1}}
+
+/* v12: Clear drawing/print guide choices and explicit printable-sheet preview */
+.guidesHelp{border:1px solid #d1ded5;border-radius:9px;margin:10px 0;background:#fcfdfc;overflow:hidden}
+.guidesHelp summary{font-size:13px;font-weight:700;cursor:pointer;padding:11px 12px;color:#285647}
+.guidesHelp .helpSub{font-weight:400;color:#6a7b71}
+.guideRows{padding:3px 12px 12px;border-top:1px solid #e2eae4}
+.guideOption{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-bottom:1px solid #ebf0eb;cursor:pointer}
+.guideOption input{flex:0 0 auto;width:17px;height:17px;margin-top:1px;accent-color:var(--accent)}
+.guideOption span{display:block}.guideOption strong{font-size:13px;display:block}
+.guideOption small{display:block;font-size:11px;line-height:1.4;color:#66766c;font-weight:400;margin-top:3px}
+.guideSpacing{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;margin:8px 0}
+.guideSpacing input{max-width:95px;padding:7px}
+.trimExplanation{font-size:12px;line-height:1.5;color:#52675b;margin:10px 0 2px}
+.printActions{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
+.printActions button{flex:1;min-width:165px;padding:12px}
+.printPreviewModal[hidden]{display:none!important}
+.printPreviewModal{position:fixed;inset:0;z-index:5000;background:rgba(10,22,17,.87);display:flex;justify-content:center;align-items:stretch;padding:0;overscroll-behavior:contain}
+.previewDialog{height:100dvh;max-width:940px;width:100%;background:#f8faf8;display:flex;flex-direction:column;padding:12px 15px;box-sizing:border-box;overflow:hidden}
+.previewDialogHead{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:17px;color:#233a30}
+.previewDialogHead button{padding:8px 13px}
+.previewDescription{font-size:12px;color:#465d51;line-height:1.4;margin:8px 0}
+.previewPaper{min-height:0;flex:1;display:flex;align-items:center;justify-content:center;background:#cbd5cd;border-radius:8px;overflow:hidden;touch-action:pan-y;outline:none}
+.previewPaper img{display:block;max-width:100%;max-height:100%;object-fit:contain;box-shadow:0 2px 10px #17261a66;background:white}
+.previewPager{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:9px 0 3px}
+.previewPager button{padding:9px 12px}.previewPager strong{font-size:13px}
+.previewInfo{font-size:11px;color:#556b5c;line-height:1.4;margin:5px 0 10px}
+#previewExport{font-size:14px;padding:12px;flex:none}
+body.previewOpen{overflow:hidden}
+@media (max-width:530px){.previewDialog{padding:9px}.previewPager button{font-size:12px;padding:8px}.previewInfo{font-size:10px;margin:4px 0 6px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#17655a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v10</span></div>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v12</span></div>
 <div id="dropOverlay" aria-hidden="true"><div class="dropCard"><strong>Drop image to load it</strong><span>Release your photo anywhere on this page</span></div></div>
-<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v10</span></h1><p>One live artwork preview: crop, pinch to zoom, and tap the pages you want to print. Your image stays on this device.</p></header>
-<main>
-<div>
-<section>
-<h2><span class="num">1</span> Choose a reference</h2>
-<p class="help" style="margin:-7px 0 12px"><strong>Drag and drop</strong> an image anywhere in this window, <strong>paste</strong> a copied image with <strong>Ctrl+V</strong> (or ⌘+V on Mac), or use the file picker below.</p>
-<input id="upload" type="file" accept="image/*" aria-label="Upload an image">
-<div class="note">Use JPG, PNG, or another image format your browser supports. Your photo never leaves this computer.</div>
-</section>
-<section>
-<h2><span class="num">2</span> Set the finished artwork size</h2>
-<div class="field"><label for="shape">Artwork shape</label><select id="shape"><option value="rect">Rectangle / square</option><option value="circle">Circle (diameter)</option><option value="oval">Oval / ellipse (width × height)</option></select></div>
-<div class="field" style="margin-top:12px"><label for="sizePreset">Standard sizes or custom</label><select id="sizePreset"></select></div>
-<div class="formrow" id="standardFields">
- <div class="field"><label for="w" id="wLabel">Finished width</label><input type="number" id="w" min="1" max="1000" step="any" value="12"></div>
- <div class="field" id="heightField"><label for="h">Finished height</label><input type="number" id="h" min="1" max="1000" step="any" value="18"></div>
-</div>
-<div class="field"><label for="unit">Measurements</label><select id="unit"><option value="in">Inches</option><option value="cm">Centimeters</option></select></div>
-<p class="shapeHint" id="shapeHint">Choose a standard size, or edit a dimension to switch to Custom size.</p>
-<div class="note">Finished artwork sizes are <strong>independent of printer-paper size</strong> below. The full-image setting never discards source-image content. For circles and ovals, it keeps the entire photograph <strong>inside the curved boundary</strong>, leaving blank areas where necessary; selecting Fill deliberately crops to that boundary.</div>
-</section>
-<section>
-<h2><span class="num">3</span> Position, zoom &amp; crop</h2>
-<p class="help" style="margin:-6px 0 13px">The <strong>single large preview</strong> shows your current crop and the actual page boundaries at the same time. Drag to pan, pinch to zoom, or switch to <strong>Select sheets</strong> and tap the page tiles.</p>
-<div class="field" style="margin-bottom:11px"><label for="fitMode">How should your photo fit the finished artwork?</label><select id="fitMode"><option value="contain" selected>Keep whole selected photo (no extra crop)</option><option value="cover">Fill artwork (may crop edges)</option><option value="free">Free placement (drag + zoom; may extend beyond canvas)</option></select></div>
-<div class="shapeHint" style="margin:9px 0 4px;font-weight:600">Quick source crop — one tap</div>
-<div class="cropPresets" aria-label="Source cropping presets">
- <button type="button" data-croppreset="full">Whole photo</button>
- <button type="button" data-croppreset="1:1">Square</button>
- <button type="button" data-croppreset="4:3">4:3</button>
- <button type="button" data-croppreset="3:4">3:4</button>
- <button type="button" data-croppreset="16:9">16:9</button>
- <button type="button" id="manualCropPreset">Draw crop</button>
-</div>
-<button id="matchRatio" type="button" style="margin-bottom:13px;font-size:13px" disabled>Match photo proportions (rectangle only; keep height)</button>
-<div class="controls"><label for="zoom" id="zoomLabel">Image zoom</label><button id="reset" type="button" style="padding:5px 9px;font-size:12px">Reset position &amp; zoom</button></div>
-<input id="zoom" type="range" min="0.15" max="8" step="0.01" value="1">
-<p class="help" style="margin:2px 0 11px">In <strong>Position / zoom</strong> mode: drag with one finger to move, pinch with two fingers to zoom at that location; on a computer use mouse wheel. <strong>Draw crop</strong> lets you select a rectangle directly on the SAME print preview. <strong>Select sheets</strong> lets you tap the pages to print.</p>
-<div class="controls" style="gap:7px;justify-content:flex-start;flex-wrap:wrap"><button id="startCrop" type="button" style="font-size:13px">Draw a crop on the preview</button><button id="clearCrop" type="button" style="font-size:13px">Restore whole source</button></div>
-<p id="cropSummary" class="shapeHint">No source crop selected.</p>
-<p id="fitMessage" class="note" aria-live="polite">Upload a photo. Nothing will be cropped automatically in Keep whole selected photo mode.</p>
-</section>
-<section>
-<h2><span class="num">4</span> Choose your printing options</h2>
-<div class="field"><label for="paper">Printer paper</label><select id="paper"><option value="letterP">US Letter — portrait (8.5 × 11 in)</option><option value="letterL">US Letter — landscape (11 × 8.5 in)</option><option value="a4P">A4 — portrait (210 × 297 mm)</option><option value="a4L">A4 — landscape (297 × 210 mm)</option></select></div>
-<div class="formrow">
- <div class="field"><label for="margin">Printer-safe margin (in)</label><input id="margin" type="number" min="0.2" max="1" step="0.05" value="0.4"></div>
- <div class="field"><label for="overlap">Repeated overlap (in)</label><input id="overlap" type="number" min="0" max="1" step="0.05" value="0.25"></div>
-</div>
-<label class="check"><input type="checkbox" id="gray">Print photo in grayscale</label>
-<label class="check"><input type="checkbox" id="gridToggle">Add a faint square drawing grid</label>
-<label class="check"><input type="checkbox" id="registration" checked>Print artwork edge and center registration marks</label>
-<label class="check"><input type="checkbox" id="assemblyPage">Include one-page assembly diagram and instructions in PDF</label>
-<div id="gridOpts" style="display:none" class="field"><label for="gridIn">Grid square size on finished artwork (in)</label><input id="gridIn" type="number" min="0.25" max="20" step="0.25" value="2"></div>
-<div class="note"><strong>Two kinds of marks:</strong> <strong>red dashed</strong> = trim the duplicated overlap on the later sheet; <strong>gray boundary / short center ticks</strong> = the actual artwork edge and its halfway points. Do not confuse page edges with artwork edges. Use the latter to align the assembled pages to your canvas or drawing paper.</div>
-</section>
-</div>
-<div id="output">
-<section>
-<h2>Working preview &amp; export</h2>
-<div id="stats" class="statline"><div class="stat"><strong id="nPages">—</strong><span>paper sheets</span></div><div class="stat"><strong id="nLayout">—</strong><span>columns × rows</span></div><div class="stat"><strong id="dpi">—</strong><span>source pixels / inch</span></div></div>
-<div class="modeToolbar" role="group" aria-label="What to do in the preview">
-<button id="modePosition" type="button" class="active" aria-pressed="true">1. Position / zoom</button>
-<button id="modeCrop" type="button" aria-pressed="false">2. Draw crop</button>
-<button id="modeTiles" type="button" aria-pressed="false">3. Select sheets</button>
-</div>
-<p id="previewHint" class="help" style="margin:4px 0 9px">Drag to move; pinch to zoom. Tap Select sheets then tap grid cells. The live preview is the print layout.</p>
-<div id="cropShapeBar" hidden class="field" style="margin:8px 0 12px;max-width:300px"><label for="cropShape">Choose the crop shape</label><select id="cropShape"><option value="rect">Rectangle</option><option value="oval">Oval / ellipse</option><option value="circle">Circle</option></select></div>
-<canvas id="layoutCanvas" width="800" height="800" tabindex="0" aria-label="Interactive artwork: drag to pan, pinch to zoom; tap tiles in Select sheets mode"></canvas>
-<div class="zoomQuick"><button id="quickZoomOut" type="button" aria-label="Zoom out">−</button><button id="quickZoomIn" type="button" aria-label="Zoom in">+</button><span class="grow" id="zoomReadout">Pinch or use these buttons to zoom</span><button id="quickZoomReset" type="button">Reset</button></div>
-<div class="nudgePanel" id="nudgePanel">
- <strong style="font-size:13px">Precise image positioning</strong>
- <p class="help" style="margin:4px 0 0">Use your keyboard <strong>↑ ↓ ← →</strong> to nudge by <strong>0.02 in</strong>; hold <strong>Shift</strong> for <strong>0.20 in</strong>. The arrows below work too. The image may extend beyond the artwork edge; only the part inside your selected artwork or tiles will print.</p>
- <div class="nudgeGrid" aria-label="Nudge the image"><button type="button" data-dir="up" aria-label="Nudge up">↑</button><button type="button" data-dir="left" aria-label="Nudge left">←</button><button type="button" data-dir="down" aria-label="Nudge down">↓</button><button type="button" data-dir="right" aria-label="Nudge right">→</button></div>
- <div class="help" id="positionSummary" aria-live="polite">Use free placement to nudge image position in physical inches.</div>
- <div class="alignTools">
-  <strong style="font-size:13px">Center the selected / cropped image</strong>
-  <p class="help" style="margin:4px 0 7px">Uses the <strong>visible crop boundary</strong> (rectangle, oval or circle), not the original photo margins. Alignment changes position without changing scale.</p>
-  <div class="alignButtons">
-   <button id="centerArtBoth" type="button">Center on artwork</button>
-   <button id="centerArtX" type="button">Center horizontally</button>
-   <button id="centerArtY" type="button">Center vertically</button>
-   <button id="centerSelected" type="button">Center in selected sheets</button>
+<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v12</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
+<main class="app-layout">
+<div class="settings-col">
+ <section class="compact">
+  <h2><span class="num">1</span> Your photograph</h2>
+  <input id="upload" type="file" accept="image/*" aria-label="Upload an image">
+  <p class="smallHelp">Or drag a photo here, or paste one with Ctrl+V. Photos stay on your device.</p>
+ </section>
+ <section class="compact">
+  <h2><span class="num">2</span> Finished drawing size</h2>
+  <div class="field"><label for="sizePreset">Choose a size</label><select id="sizePreset"></select></div>
+  <div class="field" style="margin-top:9px"><label for="shape">Shape</label><select id="shape"><option value="rect">Rectangle / square</option><option value="circle">Circle</option><option value="oval">Oval</option></select></div>
+  <div class="formrow" id="standardFields"><div class="field"><label id="wLabel" for="w">Width</label><input type="number" id="w" min="1" max="1000" step="any" value="12"></div><div class="field" id="heightField"><label for="h">Height</label><input type="number" id="h" min="1" max="1000" step="any" value="18"></div></div>
+  <div class="formrow mini-pair"><div class="field"><label for="unit">Unit</label><select id="unit"><option value="in">Inches</option><option value="cm">Centimeters</option></select></div><div class="field" style="justify-content:end"><button id="rotateArtwork" type="button">↔ Swap width / height</button></div></div>
+  <p id="shapeHint" class="smallHelp">These are the final dimensions of the drawing, not the dimensions of the sheets.</p>
+ </section>
+ <section class="compact">
+  <h2><span class="num">3</span> Printer paper</h2>
+  <div class="field"><label for="paper">Paper type and direction</label><select id="paper"><option value="letterP">US Letter · portrait (8.5 × 11 in)</option><option value="letterL">US Letter · landscape (11 × 8.5 in)</option><option value="a4P">A4 · portrait (210 × 297 mm)</option><option value="a4L">A4 · landscape (297 × 210 mm)</option></select></div>
+  <p class="smallHelp">Page count and partial edge sheets are shown on the image. Partial means only part of that paper sheet is used.</p>
+ </section>
+ <details class="settingsAdvanced"><summary>Advanced print and alignment settings</summary>
+  <div class="advancedInner">
+   <div class="formrow"><div class="field"><label for="margin">Printer margin (in)</label><input id="margin" type="number" min="0.2" max="1" step="0.05" value="0.4"></div><div class="field"><label for="overlap">Repeated overlap (in)</label><input id="overlap" type="number" min="0" max="1" step="0.05" value="0.25"></div></div>
+
+   <label class="check"><input type="checkbox" id="registration" checked>Print artwork-edge alignment marks</label>
+   <label class="check"><input type="checkbox" id="assemblyPage">Include assembly instruction page in PDF</label>
+   <p class="smallHelp">Printer margins and overlap affect the number of sheets. The default settings usually work; change them only if your printer requires it.</p>
+   <div id="nudgePanel" class="nudgePanel"><details><summary>Fine positioning (optional)</summary>
+    <p class="smallHelp">Keyboard arrows adjust image position by 0.02 in; Shift + arrow by 0.20 in.</p>
+    <div class="nudgeGrid" aria-label="Nudge image"><button type="button" data-dir="up">↑</button><button type="button" data-dir="left">←</button><button type="button" data-dir="down">↓</button><button type="button" data-dir="right">→</button></div>
+    <p id="positionSummary" class="smallHelp"></p>
+    <div class="alignTools"><strong>Align the photo</strong><div class="alignButtons"><button id="centerArtBoth" type="button">Center in artwork</button><button id="centerArtX" type="button">Center horizontally</button><button id="centerArtY" type="button">Center vertically</button><button id="centerSelected" type="button">Center in selected sheets</button></div><label for="snapMode">Snap to</label><select id="snapMode"><option value="none" selected>No guides</option><option value="art">Artwork center</option><option value="tiles">Selected sheets center</option></select><p id="alignSummary" class="smallHelp"></p></div>
+    <div class="quickFit"><button id="fitToSelected" type="button" disabled>Fit photo to selected sheets</button><button id="fillSelected" type="button" disabled>Fill selected sheets</button></div>
+   </details></div>
   </div>
-  <label for="snapMode">While dragging, snap cropped-image center to</label>
-  <select id="snapMode"><option value="none">No snapping</option><option value="art" selected>Artwork center</option><option value="tiles">Selected sheets' center</option></select>
-  <p class="help" style="margin:6px 0 0">Dotted blue guides show the chosen snap center on screen; they do <strong>not</strong> print. Arrow nudges bypass snapping.</p>
-  <div id="alignSummary" aria-live="polite">For one-column A1+A2 printing, choose Center in selected sheets; artwork centering is a different position.</div>
- </div>
+ </details>
 </div>
-<div id="cropActions" hidden>
- <p class="help" style="margin:9px 0">Point to a spot on the original image and <strong>click and drag to draw a crop</strong>. You can redraw it, adjust its edge handles, or drag the selected region to move it. Circle locks to a true circle. This does not change your original file.</p>
- <div class="controls" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button id="newCrop" type="button" style="font-size:13px">Draw new crop</button><button id="applyCrop" type="button" class="primary" style="width:auto;font-size:13px;padding:9px 13px">Apply crop</button><button id="cancelCrop" type="button" style="font-size:13px">Cancel</button><button id="fullCrop" type="button" style="font-size:13px">Full image</button></div>
-</div>
-<p class="note" id="detail">Upload a photo to see its finished crop and page layout.</p>
-<h3 style="font-size:15px;margin:16px 0 5px">Select pages to print (tap tiles or checkboxes)</h3>
-<p class="help" style="margin:0 0 5px">Tap <strong>Select sheets</strong> above, then tap any numbered page on the photo. Or tick a checkbox below. Only selected pages go into the PDF.</p>
-<div class="tileToolbar"><button id="onlyPhoto" type="button">Select photo tiles</button><button id="selectAll" type="button">Select all</button><button id="selectNone" type="button">Select none</button></div>
-<div id="selectionSummary" aria-live="polite">No image loaded.</div>
-<div id="tileChoices" aria-label="Tiles to print"></div>
-<div class="quickFit" aria-label="Fit image to selected sheets"><button id="fitToSelected" type="button" disabled>Fit photo inside selected sheets</button><button id="fillSelected" type="button" disabled>Fill selected sheets (crops edges)</button></div>
-<p class="help" style="margin:0 0 14px">For <strong>A1 + A2 only</strong>, select just those sheets and click <strong>Fit photo inside selected sheets</strong> to avoid cutting the image off. Then use <strong>Center in selected sheets</strong> for exact positioning. Simply centering a wider image will not make it fit that column. Artwork center is a different position.</p>
-<button id="download" class="primary" disabled>Download selected sheets PDF</button>
-<div class="formrow" style="margin-top:9px"><button id="sharePdf" type="button" disabled>Share PDF to printer</button><button id="openPdf" type="button" disabled>Open PDF</button></div>
-<div id="message" role="status"></div>
-</section>
-<section class="help">
-<h2>Assembly: how to align the printed sheets</h2>
+<div id="output" class="preview-col">
+ <section class="previewSection">
+  <h2>Live layout</h2>
+  <div id="artworkBadge" class="artworkBadge" aria-live="polite">12 × 18 in drawing · Letter portrait · calculating…</div>
+  <div class="fitTools" aria-label="How photo fits"><span class="toolCaption">Photo fit</span><button id="fitContain" type="button" class="active">Keep entire photo</button><button id="fitCover" type="button">Fill artwork</button><button id="manualCropPreview" type="button">Draw crop</button></div>
+  <div class="cropPresets" aria-label="Crop shortcuts"><button type="button" data-croppreset="full">Whole image</button><button type="button" data-croppreset="1:1">Square</button><button type="button" data-croppreset="4:3">4:3</button><button type="button" data-croppreset="3:4">3:4</button><button type="button" data-croppreset="16:9">16:9</button></div>
+  <div id="cropShapeBar" hidden class="field"><label for="cropShape">Crop shape</label><select id="cropShape"><option value="rect">Rectangle</option><option value="oval">Oval</option><option value="circle">Circle</option></select></div>
+  <details class="guidesHelp" id="guidesHelp">
+   <summary>Lines and grids: what do they mean? <span class="helpSub">(optional)</span></summary>
+   <div class="guideRows">
+    <label class="guideOption"><input id="showSheetGuides" type="checkbox" checked><span><strong>Printer sheet boundaries (A1, B1…)</strong><small>Dark lines show where one printer sheet begins. Used to select pages here; do not print as a grid.</small></span></label>
+    <label class="guideOption"><input id="gridToggle" type="checkbox"><span><strong>Drawing grid</strong><small>Evenly spaced squares for copying a drawing by hand. This grid <em>will print</em> on the sheets.</small></span></label>
+    <div id="gridOpts" style="display:none" class="guideSpacing"><label for="gridIn">Drawing-grid spacing (inches)</label><input id="gridIn" type="number" min="0.25" max="20" step="0.25" value="2"></div>
+    <label class="guideOption"><input id="showCenterGuides" type="checkbox"><span><strong>Center crosshair</strong><small>Blue dashed center lines on this screen only. Helps position your image; not printed.</small></span></label>
+    <p class="trimExplanation"><strong>Red dashed cut lines:</strong> Only appear in Print preview / PDF where sheets overlap. Cut away the duplicated strip before assembling the pages. They are not a drawing grid.</p>
+   </div>
+  </details>
+  <div class="canvasWrap"><canvas id="layoutCanvas" width="800" height="800" tabindex="0" aria-label="Image with printable page tiles. Tap to select pages, drag to reposition, pinch to zoom"></canvas></div>
+  <p id="previewHint" class="previewHint">Drag the photo to reposition · pinch to zoom · tap a page to select/deselect it</p>
+  <div class="previewBottom"><span id="zoomReadout" class="smallHelp">Pinch or scroll to zoom</span><button id="quickZoomReset" type="button">Reset view</button><button id="resetCrop" type="button">Restore photo</button></div>
+  <div id="printSelectionBar" class="selectBar"><div><strong id="selectionSummary">Select sheets to print</strong><p class="smallHelp">Tap the A1, A2, B1… regions directly in the image.</p></div><div class="selectActions"><button id="selectAll" type="button">All</button><button id="onlyPhoto" type="button">Photo pages</button><button id="selectNone" type="button">None</button></div></div>
+  <div id="stats" class="statline"><div class="stat"><strong id="nPages">—</strong><span>selected / total</span></div><div class="stat"><strong id="nLayout">—</strong><span>columns × rows</span></div><div class="stat"><strong id="dpi">—</strong><span>source px / inch</span></div></div>
+  <label class="check" style="margin:9px 0"><input type="checkbox" id="gray">Print in grayscale</label>
+  <div class="printActions"><button id="showPreview" type="button" class="primary" disabled>Preview selected print pages</button><button id="download" type="button" disabled>Save selected PDF</button></div>
+  <div class="formrow" style="margin-top:8px"><button id="sharePdf" type="button" disabled>Share PDF / print</button><button id="openPdf" type="button" disabled>Open saved PDF</button></div>
+  <div id="message" role="status"></div>
+  <p class="smallHelp">Print at <strong>Actual size / 100%</strong>. Check the printed 1-inch ruler before assembling.</p>
+  <div id="detail" class="sr-only" aria-live="polite"></div>
+ </section>
+<section class="help"><details class="assemblyFold"><summary>How to assemble printed sheets</summary>
 <p><strong>Red dashed = TRIM REPEATED STRIP.</strong> On A2, remove the top strip; on B1, remove the left strip. The dashed line is the new edge of the later sheet, not an image or artwork-center line.</p>
 <div class="assemblyTip"><strong>Gray artwork outline and short midpoint ticks (optional):</strong> These show the finished canvas edges and its true horizontal/vertical centers, based on your 12 × 18-inch dimensions. They are independent of the photograph's crop. <strong>Keep the artwork outline</strong> when positioning the template; only trim the dashed red overlap strips to join sheets.</div>
 <svg class="assemblyDiagram" viewBox="0 0 540 226" role="img" aria-label="How to join A1 above A2: A2 has a repeated top strip ending at a dashed trim line; cut it off then join it to the image bottom of A1">
@@ -249,10 +272,28 @@ input[readonly]{background:#f4f6f4;color:#52615c}#circleControls[hidden],#standa
 <li><strong>For tracing:</strong> Tape the aligned pattern along the top as a hinge, lift it, insert appropriate graphite/chalk transfer paper, and trace the contours. For pouncing, perforate the assembled pattern along the lines first.</li>
 </ol>
 <p><strong>Important:</strong> If the picture is centered within only A1+A2, it is <em>not necessarily centered within the entire canvas</em>. Choose Center on artwork if you want the subject itself centered on the 12 × 18 surface. If overlap is 0, no repeated strip is present: align the printed image edges without a dashed trim.</p>
-</section>
+</details></section>
+</div>
+<div class="legacyHidden" aria-hidden="true">
+ <select id="fitMode"><option value="contain" selected>Keep whole selected photo</option><option value="cover">Fill</option><option value="free">Free placement</option></select>
+ <input id="zoom" type="range" min="0.15" max="8" value="1"><label id="zoomLabel"></label><button id="reset">Reset</button><button id="matchRatio"></button><button id="startCrop"></button><button id="clearCrop"></button><button id="manualCropPreset"></button><p id="cropSummary"></p><p id="fitMessage"></p>
+ <div class="modeToolbar"><button id="modePosition"></button><button id="modeCrop"></button><button id="modeTiles"></button></div>
+ <button id="quickZoomOut"></button><button id="quickZoomIn"></button>
+ <div id="cropActions" hidden><button id="newCrop"></button><button id="applyCrop"></button><button id="cancelCrop"></button><button id="fullCrop"></button></div>
+ <div id="tileChoices"></div>
 </div>
 </main>
-<footer class="foot">Art Reference Enlarger v10 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
+<div id="printPreviewModal" class="printPreviewModal" hidden role="dialog" aria-modal="true" aria-label="Print preview">
+ <div class="previewDialog">
+  <div class="previewDialogHead"><strong>Print preview</strong><button id="previewClose" type="button" aria-label="Close print preview">Close ×</button></div>
+  <p class="previewDescription" id="previewDescription">Loading printable sheet…</p>
+  <div class="previewPaper" id="previewPaper" tabindex="0"><img id="previewImage" alt="Selected printable page at actual sheet proportions"></div>
+  <div class="previewPager"><button id="previewPrev" type="button">← Previous</button><strong id="previewPosition">Page 1</strong><button id="previewNext" type="button">Next →</button></div>
+  <p class="previewInfo">Swipe sideways to inspect other pages. These images show the actual sheet borders, print margins, trim lines, and selected artwork. To preserve physical size, print the saved PDF at 100% / Actual Size.</p>
+  <button id="previewExport" type="button" class="primary">Save these pages as PDF</button>
+ </div>
+</div>
+<footer class="foot">Art Reference Enlarger v11 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
 <script>
 'use strict';
 const $=s=>document.getElementById(s);
@@ -419,14 +460,15 @@ function drawLayout(conf){layoutCanvas.style.maxWidth='100%';let can=layoutCanva
  lctx.restore();lctx.strokeStyle='#286858';lctx.lineWidth=3;strokeArtwork(lctx,conf,0,0,W,H);
  // Screen-only guide aligns the CENTER of the selected photo bounding box,
  // not the uncropped original or a generic decorative grid.
- if(viewMode==='position' && img && $('snapMode').value!=='none'){
-  const guide=$('snapMode').value==='tiles'?selectedBounds(conf):{x:0,y:0,w:conf.pw,h:conf.ph};
+ if(viewMode==='position' && img && ($('showCenterGuides').checked || $('snapMode').value!=='none')){
+  const guide=(!$('showCenterGuides').checked && $('snapMode').value==='tiles')?selectedBounds(conf):{x:0,y:0,w:conf.pw,h:conf.ph};
   if(guide){
    const gx=(guide.x+guide.w/2)/conf.pw*W,gy=(guide.y+guide.h/2)/conf.ph*H;
    lctx.save();lctx.strokeStyle='rgba(31,88,184,.78)';lctx.lineWidth=1.35;lctx.setLineDash([6,5]);
    lctx.beginPath();lctx.moveTo(gx,0);lctx.lineTo(gx,H);lctx.moveTo(0,gy);lctx.lineTo(W,gy);lctx.stroke();lctx.restore();
   }
  }
+ if($('showSheetGuides').checked){
  lctx.strokeStyle='rgba(3,57,48,.9)';lctx.lineWidth=1.7;
  for(let c=1;c<conf.cols;c++){let x=c*conf.stepW/conf.pw*W;lctx.beginPath();lctx.moveTo(x,0);lctx.lineTo(x,H);lctx.stroke()}
  for(let r=1;r<conf.rows;r++){let y=r*conf.stepH/conf.ph*H;lctx.beginPath();lctx.moveTo(0,y);lctx.lineTo(W,y);lctx.stroke()}
@@ -439,7 +481,12 @@ function drawLayout(conf){layoutCanvas.style.maxWidth='100%';let can=layoutCanva
   }
   lctx.fillStyle=selectedTiles.has(key)?'#064535':'#777f7a';
   lctx.font='bold 18px system-ui';
-  const xx=sx+7,yy=sy+22;if(xx<W-5&&yy<H-5)lctx.fillText(colName(col)+(row+1)+(selectedTiles.has(key)?'':' – skip'),xx,yy);
+  const xx=sx+7,yy=sy+22;if(xx<W-5&&yy<H-5){
+   lctx.fillText(colName(col)+(row+1)+(selectedTiles.has(key)?' ✓':' – skip'),xx,yy);
+   const partial=conf.pw-col*conf.stepW<conf.usableW-.01||conf.ph-row*conf.stepH<conf.usableH-.01;
+   if(partial){lctx.font='bold 11px system-ui';lctx.fillText('partial sheet',xx,yy+16);}
+  }
+ }
  }
  if(viewMode==='crop' && img){
   // Manual crop outline is displayed directly on the output/page preview.
@@ -513,7 +560,7 @@ function renderTileChoices(conf){
  $('selectionSummary').textContent=`${n} of ${total} sheets selected. `+(selectionMode==='image'?'Auto: tiles intersecting the photo.':'Selections are manual or include all pages.')+(n<total?' Omitted tiles will not be in the PDF.':'');
  $('nPages').textContent=`${n} / ${total}`;
 }
-function refresh(){resetGenerated();$('zoomReadout').textContent=img?'Image scale: '+zoom.toFixed(2)+'× · pinch or use +/-':'Load a photo to zoom';const m=$('message');m.className='';try{const conf=config();$('nPages').textContent=conf.cols*conf.rows;$('nLayout').textContent=conf.cols+' × '+conf.rows;
+function refresh(){resetGenerated();$('zoomReadout').textContent=img?'Scale '+zoom.toFixed(2)+'× · pinch or wheel to zoom':'Load a photo to zoom';const m=$('message');m.className='';try{const conf=config();$('nPages').textContent=conf.cols*conf.rows;$('nLayout').textContent=conf.cols+' × '+conf.rows;
  const place=img?getPlacement(conf):null;
  syncTileSelection(conf,place);
  $('dpi').textContent=place?String(Math.round(Math.min(place.w/place.dw,place.h/place.dh))):'—';
@@ -525,7 +572,7 @@ function refresh(){resetGenerated();$('zoomReadout').textContent=img?'Image scal
  $('cropSummary').textContent=(sourceCrop.w>.999999&&sourceCrop.h>.999999)?'Source crop: entire original photo.':`Source crop: ${sourceCropShape==='rect'?'rectangle':sourceCropShape} · ${Math.round(100*sourceCrop.w)}% width × ${Math.round(100*sourceCrop.h)}% height. Restore whole source to undo.`;
  $('cropActions').hidden=true;$('cropShapeBar').hidden=viewMode!=='crop';$('applyCrop').disabled=true;
  for(const name of ['position','crop','tiles']){const btn=$('mode'+name[0].toUpperCase()+name.slice(1));btn.classList.toggle('active',viewMode===name);btn.setAttribute('aria-pressed',String(viewMode===name));}
- $('previewHint').textContent=viewMode==='crop'?'Draw a rectangle directly over the photo in this same grid preview. Releasing applies the crop; print-page boundaries remain in the preview.':viewMode==='tiles'?'Tap any page tile to include or exclude it. This same preview shows exactly which pages will print.':'Drag to position, pinch with two fingers to zoom, or use +/−. Lines are real print page boundaries. Blue guides are screen-only.';
+ $('previewHint').textContent=viewMode==='crop'?'Drag over the image to choose a crop. Release to apply it.':'Tap a page to select/deselect · drag photo to reposition · pinch to zoom';
  if(place){
   const cropping=mode==='cover';
   const cutoff=(1-place.w*place.h/(sourceCrop.w*sourceCrop.h*img.naturalWidth*img.naturalHeight))*100;
@@ -540,6 +587,17 @@ function refresh(){resetGenerated();$('zoomReadout').textContent=img?'Image scal
     'Full image preserved and fills the artwork area without cropping.');
  } else $('fitMessage').textContent='Upload a photo; the full image will be preserved.';
  drawLayout(conf);renderTileChoices(conf);const suffix=$('unit').value;
+ const paperNames={letterP:'US Letter portrait',letterL:'US Letter landscape',a4P:'A4 portrait',a4L:'A4 landscape'};
+ const sizeText=conf.shape==='circle'?`${num('w')} ${suffix} diameter`:`${num('w')} × ${num('h')} ${suffix}`;
+ const totalSheets=conf.cols*conf.rows;
+ const edgeTiles=[];
+ for(let rr=0;rr<conf.rows;rr++)for(let cc=0;cc<conf.cols;cc++){
+  if(conf.pw-cc*conf.stepW<conf.usableW-.01||conf.ph-rr*conf.stepH<conf.usableH-.01)edgeTiles.push(tileKey(cc,rr));
+ }
+ $('artworkBadge').textContent=`Finished ${sizeText} · ${paperNames[$('paper').value]} · ${conf.cols} columns × ${conf.rows} rows (${totalSheets} sheets${edgeTiles.length?', '+edgeTiles.length+' partial':''})`;
+ $('fitContain').classList.toggle('active',$('fitMode').value==='contain');
+ $('fitCover').classList.toggle('active',$('fitMode').value==='cover');
+
  $('detail').textContent=`${artworkName(conf.shape)}: ${conf.shape==='circle'?num('w')+' diameter':num('w')+' × '+num('h')} ${suffix}. Paper: ${conf.cols} columns × ${conf.rows} rows. Pages repeat ${conf.overlap} in of adjacent image. ${img?'Source selection, artwork placement and print tiles are synchronized.':'Upload an image to export.'}`;
  $('fitToSelected').disabled=!img||selectedTiles.size===0;$('fillSelected').disabled=!img||selectedTiles.size===0;
  $('nudgePanel').hidden=viewMode!=='position';
@@ -547,8 +605,8 @@ function refresh(){resetGenerated();$('zoomReadout').textContent=img?'Image scal
  const selectedCenter=selectedBounds(conf);
  const selectedComment=selectedCenter?` Selected-sheet center: ${(selectedCenter.x+selectedCenter.w/2).toFixed(2)}, ${(selectedCenter.y+selectedCenter.h/2).toFixed(2)} in.`:'';
  $('alignSummary').textContent=place?`Canvas center: ${(conf.pw/2).toFixed(2)}, ${(conf.ph/2).toFixed(2)} in.${selectedComment} Use the corresponding button to align the selected crop, without changing its size.`:'Load a photo to use center alignment.';
- $('download').disabled=!img||selectedTiles.size===0;if(m.dataset.error==='yes'){m.textContent='';delete m.dataset.error}
- }catch(e){$('nPages').textContent='—';$('nLayout').textContent='—';$('dpi').textContent='—';$('download').disabled=true;m.textContent=e.message;m.className='error';m.dataset.error='yes';}}
+ $('download').disabled=!img||selectedTiles.size===0;$('showPreview').disabled=!img||selectedTiles.size===0;if(m.dataset.error==='yes'){m.textContent='';delete m.dataset.error}
+ }catch(e){$('nPages').textContent='—';$('nLayout').textContent='—';$('dpi').textContent='—';$('download').disabled=true;$('showPreview').disabled=true;m.textContent=e.message;m.className='error';m.dataset.error='yes';}}
 // Use the same loading path for the file picker, drag/drop, and clipboard paste.
 let imageLoadSeq=0;
 function showFileError(text){const m=$('message');m.textContent=text;m.className='error';m.dataset.error='yes';}
@@ -809,11 +867,8 @@ layoutCanvas.addEventListener('pointerdown',e=>{
    previewDrag={id:e.pointerId,kind:'crop',handle,x:p.x,y:p.y,r:{...cropDraft}};
   }
  }else{
-  // Switch to unconstrained positioning while preserving appearance, so a drag
-  // cannot get stuck against the Keep Whole photo frame.
-  selectedAreaClip=null;
-  enablePrecisePlacement(conf);
-  previewDrag={id:e.pointerId,kind:'position',x:p.x,y:p.y,cx:centerX,cy:centerY,px:containX,py:containY,fx:freeX,fy:freeY,place:getPlacement(conf)};
+  // Wait for actual movement. A quick tap selects the page; a drag repositions.
+  previewDrag={id:e.pointerId,kind:'pending-position',x0:e.clientX,y0:e.clientY};
  }
  layoutCanvas.setPointerCapture(e.pointerId);
 });
@@ -821,6 +876,12 @@ layoutCanvas.addEventListener('pointermove',e=>{
  if(!previewDrag||previewDrag.id!==e.pointerId)return;
  let conf;try{conf=config()}catch(_){return;}
  const p=cursorPoint(e),d=previewDrag;
+ if(d.kind==='pending-position'){
+  if(Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<9)return;
+  selectedAreaClip=null;enablePrecisePlacement(conf);
+  previewDrag={id:e.pointerId,kind:'position',x:p.x,y:p.y,cx:centerX,cy:centerY,px:containX,py:containY,fx:freeX,fy:freeY,place:getPlacement(conf)};
+  return;
+ }
  if(d.kind==='draw-crop'){
   cropDraft=drawnCrop(d.start,p,cropDraftShape);
   if(cropDraft.w<.0001||cropDraft.h<.0001)cropDraft=null;
@@ -874,7 +935,15 @@ layoutCanvas.addEventListener('pointermove',e=>{
  }
  refresh();
 });
-for(const en of ['pointerup','pointercancel','lostpointercapture'])layoutCanvas.addEventListener(en,()=>{
+for(const en of ['pointerup','pointercancel','lostpointercapture'])layoutCanvas.addEventListener(en,(event)=>{
+ if(en==='pointerup'&&previewDrag&&previewDrag.kind==='pending-position'&&event.pointerId===previewDrag.id){
+  const p=cursorPoint(event);let conf;try{conf=config()}catch(_){conf=null}
+  if(conf&&p.u>=0&&p.u<=1&&p.v>=0&&p.v<=1){
+   const col=Math.min(conf.cols-1,Math.max(0,Math.floor(p.u*conf.pw/conf.stepW)));
+   const row=Math.min(conf.rows-1,Math.max(0,Math.floor(p.v*conf.ph/conf.stepH)));
+   const key=tileKey(col,row);toggleTile(key,!selectedTiles.has(key));
+  }
+ }
  if(previewDrag&&previewDrag.kind==='draw-crop'&&(!cropDraft||cropDraft.w*img.naturalWidth<7||cropDraft.h*img.naturalHeight<7)){
   cropDraft=previewDrag.previous; // a click without dragging should not erase the last selection
   drawSourceCrop();
@@ -894,6 +963,69 @@ layoutCanvas.addEventListener('click',e=>{
  const row=Math.min(conf.rows-1,Math.max(0,Math.floor(yy/conf.stepH)));
  const key=tileKey(col,row);toggleTile(key,!selectedTiles.has(key));
 });
+// Print-preview mode uses the SAME artwork layout and tile renderer as PDF export.
+// Rendering at a lower resolution on screen is intentional; printed PDF uses 180px/in.
+let previewPages=[],previewIndex=0,previewURL=null,previewBusy=false;
+function closePrintPreview(){
+ $('printPreviewModal').hidden=true;document.body.classList.remove('previewOpen');
+ if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}
+}
+function buildPreviewIndex(){
+ const conf=config(), place=getPlacement(conf),p=[];
+ if($('assemblyPage').checked)p.push({kind:'guide',label:'Assembly instructions'});
+ for(let r=0;r<conf.rows;r++)for(let c=0;c<conf.cols;c++)if(selectedTiles.has(tileKey(c,r)))p.push({kind:'tile',c,r,label:'Sheet '+tileKey(c,r)});
+ return {p,conf,place};
+}
+async function showPrintPage(index){
+ if(previewBusy||!previewPages.length)return;
+ previewBusy=true;
+ try{
+  index=(index+previewPages.length)%previewPages.length;
+  const item=previewPages[index];
+  $('previewDescription').textContent=item.label+' · physical '+num('w')+' × '+(num('h')||num('w'))+' '+$('unit').value+' artwork · '+$('paper').selectedOptions[0].text;
+  $('previewPosition').textContent=`${index+1} / ${previewPages.length}`;
+  $('previewPrev').disabled=previewPages.length<2;
+  $('previewNext').disabled=previewPages.length<2;
+  const conf=config(),place=getPlacement(conf);
+  const bytes=item.kind==='guide'?await makeAssemblyGuide(conf,place,110):await makePageImage(conf,place,item.c,item.r,110);
+  const url=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
+  const image=$('previewImage');
+  await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject;image.src=url;});
+  if(previewURL)URL.revokeObjectURL(previewURL);
+  previewURL=url;previewIndex=index;
+ }catch(err){$('previewDescription').textContent='Could not preview page: '+err.message;}
+ finally{previewBusy=false;}
+}
+$('showPreview').addEventListener('click',async()=>{
+ if(!img||!selectedTiles.size)return;
+ const {p}=buildPreviewIndex();if(!p.length)return;
+ previewPages=p;previewIndex=0;
+ $('printPreviewModal').hidden=false;document.body.classList.add('previewOpen');
+ $('previewDescription').textContent='Preparing selected printable sheets…';
+ $('previewImage').removeAttribute('src');
+ await showPrintPage(0);
+});
+$('previewClose').addEventListener('click',closePrintPreview);
+$('previewPrev').addEventListener('click',()=>showPrintPage(previewIndex-1));
+$('previewNext').addEventListener('click',()=>showPrintPage(previewIndex+1));
+$('previewExport').addEventListener('click',()=>{closePrintPreview();$('download').click();});
+window.addEventListener('keydown',e=>{
+ if($('printPreviewModal').hidden)return;
+ if(e.key==='Escape'){e.preventDefault();closePrintPreview();}
+ else if(e.key==='ArrowRight'){e.preventDefault();showPrintPage(previewIndex+1);}
+ else if(e.key==='ArrowLeft'){e.preventDefault();showPrintPage(previewIndex-1);}
+},true);
+let swipeStart=null;
+$('previewPaper').addEventListener('pointerdown',e=>{
+ if(!e.isPrimary)return;swipeStart={id:e.pointerId,x:e.clientX,y:e.clientY};
+ try{$('previewPaper').setPointerCapture(e.pointerId);}catch(_){}
+});
+$('previewPaper').addEventListener('pointerup',e=>{
+ if(!swipeStart||swipeStart.id!==e.pointerId)return;
+ const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y;swipeStart=null;
+ if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy)*1.15){e.preventDefault();showPrintPage(previewIndex+(dx<0?1:-1));}
+});
+$('previewPaper').addEventListener('pointercancel',()=>swipeStart=null);
 function makePageImage(conf,place,col,row,scale=180){const cvs=document.createElement('canvas');cvs.width=Math.round(conf.paperW*scale);cvs.height=Math.round(conf.paperH*scale);const g=cvs.getContext('2d',{alpha:false});g.fillStyle='#fff';g.fillRect(0,0,cvs.width,cvs.height);
  const sx=col*conf.stepW,sy=row*conf.stepH;const tileW=Math.min(conf.usableW,conf.pw-sx),tileH=Math.min(conf.usableH,conf.ph-sy);
  const mx=conf.margin*scale,my=conf.margin*scale;
@@ -1171,23 +1303,14 @@ $('openPdf').addEventListener('click',()=>{
  if(!w)$('message').textContent='Open the PDF from Downloads in your PDF viewer.';
 });
 
-// Crop and fit are adjacent to the only live print preview.
-const cropPanel=document.createElement('div');cropPanel.className='unifiedCropPanel';
-cropPanel.style.cssText='background:#f6faf7;border:1px solid #d9e6df;border-radius:9px;padding:10px 12px;margin:9px 0 10px';
-cropPanel.innerHTML='<strong style="font-size:13px">Photo crop and fit</strong>';
-const fitField=$('fitMode').closest('.field');
-cropPanel.append(fitField,document.querySelector('.cropPresets'),$('cropShapeBar'),$('cropSummary'));
-document.querySelector('#previewHint').before(cropPanel);
-// Advanced options and print assembly instructions are available but not in the main workflow.
-const nudges=$('nudgePanel'),nudgeDisclosure=document.createElement('details');
-nudgeDisclosure.className='nudgeDisclosure';nudgeDisclosure.innerHTML='<summary>Advanced positioning and alignment</summary>';
-while(nudges.firstChild)nudgeDisclosure.append(nudges.firstChild);nudges.append(nudgeDisclosure);
-const assemblySection=document.querySelector('#output>section.help');
-if(assemblySection){const assemblyDisclosure=document.createElement('details');
- assemblyDisclosure.className='assemblyFold';assemblyDisclosure.innerHTML='<summary>Assembly instructions and trim diagram</summary>';
- while(assemblySection.firstChild)assemblyDisclosure.append(assemblySection.firstChild);
- assemblySection.append(assemblyDisclosure);
-}
+// v11: all controls live near the single preview; no relocation or duplicate panels.
+$('fitContain').addEventListener('click',()=>{if($('fitMode').value!=='contain'){$('fitMode').value='contain';selectedAreaClip=null;resetPosition();viewMode='position';refresh();}});
+$('fitCover').addEventListener('click',()=>{$('fitMode').value='cover';selectedAreaClip=null;resetPosition();viewMode='position';refresh();});
+$('manualCropPreview').addEventListener('click',()=>setViewMode('crop'));
+$('resetCrop').addEventListener('click',()=>{sourceCrop={x:0,y:0,w:1,h:1};sourceCropShape='rect';selectedAreaClip=null;cropDraft=null;manualDestCrop=null;$('fitMode').value='contain';resetPosition();viewMode='position';selectionMode='image';document.querySelectorAll('[data-croppreset]').forEach(b=>b.classList.remove('active'));refresh();});
+$('showSheetGuides').addEventListener('change',()=>refresh());
+$('showCenterGuides').addEventListener('change',()=>refresh());
+$('rotateArtwork').addEventListener('click',()=>{if($('shape').value==='circle')return;const w=$('w').value; $('w').value=$('h').value;$('h').value=w;setCustom();resetPosition();refresh();});
 rebuildPresets(7);refresh();
 </script>
 <script>
