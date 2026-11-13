@@ -61,12 +61,22 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 #selectionCount{font-weight:650;color:#1d686c;font-size:13px}
 .cardFoot .view{font-weight:600}
 @media(max-width:560px){.resultsHeader{display:block}.saveOptions{justify-content:flex-start;margin-top:12px}}
+
+/* v5: directly tap thumbnail to open; navigate with gestures and keyboard. */
+#modal{touch-action:none;overscroll-behavior:contain}
+#modal .modalFrame{touch-action:none;cursor:grab;max-width:100%;margin:auto;width:100%;overflow:hidden}
+#modal .modalFrame:active{cursor:grabbing}
+#modal canvas{touch-action:none;max-width:min(96vw,1200px);max-height:calc(100dvh - 155px);object-fit:contain}
+#modal .viewerHint{font-size:12px;line-height:1.3;color:#d7e5e5;text-align:center;flex:1 1 170px}
+#modal .modalBottom{width:min(96vw,1100px)}
+.thumb,.thumb canvas{touch-action:manipulation}
+@media(max-width:560px){#modal canvas{max-width:96vw;max-height:calc(100dvh - 146px)}#modal .modalFrame{gap:0}#modal .viewerHint{order:2;flex:1 1 100%;font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#153d42"><meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
 <div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v4</span></div>
-<header><h1>Value Studies</h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
+<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v5</span></h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
 <main>
   <div class="controls" id="toolbar">
     <label for="fileInput" class="fileLabel primary">+ Choose a photo</label><input type="file" id="fileInput" accept="image/*">
@@ -100,15 +110,15 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
   </section>
   <div class="resultsHeader"><div><h2>3 · Compare and select</h2><div class="subtle">Tap a picture to view it full size. Use its + Select button to choose it for saving.</div></div><div class="saveOptions"><span id="selectionCount">0 selected</span><button id="selectAll">Select all</button><button id="clearSelection">Clear</button><button class="primary" id="saveIndividuals">Save individual PNGs</button><button id="savePdf">Save one-page PDF</button><button id="saveComparison">Save comparison PNG</button><span id="saveFeedback" aria-live="polite"></span></div></div>
   <section class="preview-grid" id="previewGrid">
-   <div class="photoCard top"><div class="cardHead"><strong>Original color</strong><button type="button" class="selectChip" data-select="original" aria-pressed="false">+ Select</button><span class="type">Reference</span></div><div class="thumb" data-key="original" role="button" tabindex="0"><canvas id="out-original"></canvas></div><div class="cardFoot"><span class="desc">Color and materials</span><button type="button" class="view" data-view="original">View</button><button data-download="original">Save PNG</button></div></div>
-   <div class="photoCard top"><div class="cardHead"><strong>Grayscale</strong><button type="button" class="selectChip" data-select="gray" aria-pressed="false">+ Select</button><span class="type">All tones</span></div><div class="thumb" data-key="gray" role="button" tabindex="0"><canvas id="out-gray"></canvas></div><div class="cardFoot"><span class="desc">Compare actual lightness</span><button type="button" class="view" data-view="gray">View</button><button data-download="gray">Save PNG</button></div></div>
-   <div class="photoCard group"><div class="cardHead"><strong>2 values</strong><button type="button" class="selectChip" data-select="2" aria-pressed="false">+ Select</button><span class="type">Light · dark</span></div><div class="thumb" data-key="2" role="button" tabindex="0"><canvas id="out-2"></canvas></div><div class="swatches" id="sw-2"></div><div class="cardFoot"><span class="desc">Find the largest masses</span><button type="button" class="view" data-view="2">View</button><button data-download="2">Save PNG</button></div></div>
-   <div class="photoCard group"><div class="cardHead"><strong>3 values</strong><button type="button" class="selectChip" data-select="3" aria-pressed="false">+ Select</button><span class="type">Light · middle · dark</span></div><div class="thumb" data-key="3" role="button" tabindex="0"><canvas id="out-3"></canvas></div><div class="swatches" id="sw-3"></div><div class="cardFoot"><span class="desc">Best starting thumbnail</span><button type="button" class="view" data-view="3">View</button><button data-download="3">Save PNG</button></div></div>
-   <div class="photoCard group"><div class="cardHead"><strong>4 values</strong><button type="button" class="selectChip" data-select="4" aria-pressed="false">+ Select</button><span class="type">Add a second middle</span></div><div class="thumb" data-key="4" role="button" tabindex="0"><canvas id="out-4"></canvas></div><div class="swatches" id="sw-4"></div><div class="cardFoot"><span class="desc">Clarify turning planes</span><button type="button" class="view" data-view="4">View</button><button data-download="4">Save PNG</button></div></div>
+   <div class="photoCard top"><div class="cardHead"><strong>Original color</strong><button type="button" class="selectChip" data-select="original" aria-pressed="false">+ Select</button><span class="type">Reference</span></div><div class="thumb" data-key="original" role="button" tabindex="0"><canvas id="out-original"></canvas></div><div class="cardFoot"><span class="desc">Color and materials</span><button data-download="original">Save PNG</button></div></div>
+   <div class="photoCard top"><div class="cardHead"><strong>Grayscale</strong><button type="button" class="selectChip" data-select="gray" aria-pressed="false">+ Select</button><span class="type">All tones</span></div><div class="thumb" data-key="gray" role="button" tabindex="0"><canvas id="out-gray"></canvas></div><div class="cardFoot"><span class="desc">Compare actual lightness</span><button data-download="gray">Save PNG</button></div></div>
+   <div class="photoCard group"><div class="cardHead"><strong>2 values</strong><button type="button" class="selectChip" data-select="2" aria-pressed="false">+ Select</button><span class="type">Light · dark</span></div><div class="thumb" data-key="2" role="button" tabindex="0"><canvas id="out-2"></canvas></div><div class="swatches" id="sw-2"></div><div class="cardFoot"><span class="desc">Find the largest masses</span><button data-download="2">Save PNG</button></div></div>
+   <div class="photoCard group"><div class="cardHead"><strong>3 values</strong><button type="button" class="selectChip" data-select="3" aria-pressed="false">+ Select</button><span class="type">Light · middle · dark</span></div><div class="thumb" data-key="3" role="button" tabindex="0"><canvas id="out-3"></canvas></div><div class="swatches" id="sw-3"></div><div class="cardFoot"><span class="desc">Best starting thumbnail</span><button data-download="3">Save PNG</button></div></div>
+   <div class="photoCard group"><div class="cardHead"><strong>4 values</strong><button type="button" class="selectChip" data-select="4" aria-pressed="false">+ Select</button><span class="type">Add a second middle</span></div><div class="thumb" data-key="4" role="button" tabindex="0"><canvas id="out-4"></canvas></div><div class="swatches" id="sw-4"></div><div class="cardFoot"><span class="desc">Clarify turning planes</span><button data-download="4">Save PNG</button></div></div>
   </section>
   <footer><b>Drawing guidance:</b> Treat these as initial maps, not perfect artistic answer keys. Automatic cutoffs group photographed brightness, not the physical cause of that brightness. Local color (dark wood or hair) and cast/form shadow can end up in the same value group. If a boundary looks wrong, change the crop or click a different light/dark balance. Keep the manually drawn thumbnail small, flat, and simple; add gradients only in the later shaded drawing. All photo processing happens on your device; this standalone file works offline.</footer>
 </main>
-<div id="modal" role="dialog" aria-modal="true" aria-label="Full-screen image viewer"><div class="modalTop"><strong id="modalLabel">Value study</strong><button id="closeModal">Close ×</button></div><div class="modalFrame"><button id="prevModal" class="modalNav" aria-label="Previous image">‹</button><canvas id="modalCanvas" aria-label="Enlarged value study"></canvas><button id="nextModal" class="modalNav" aria-label="Next image">›</button></div><div class="modalBottom"><span id="modalPosition"></span><button id="modalSelect">+ Select</button><button id="modalSave">Save this PNG</button></div></div>
+<div id="modal" role="dialog" aria-modal="true" aria-label="Full-screen image viewer" tabindex="-1"><div class="modalTop"><strong id="modalLabel">Value study</strong><button id="closeModal" type="button">Close ×</button></div><div class="modalFrame" id="modalSwipeArea"><canvas id="modalCanvas" aria-label="Enlarged value study"></canvas></div><div class="modalBottom"><span id="modalPosition"></span><span class="viewerHint">Swipe left / right · Keyboard ← →</span><button id="modalSelect" type="button">+ Select</button><button id="modalSave" type="button">Save this PNG</button></div></div>
 <div id="dropOverlay">Drop image to open</div>
 <script>
 'use strict';
@@ -287,6 +297,8 @@ document.querySelectorAll('[data-download]').forEach(b=>b.onclick=()=>{const key
 function showModal(key){const src=state.out[key];if(!src)return;state.modalKey=key;
  $('#modalLabel').textContent=({original:'Original color',gray:'Grayscale',2:'2 values',3:'3 values',4:'4 values'})[key];const dst=$('#modalCanvas');dst.width=src.width;dst.height=src.height;dst.getContext('2d').drawImage(src,0,0);
  $('#modal').classList.add('open');
+ document.body.style.overflow='hidden';
+ $('#modal').focus({preventScroll:true});
  $('#modalPosition').textContent=`${SELECT_KEYS.indexOf(key)+1} of ${SELECT_KEYS.length}`;
  $('#modalSelect').textContent=selectedKeys.has(key)?'✓ Selected':'+ Select';
 }
@@ -313,51 +325,53 @@ document.querySelectorAll('.thumb').forEach(t=>{
  t.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showModal(t.dataset.key)}});
 });
 document.querySelectorAll('[data-select]').forEach(b=>b.addEventListener('click',()=>toggleSelected(b.dataset.select)));
-document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showModal(b.dataset.view)));
 $('#selectAll').onclick=()=>{SELECT_KEYS.forEach(k=>selectedKeys.add(k));syncSelection()};
 $('#clearSelection').onclick=()=>{selectedKeys.clear();syncSelection()};
-function closeModal(){state.modalKey=null;$('#modal').classList.remove('open')}
+function closeModal(){state.modalKey=null;$('#modal').classList.remove('open');document.body.style.overflow=''}
 function moveModal(direction){if(!state.modalKey)return;const pos=SELECT_KEYS.indexOf(state.modalKey);showModal(SELECT_KEYS[(pos+direction+SELECT_KEYS.length)%SELECT_KEYS.length])}
 $('#closeModal').onclick=closeModal;
-$('#prevModal').onclick=()=>moveModal(-1);
-$('#nextModal').onclick=()=>moveModal(1);
 $('#modalSelect').onclick=()=>{if(state.modalKey){toggleSelected(state.modalKey);$('#modalSelect').textContent=selectedKeys.has(state.modalKey)?'✓ Selected':'+ Select'}};
-$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeModal()});
-// Capture arrow keys regardless of which modal control currently has focus.
-document.addEventListener('keydown',e=>{
- if(!state.modalKey)return;
- if(e.key==='Escape'){e.preventDefault();closeModal();}
- else if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
-  e.preventDefault();e.stopPropagation();moveModal(e.key==='ArrowLeft'?-1:1);
+window.addEventListener('keydown',e=>{
+ if(!state.modalKey || e.altKey || e.metaKey || e.ctrlKey)return;
+ if(e.key==='Escape'){e.preventDefault();closeModal();return;}
+ if(e.key==='ArrowLeft' || e.key==='ArrowRight'){
+  e.preventDefault();e.stopImmediatePropagation();
+  moveModal(e.key==='ArrowLeft'?-1:1);
  }
 },true);
-// Listen on the entire viewer frame, not only on the image canvas.
-const viewerFrame=$('#modal .modalFrame');
-let gestureStart=null;
-function gestureFinish(x,y){
- if(!gestureStart)return;
- const dx=x-gestureStart.x,dy=y-gestureStart.y;
- gestureStart=null;
- if(Math.abs(dx)>32 && Math.abs(dx)>Math.abs(dy)*1.15)moveModal(dx<0?1:-1);
+// Use pointer capture for gestures across the whole enlarged image and surrounding area.
+// With touch-action:none, browser scrolling cannot intercept horizontal gestures.
+const modalElement=$('#modal');
+let swipeStart=null;
+modalElement.addEventListener('pointerdown',e=>{
+ if(!state.modalKey || e.target.closest('button') || !e.isPrimary)return;
+ swipeStart={id:e.pointerId,x:e.clientX,y:e.clientY};
+ try{modalElement.setPointerCapture(e.pointerId)}catch(err){}
+});
+modalElement.addEventListener('pointerup',e=>{
+ if(!swipeStart || e.pointerId!==swipeStart.id)return;
+ const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y;
+ swipeStart=null;
+ if(Math.abs(dx)>=38 && Math.abs(dx)>=Math.abs(dy)*1.12){
+  e.preventDefault();moveModal(dx<0?1:-1);
+ }
+});
+modalElement.addEventListener('pointercancel',()=>{swipeStart=null});
+modalElement.addEventListener('lostpointercapture',()=>{swipeStart=null});
+if(!window.PointerEvent){
+ let touchStart=null;
+ modalElement.addEventListener('touchstart',e=>{
+  if(!state.modalKey||e.target.closest('button')||e.touches.length!==1)return;
+  touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
+ },{passive:true});
+ modalElement.addEventListener('touchend',e=>{
+  if(!touchStart||!e.changedTouches.length)return;
+  const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;
+  touchStart=null;
+  if(Math.abs(dx)>=38 && Math.abs(dx)>=Math.abs(dy)*1.12)moveModal(dx<0?1:-1);
+ },{passive:true});
+ modalElement.addEventListener('touchcancel',()=>{touchStart=null});
 }
-viewerFrame.addEventListener('touchstart',e=>{
- if(e.target.closest('button')||e.touches.length!==1){gestureStart=null;return;}
- const t=e.touches[0];gestureStart={x:t.clientX,y:t.clientY};
-},{passive:true});
-viewerFrame.addEventListener('touchend',e=>{
- if(!gestureStart||!e.changedTouches.length)return;
- const t=e.changedTouches[0];gestureFinish(t.clientX,t.clientY);
-},{passive:true});
-viewerFrame.addEventListener('touchcancel',()=>{gestureStart=null},{passive:true});
-viewerFrame.addEventListener('pointerdown',e=>{
- if(e.pointerType==='touch'||e.target.closest('button'))return;
- gestureStart={x:e.clientX,y:e.clientY};
-});
-viewerFrame.addEventListener('pointerup',e=>{
- if(e.pointerType==='touch')return;
- gestureFinish(e.clientX,e.clientY);
-});
-viewerFrame.addEventListener('pointercancel',()=>{gestureStart=null});
 $('#modalSave').onclick=()=>{if(state.modalKey)downloadCanvas(state.out[state.modalKey],filenameFor(state.modalKey))};
 function orderedSelection(){return SELECT_KEYS.filter(k=>selectedKeys.has(k))}
 function makeComparisonCanvas(keys){
@@ -450,12 +464,14 @@ window.addEventListener('load',async()=>{
  status.setAttribute('role','status');
  status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
  status.textContent='Checking offline access…';document.body.appendChild(status);
- const key='art-tools-value-study-v4';
+ const key='art-tools-value-study-v5';
  async function check(){
   try{
    const cache=await caches.open(key);
-   const hit=await cache.match(new URL('./index.html',location.href).href);
-   if(hit){status.textContent=navigator.onLine?'Offline ready':'Offline ready · no connection';status.style.background='#176458'}
+   const paths=['./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+   const hits=await Promise.all(paths.map(path=>cache.match(new URL(path,location.href).href)));
+   const installed=hits.every(Boolean);
+   if(installed){status.textContent=navigator.onLine?'Offline copy saved':'Offline copy saved · disconnected';status.style.background='#176458';status.title='Files cached locally. Confirm by turning on Airplane mode and reopening the app.'}
    else{status.textContent='Offline not ready · open while online';status.style.background='#91561d'}
   }catch(e){status.textContent='Offline not available';status.style.background='#91561d'}
  }
