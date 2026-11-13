@@ -1,5 +1,5 @@
-/* Offline app shell; build v9 for value-study. */
-const CACHE_NAME = 'art-tools-value-study-v9';
+/* Offline app shell; build v10 for value-study. */
+const CACHE_NAME = 'art-tools-value-study-v10';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
  event.waitUntil((async () => {
