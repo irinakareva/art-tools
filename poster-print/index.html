@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Art Reference Enlarger — Crop, Tile & Print</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Art Reference Enlarger v10 — Mobile Crop & Page Selection</title>
 <style>
 :root{--bg:#f6f5f1;--paper:#fff;--ink:#253330;--sub:#596763;--accent:#17655a;--line:#d9ddd7;--pale:#eaf1ee}*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -22,12 +22,41 @@ small,.note{color:var(--sub);font-size:12px;line-height:1.5}.note{background:#f6
 button{font:inherit;border-radius:8px;border:1px solid #b9c8c0;padding:10px 16px;background:#fff;color:var(--ink);cursor:pointer;font-weight:600}
 button.primary{background:var(--accent);border-color:var(--accent);color:#fff;width:100%;font-size:16px;padding:15px 18px}
 button:hover:not(:disabled){filter:brightness(.96)}button:disabled{opacity:.5;cursor:not-allowed}
-#cropWrap{border-radius:9px;border:1px solid var(--line);background:repeating-conic-gradient(#e4e9e4 0% 25%,#f1f3f0 0% 50%) 50% / 18px 18px;min-height:230px;display:grid;place-items:center;overflow:hidden}
-#cropCanvas{display:block;max-width:100%;max-height:400px;min-width:0;touch-action:none;cursor:grab}#cropCanvas:active{cursor:grabbing}
+input[readonly]{background:#f4f6f4;color:#52615c}#circleControls[hidden],#standardFields[hidden]{display:none!important}.shapeHint{font-size:12px;color:#536761;margin:5px 0 0}
+#cropCanvas{display:none}
 .placeholder{padding:50px 20px;color:#708078;text-align:center;display:none}
 .statline{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}.stat{background:var(--pale);border-radius:8px;padding:9px 12px;flex:1;min-width:100px}
 .stat strong{display:block;font-size:18px;font-weight:700}.stat span{font-size:12px;color:#486357}
-#layoutCanvas{width:100%;height:auto;display:block;background:#e9eee8;border-radius:7px}
+#layoutCanvas{width:100%;height:auto;display:block;background:#e9eee8;border-radius:7px;cursor:default;touch-action:none;max-height:none}
+#layoutCanvas:active{cursor:default} .modeToolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0 8px}
+.modeToolbar button{padding:8px 4px;font-size:12px;white-space:normal;line-height:1.3}
+.modeToolbar button.active{color:#fff;background:var(--accent);border-color:var(--accent)}
+.nudgePanel{border:1px solid var(--line);padding:12px;background:#fafcf9;border-radius:9px;margin:9px 0 13px}
+.nudgePanel .nudgeGrid{display:grid;grid-template-columns:repeat(3,43px);grid-template-rows:repeat(2,36px);gap:4px;justify-content:center;align-items:center;margin:9px 0}
+.nudgePanel .nudgeGrid button{padding:5px 0;text-align:center;font-size:16px}
+.nudgePanel .nudgeGrid button[data-dir=up]{grid-column:2;grid-row:1}
+.nudgePanel .nudgeGrid button[data-dir=left]{grid-column:1;grid-row:2}
+.nudgePanel .nudgeGrid button[data-dir=down]{grid-column:2;grid-row:2}
+.nudgePanel .nudgeGrid button[data-dir=right]{grid-column:3;grid-row:2}
+.quickFit{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.quickFit button{font-size:12px;padding:8px 10px}
+#nudgePanel[hidden]{display:none}
+.assemblyDiagram{width:100%;height:auto;max-height:230px;background:#fbfcfb;border:1px solid #dce6df;border-radius:9px;margin:10px 0}
+.alignTools{background:#fff;border:1px solid #cbdcd4;border-radius:9px;padding:12px;margin:12px 0}
+.alignButtons{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}
+.alignButtons button{font-size:12px;padding:8px 10px}
+.alignTools label{display:block;margin:9px 0 4px}
+.alignTools select{font-size:13px;padding:8px}
+#alignSummary{font-size:12px;color:#426359;margin:7px 0 0}
+.key{font:600 11px/1.3 ui-monospace,monospace;background:#edf3f0;padding:2px 5px;border-radius:3px}
+.assemblyTip{background:#f7f9f6;border:1px solid #dae4dd;padding:11px 13px;border-radius:8px;margin:10px 0}
+
+
+#cropActions[hidden],#cropShapeBar[hidden]{display:none!important}
+.tileToolbar{display:flex;flex-wrap:wrap;gap:7px;margin:11px 0 7px}.tileToolbar button{padding:7px 9px;font-size:12px}
+#tileChoices{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:5px;margin:9px 0 12px;max-height:170px;overflow:auto}
+.tilePick{display:flex;align-items:center;gap:7px;padding:8px;background:#f7f9f7;border:1px solid #dce4df;border-radius:7px;font-weight:600;font-size:13px;cursor:pointer}
+.tilePick input{accent-color:var(--accent)}.tilePick.skipped{color:#8b9490;background:#fafafa;border-style:dashed}
+#selectionSummary{font-size:13px;color:var(--sub);margin:2px 0 8px}
 #message{margin-top:10px;font-size:13px;color:#4c655a;min-height:20px}#message.error{color:#a13b2a}
 #output{position:sticky;top:15px}
 .help{font-size:13px;color:#52655c}.help ol{padding-left:21px;margin:8px 0 0}.help li{margin:6px 0}
@@ -38,35 +67,86 @@ button:hover:not(:disabled){filter:brightness(.96)}button:disabled{opacity:.5;cu
 #dropOverlay .dropCard strong{display:block;font-size:25px;margin-bottom:6px}
 @media(max-width:800px){main{grid-template-columns:1fr;padding:12px}#output{position:static}section{padding:16px}header{padding:22px 18px}}
 @media print{body{display:none}}
+
+/* v10: one always-current preview on phones; all editing and page selection use this canvas. */
+.cropPresets{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 13px}
+.cropPresets button{font-size:12px;padding:9px 11px}
+.cropPresets button.active{background:var(--pale);border-color:var(--accent)}
+#cropActions{display:none!important}
+#cropShapeBar:not([hidden]){display:flex!important;margin:8px 0 4px}
+#previewHint{background:#f3f8f5;border-radius:7px;padding:7px 10px}
+#layoutCanvas{touch-action:none;user-select:none;-webkit-user-select:none}
+#layoutCanvas:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.zoomQuick{display:flex;align-items:center;gap:6px;margin:9px 0 13px}
+.zoomQuick button{min-height:40px;min-width:48px;font-size:18px}
+.zoomQuick .grow{flex:1;font-size:12px;color:var(--sub)}
+#tileChoices{max-height:195px}
+#output section:first-child{scroll-margin-top:10px}
+#nudgePanel{padding:7px 11px}
+.nudgeDisclosure summary,.assemblyFold summary{cursor:pointer;padding:9px;color:var(--accent);font-weight:650}
+.nudgeDisclosure[open] summary,.assemblyFold[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+
+@media(max-width:800px){
+ main{display:flex;flex-direction:column;gap:0}
+ main>div:first-child,main>#output{display:contents}
+ main>div:first-child>section:nth-child(1){order:0}
+ main>div:first-child>section:nth-child(2){order:1}
+ main>div:first-child>section:nth-child(4){order:2}
+ main>#output>section:first-child{order:3;width:100%}
+ main>div:first-child>section:nth-child(3){order:4}
+ main>#output>section:last-child{order:5;width:100%}
+ #layoutCanvas{max-width:100%}
+ .modeToolbar button{font-size:12px;padding:10px 5px}
+}
 </style>
-<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#17655a"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#17655a">
+<meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing</span></div>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v10</span></div>
 <div id="dropOverlay" aria-hidden="true"><div class="dropCard"><strong>Drop image to load it</strong><span>Release your photo anywhere on this page</span></div></div>
-<header><h1>Art Reference Enlarger</h1><p>Crop a photo, choose the finished artwork size, and make a multi-sheet PDF with matched overlap and trim guides. All processing happens on this device; create a tiled PDF and share it for printing.</p></header>
+<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v10</span></h1><p>One live artwork preview: crop, pinch to zoom, and tap the pages you want to print. Your image stays on this device.</p></header>
 <main>
 <div>
 <section>
 <h2><span class="num">1</span> Choose a reference</h2>
 <p class="help" style="margin:-7px 0 12px"><strong>Drag and drop</strong> an image anywhere in this window, <strong>paste</strong> a copied image with <strong>Ctrl+V</strong> (or ⌘+V on Mac), or use the file picker below.</p>
 <input id="upload" type="file" accept="image/*" aria-label="Upload an image">
-<div class="note">Use JPG, PNG, or another image format your browser supports. Your photo stays on this device.</div>
+<div class="note">Use JPG, PNG, or another image format your browser supports. Your photo never leaves this computer.</div>
 </section>
 <section>
 <h2><span class="num">2</span> Set the finished artwork size</h2>
-<div class="formrow">
- <div class="field"><label for="w">Finished width</label><input type="number" id="w" min="1" max="1000" step="0.1" value="18"></div>
- <div class="field"><label for="h">Finished height</label><input type="number" id="h" min="1" max="1000" step="0.1" value="24"></div>
+<div class="field"><label for="shape">Artwork shape</label><select id="shape"><option value="rect">Rectangle / square</option><option value="circle">Circle (diameter)</option><option value="oval">Oval / ellipse (width × height)</option></select></div>
+<div class="field" style="margin-top:12px"><label for="sizePreset">Standard sizes or custom</label><select id="sizePreset"></select></div>
+<div class="formrow" id="standardFields">
+ <div class="field"><label for="w" id="wLabel">Finished width</label><input type="number" id="w" min="1" max="1000" step="any" value="12"></div>
+ <div class="field" id="heightField"><label for="h">Finished height</label><input type="number" id="h" min="1" max="1000" step="any" value="18"></div>
 </div>
 <div class="field"><label for="unit">Measurements</label><select id="unit"><option value="in">Inches</option><option value="cm">Centimeters</option></select></div>
-<div class="note">The crop automatically matches this width-to-height proportion; the image is never stretched.</div>
+<p class="shapeHint" id="shapeHint">Choose a standard size, or edit a dimension to switch to Custom size.</p>
+<div class="note">Finished artwork sizes are <strong>independent of printer-paper size</strong> below. The full-image setting never discards source-image content. For circles and ovals, it keeps the entire photograph <strong>inside the curved boundary</strong>, leaving blank areas where necessary; selecting Fill deliberately crops to that boundary.</div>
 </section>
 <section>
-<h2><span class="num">3</span> Crop and reframe</h2>
-<div id="cropWrap"><canvas id="cropCanvas" width="560" height="740" hidden></canvas><div class="placeholder" id="empty" style="display:block">Drop an image anywhere, paste with Ctrl+V, or choose a file.</div></div>
-<div class="controls" style="margin-top:14px"><label for="zoom">Zoom / crop closer</label><button id="reset" type="button" style="padding:5px 9px;font-size:12px">Reset crop</button></div>
-<input id="zoom" type="range" min="1" max="4" step="0.01" value="1"><small>Drag the photo to reposition it. Move the zoom slider to crop closer.</small>
+<h2><span class="num">3</span> Position, zoom &amp; crop</h2>
+<p class="help" style="margin:-6px 0 13px">The <strong>single large preview</strong> shows your current crop and the actual page boundaries at the same time. Drag to pan, pinch to zoom, or switch to <strong>Select sheets</strong> and tap the page tiles.</p>
+<div class="field" style="margin-bottom:11px"><label for="fitMode">How should your photo fit the finished artwork?</label><select id="fitMode"><option value="contain" selected>Keep whole selected photo (no extra crop)</option><option value="cover">Fill artwork (may crop edges)</option><option value="free">Free placement (drag + zoom; may extend beyond canvas)</option></select></div>
+<div class="shapeHint" style="margin:9px 0 4px;font-weight:600">Quick source crop — one tap</div>
+<div class="cropPresets" aria-label="Source cropping presets">
+ <button type="button" data-croppreset="full">Whole photo</button>
+ <button type="button" data-croppreset="1:1">Square</button>
+ <button type="button" data-croppreset="4:3">4:3</button>
+ <button type="button" data-croppreset="3:4">3:4</button>
+ <button type="button" data-croppreset="16:9">16:9</button>
+ <button type="button" id="manualCropPreset">Draw crop</button>
+</div>
+<button id="matchRatio" type="button" style="margin-bottom:13px;font-size:13px" disabled>Match photo proportions (rectangle only; keep height)</button>
+<div class="controls"><label for="zoom" id="zoomLabel">Image zoom</label><button id="reset" type="button" style="padding:5px 9px;font-size:12px">Reset position &amp; zoom</button></div>
+<input id="zoom" type="range" min="0.15" max="8" step="0.01" value="1">
+<p class="help" style="margin:2px 0 11px">In <strong>Position / zoom</strong> mode: drag with one finger to move, pinch with two fingers to zoom at that location; on a computer use mouse wheel. <strong>Draw crop</strong> lets you select a rectangle directly on the SAME print preview. <strong>Select sheets</strong> lets you tap the pages to print.</p>
+<div class="controls" style="gap:7px;justify-content:flex-start;flex-wrap:wrap"><button id="startCrop" type="button" style="font-size:13px">Draw a crop on the preview</button><button id="clearCrop" type="button" style="font-size:13px">Restore whole source</button></div>
+<p id="cropSummary" class="shapeHint">No source crop selected.</p>
+<p id="fitMessage" class="note" aria-live="polite">Upload a photo. Nothing will be cropped automatically in Keep whole selected photo mode.</p>
 </section>
 <section>
 <h2><span class="num">4</span> Choose your printing options</h2>
@@ -77,45 +157,138 @@ button:hover:not(:disabled){filter:brightness(.96)}button:disabled{opacity:.5;cu
 </div>
 <label class="check"><input type="checkbox" id="gray">Print photo in grayscale</label>
 <label class="check"><input type="checkbox" id="gridToggle">Add a faint square drawing grid</label>
+<label class="check"><input type="checkbox" id="registration" checked>Print artwork edge and center registration marks</label>
+<label class="check"><input type="checkbox" id="assemblyPage">Include one-page assembly diagram and instructions in PDF</label>
 <div id="gridOpts" style="display:none" class="field"><label for="gridIn">Grid square size on finished artwork (in)</label><input id="gridIn" type="number" min="0.25" max="20" step="0.25" value="2"></div>
-<div class="note">Every page has a letter–number label and a 1-inch calibration ruler. Dashed trim lines appear on pages with left/top overlap.</div>
+<div class="note"><strong>Two kinds of marks:</strong> <strong>red dashed</strong> = trim the duplicated overlap on the later sheet; <strong>gray boundary / short center ticks</strong> = the actual artwork edge and its halfway points. Do not confuse page edges with artwork edges. Use the latter to align the assembled pages to your canvas or drawing paper.</div>
 </section>
 </div>
 <div id="output">
 <section>
-<h2>Preview &amp; export</h2>
+<h2>Working preview &amp; export</h2>
 <div id="stats" class="statline"><div class="stat"><strong id="nPages">—</strong><span>paper sheets</span></div><div class="stat"><strong id="nLayout">—</strong><span>columns × rows</span></div><div class="stat"><strong id="dpi">—</strong><span>source pixels / inch</span></div></div>
-<canvas id="layoutCanvas" width="800" height="800"></canvas>
+<div class="modeToolbar" role="group" aria-label="What to do in the preview">
+<button id="modePosition" type="button" class="active" aria-pressed="true">1. Position / zoom</button>
+<button id="modeCrop" type="button" aria-pressed="false">2. Draw crop</button>
+<button id="modeTiles" type="button" aria-pressed="false">3. Select sheets</button>
+</div>
+<p id="previewHint" class="help" style="margin:4px 0 9px">Drag to move; pinch to zoom. Tap Select sheets then tap grid cells. The live preview is the print layout.</p>
+<div id="cropShapeBar" hidden class="field" style="margin:8px 0 12px;max-width:300px"><label for="cropShape">Choose the crop shape</label><select id="cropShape"><option value="rect">Rectangle</option><option value="oval">Oval / ellipse</option><option value="circle">Circle</option></select></div>
+<canvas id="layoutCanvas" width="800" height="800" tabindex="0" aria-label="Interactive artwork: drag to pan, pinch to zoom; tap tiles in Select sheets mode"></canvas>
+<div class="zoomQuick"><button id="quickZoomOut" type="button" aria-label="Zoom out">−</button><button id="quickZoomIn" type="button" aria-label="Zoom in">+</button><span class="grow" id="zoomReadout">Pinch or use these buttons to zoom</span><button id="quickZoomReset" type="button">Reset</button></div>
+<div class="nudgePanel" id="nudgePanel">
+ <strong style="font-size:13px">Precise image positioning</strong>
+ <p class="help" style="margin:4px 0 0">Use your keyboard <strong>↑ ↓ ← →</strong> to nudge by <strong>0.02 in</strong>; hold <strong>Shift</strong> for <strong>0.20 in</strong>. The arrows below work too. The image may extend beyond the artwork edge; only the part inside your selected artwork or tiles will print.</p>
+ <div class="nudgeGrid" aria-label="Nudge the image"><button type="button" data-dir="up" aria-label="Nudge up">↑</button><button type="button" data-dir="left" aria-label="Nudge left">←</button><button type="button" data-dir="down" aria-label="Nudge down">↓</button><button type="button" data-dir="right" aria-label="Nudge right">→</button></div>
+ <div class="help" id="positionSummary" aria-live="polite">Use free placement to nudge image position in physical inches.</div>
+ <div class="alignTools">
+  <strong style="font-size:13px">Center the selected / cropped image</strong>
+  <p class="help" style="margin:4px 0 7px">Uses the <strong>visible crop boundary</strong> (rectangle, oval or circle), not the original photo margins. Alignment changes position without changing scale.</p>
+  <div class="alignButtons">
+   <button id="centerArtBoth" type="button">Center on artwork</button>
+   <button id="centerArtX" type="button">Center horizontally</button>
+   <button id="centerArtY" type="button">Center vertically</button>
+   <button id="centerSelected" type="button">Center in selected sheets</button>
+  </div>
+  <label for="snapMode">While dragging, snap cropped-image center to</label>
+  <select id="snapMode"><option value="none">No snapping</option><option value="art" selected>Artwork center</option><option value="tiles">Selected sheets' center</option></select>
+  <p class="help" style="margin:6px 0 0">Dotted blue guides show the chosen snap center on screen; they do <strong>not</strong> print. Arrow nudges bypass snapping.</p>
+  <div id="alignSummary" aria-live="polite">For one-column A1+A2 printing, choose Center in selected sheets; artwork centering is a different position.</div>
+ </div>
+</div>
+<div id="cropActions" hidden>
+ <p class="help" style="margin:9px 0">Point to a spot on the original image and <strong>click and drag to draw a crop</strong>. You can redraw it, adjust its edge handles, or drag the selected region to move it. Circle locks to a true circle. This does not change your original file.</p>
+ <div class="controls" style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button id="newCrop" type="button" style="font-size:13px">Draw new crop</button><button id="applyCrop" type="button" class="primary" style="width:auto;font-size:13px;padding:9px 13px">Apply crop</button><button id="cancelCrop" type="button" style="font-size:13px">Cancel</button><button id="fullCrop" type="button" style="font-size:13px">Full image</button></div>
+</div>
 <p class="note" id="detail">Upload a photo to see its finished crop and page layout.</p>
-<button id="download" class="primary" disabled>Create / download multi-page PDF</button><div class="formrow" style="margin-top:9px"><button id="sharePdf" disabled type="button">Share PDF to printer</button><button id="openPdf" disabled type="button">Open PDF</button></div>
+<h3 style="font-size:15px;margin:16px 0 5px">Select pages to print (tap tiles or checkboxes)</h3>
+<p class="help" style="margin:0 0 5px">Tap <strong>Select sheets</strong> above, then tap any numbered page on the photo. Or tick a checkbox below. Only selected pages go into the PDF.</p>
+<div class="tileToolbar"><button id="onlyPhoto" type="button">Select photo tiles</button><button id="selectAll" type="button">Select all</button><button id="selectNone" type="button">Select none</button></div>
+<div id="selectionSummary" aria-live="polite">No image loaded.</div>
+<div id="tileChoices" aria-label="Tiles to print"></div>
+<div class="quickFit" aria-label="Fit image to selected sheets"><button id="fitToSelected" type="button" disabled>Fit photo inside selected sheets</button><button id="fillSelected" type="button" disabled>Fill selected sheets (crops edges)</button></div>
+<p class="help" style="margin:0 0 14px">For <strong>A1 + A2 only</strong>, select just those sheets and click <strong>Fit photo inside selected sheets</strong> to avoid cutting the image off. Then use <strong>Center in selected sheets</strong> for exact positioning. Simply centering a wider image will not make it fit that column. Artwork center is a different position.</p>
+<button id="download" class="primary" disabled>Download selected sheets PDF</button>
+<div class="formrow" style="margin-top:9px"><button id="sharePdf" type="button" disabled>Share PDF to printer</button><button id="openPdf" type="button" disabled>Open PDF</button></div>
 <div id="message" role="status"></div>
 </section>
 <section class="help">
-<h2>Assembly instructions</h2>
+<h2>Assembly: how to align the printed sheets</h2>
+<p><strong>Red dashed = TRIM REPEATED STRIP.</strong> On A2, remove the top strip; on B1, remove the left strip. The dashed line is the new edge of the later sheet, not an image or artwork-center line.</p>
+<div class="assemblyTip"><strong>Gray artwork outline and short midpoint ticks (optional):</strong> These show the finished canvas edges and its true horizontal/vertical centers, based on your 12 × 18-inch dimensions. They are independent of the photograph's crop. <strong>Keep the artwork outline</strong> when positioning the template; only trim the dashed red overlap strips to join sheets.</div>
+<svg class="assemblyDiagram" viewBox="0 0 540 226" role="img" aria-label="How to join A1 above A2: A2 has a repeated top strip ending at a dashed trim line; cut it off then join it to the image bottom of A1">
+<rect width="540" height="226" fill="#fbfcfb"/>
+<text x="18" y="20" font-size="12" font-weight="700" fill="#263b32">BEFORE: separate printed sheets</text>
+<rect x="35" y="34" width="155" height="72" fill="#d7e4d7" stroke="#43645a"/>
+<path d="M36 88 Q110 34 189 83" stroke="#637767" stroke-width="6" fill="none"/>
+<text x="45" y="54" fill="#173d30" font-weight="700">A1</text>
+<rect x="35" y="118" width="155" height="89" fill="#d7e4d7" stroke="#43645a"/>
+<rect x="35" y="118" width="155" height="23" fill="#f3e5c8"/>
+<path d="M36 136 Q110 82 189 131" stroke="#637767" stroke-width="6" fill="none"/>
+<path d="M35 141 H190" stroke="#b04328" stroke-width="2.5" stroke-dasharray="7 4"/>
+<text x="45" y="163" fill="#173d30" font-weight="700">A2</text>
+<text x="199" y="133" font-size="11" fill="#9a3a22">Remove this strip</text>
+<text x="199" y="147" font-size="10" fill="#9a3a22">Cut at dashed line</text>
+<path d="M287 108 L325 108 M314 99 L325 108 L314 117" stroke="#667e70" stroke-width="2" fill="none"/>
+<text x="354" y="20" font-size="12" font-weight="700" fill="#263b32">AFTER: joined, edge-to-edge</text>
+<rect x="351" y="34" width="155" height="83" fill="#d7e4d7" stroke="#43645a"/>
+<path d="M351 88 Q428 34 506 83" stroke="#637767" stroke-width="6" fill="none"/>
+<rect x="351" y="117" width="155" height="90" fill="#d7e4d7" stroke="#43645a"/>
+<path d="M351 117 L506 117" stroke="#aa6947" stroke-width="2"/>
+<text x="362" y="54" fill="#173d30" font-weight="700">A1</text>
+<text x="362" y="138" fill="#173d30" font-weight="700">A2</text>
+<text x="358" y="217" font-size="10" fill="#54665d">Tape join on the back</text>
+</svg>
 <ol>
-<li>Open the PDF and print <strong>Actual size / 100%</strong>, one-sided, with the selected paper size. Turn off “Fit” and automatic scaling.</li>
-<li>Print the first page, measure its 1-inch ruler, and check that it really measures 1 inch before printing the rest.</li>
-<li>Arrange printed pages in reading order: <strong>A1, B1, C1…</strong>, then <strong>A2, B2…</strong>.</li>
-<li>At a vertical join, trim the <strong>right white margin</strong> of the left sheet at the image boundary. On the sheet to its right, cut off the <strong>left margin and repeated image strip</strong> at its dashed vertical line. At horizontal joins, similarly trim the upper sheet at its bottom image boundary and the lower sheet at its dashed horizontal line.</li>
-<li>Align the newly cut picture edges, tape on the back, and trim remaining blank paper outside the outermost artwork boundary. The dashed overlap guides are intended to be removed, not left showing in the assembled image.</li>
+<li><strong>Print at Actual Size / 100%</strong> (not Fit). First measure the 1-inch calibration ruler. Print one-sided.</li>
+<li><strong>Lay out sheets</strong> using their codes: A1 is top left, A2 directly below it, B1 immediately to the right of A1. The page count may omit intentionally deselected sheets.</li>
+<li><strong>For A1 over A2:</strong> Cut off A1's bottom white margin along the <em>edge of its printed image</em>. On A2, cut along its dashed <em>horizontal</em> line, removing the top white margin and the repeated 0.25-inch photo strip. Put the two new edges together. The picture should be continuous.</li>
+<li><strong>For A1 beside B1:</strong> Cut A1 at its right image edge. Cut B1 along its dashed <em>vertical</em> line, removing its left margin and repeated strip. Join the two edges.</li>
+<li><strong>Secure</strong> the pieces from the back with low-tack tape, checking obvious landmarks across each seam. The dashed cutting guides are not part of the final picture.</li>
+<li><strong>Position on the canvas:</strong> Match the assembled template's <strong>gray artwork-edge guides</strong> to the canvas edges. Use midpoint ticks to verify that the printed template is centered on the surface. If you printed only A1+A2, you can still align its <strong>top and left artwork-edge guides</strong> to the top/left of the canvas; the unprinted B region is deliberately absent.</li>
+<li><strong>For tracing:</strong> Tape the aligned pattern along the top as a hinge, lift it, insert appropriate graphite/chalk transfer paper, and trace the contours. For pouncing, perforate the assembled pattern along the lines first.</li>
 </ol>
-<p>For carbon transfer: tape the assembled print over your canvas with transfer paper between them, then trace the important contours. For pouncing: perforate the key contours of this full-size print and pounce chalk or charcoal through the holes.</p>
+<p><strong>Important:</strong> If the picture is centered within only A1+A2, it is <em>not necessarily centered within the entire canvas</em>. Choose Center on artwork if you want the subject itself centered on the 12 × 18 surface. If overlap is 0, no repeated strip is present: align the printed image edges without a dashed trim.</p>
 </section>
 </div>
 </main>
-<footer class="foot">Single-file, offline art utility · No tracking, photo upload, or external libraries</footer>
+<footer class="foot">Art Reference Enlarger v10 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
 <script>
 'use strict';
 const $=s=>document.getElementById(s);
 let img=null, fileStem='art-reference', centerX=0.5,centerY=0.5,zoom=1,drag=null;
 let generatedPDF=null,generatedPDFURL=null,generatedPDFName='';
 function resetGenerated(){generatedPDF=null;if(generatedPDFURL)URL.revokeObjectURL(generatedPDFURL);generatedPDFURL=null;$('sharePdf').disabled=true;$('openPdf').disabled=true;}
-
-const cropCanvas=$('cropCanvas'), cctx=cropCanvas.getContext('2d'), layoutCanvas=$('layoutCanvas'), lctx=layoutCanvas.getContext('2d');
+let containX=.5,containY=.5,freeX=.5,freeY=.5,selectedTiles=new Set(),selectionMode='image',selectionLayout='';
+let selectedAreaClip=null; // optional target rectangle when user explicitly chooses Fill selected sheets
+let viewMode='position',sourceCrop={x:0,y:0,w:1,h:1},sourceCropShape='rect',cropDraft=null,cropDraftShape='rect',cropDrawNew=false,previewDrag=null;
+let manualDestCrop=null;
+const layoutCanvas=$('layoutCanvas'), lctx=layoutCanvas.getContext('2d');
 const sizes={letterP:[8.5,11],letterL:[11,8.5],a4P:[210/25.4,297/25.4],a4L:[297/25.4,210/25.4]};
+// A preset specifies the FINAL ARTWORK size. Printer paper is selected separately.
+const artPresets={
+ rect:[['5 × 7 in',5,7],['8 × 10 in',8,10],['8.5 × 11 in',8.5,11],['9 × 12 in',9,12],['11 × 14 in',11,14],['12 × 12 in',12,12],['12 × 16 in',12,16],['12 × 18 in',12,18],['16 × 20 in',16,20],['18 × 24 in',18,24],['20 × 24 in',20,24],['24 × 30 in',24,30],['24 × 36 in',24,36],['A5 (14.8 × 21 cm)',14.8/2.54,21/2.54],['A4 (21 × 29.7 cm)',21/2.54,29.7/2.54],['A3 (29.7 × 42 cm)',29.7/2.54,42/2.54],['A2 (42 × 59.4 cm)',42/2.54,59.4/2.54]],
+ circle:[['8 in diameter',8,8],['10 in diameter',10,10],['12 in diameter',12,12],['16 in diameter',16,16],['18 in diameter',18,18],['20 in diameter',20,20],['24 in diameter',24,24]],
+ oval:[['8 × 10 in oval',8,10],['9 × 12 in oval',9,12],['11 × 14 in oval',11,14],['12 × 16 in oval',12,16],['12 × 18 in oval',12,18],['16 × 20 in oval',16,20],['18 × 24 in oval',18,24]]
+};
+function currentCoef(){return $('unit').value==='cm'?2.54:1}
+function formattedDim(inches){return String(Number((inches*currentCoef()).toFixed(3)))}
+function rebuildPresets(defaultSize){
+ const shape=$('shape').value, s=$('sizePreset');s.replaceChildren();
+ artPresets[shape].forEach(([label],i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=label;s.appendChild(opt)});
+ const custom=document.createElement('option');custom.value='custom';custom.textContent=shape==='circle'?'Custom diameter…':'Custom dimensions…';s.appendChild(custom);
+ s.value=String(defaultSize===undefined?(shape==='circle'?2:shape==='oval'?4:7):defaultSize);
+ updateSizeLabels();applyPreset();
+}
+function updateSizeLabels(){const shape=$('shape').value;$('wLabel').textContent=shape==='circle'?'Finished diameter':'Finished width';$('heightField').hidden=shape==='circle';$('matchRatio').title=shape==='rect'?'Match the rectangular canvas to the image ratio.':'Only available for rectangular artwork.';
+ $('shapeHint').textContent=shape==='circle'?'Diameter determines both height and width. Edit it for a custom circle.':shape==='oval'?"Width and height define the oval's full bounding box. Edit either for custom dimensions.":'Presets are in standard physical sizes. Edit either dimension for a custom rectangular artwork.';
+}
+function applyPreset(){const val=$('sizePreset').value;if(val==='custom')return;const spec=artPresets[$('shape').value][Number(val)];if(!spec)return;$('w').value=formattedDim(spec[1]);$('h').value=formattedDim(spec[2]);}
+function setCustom(){if($('shape').value==='circle')$('h').value=$('w').value;$('sizePreset').value='custom'}
+
 function num(id){return Number($(id).value)}
 function clamp(x,a,b){return Math.min(b,Math.max(a,x))}
-function config(){const unit=$('unit').value, coef=unit==='cm'?1/2.54:1;const pw=num('w')*coef, ph=num('h')*coef;
+function config(){const unit=$('unit').value, coef=unit==='cm'?1/2.54:1,shape=$('shape').value;const pw=num('w')*coef, ph=(shape==='circle'?num('w'):num('h'))*coef;
  const [paperW,paperH]=sizes[$('paper').value]; const margin=num('margin'),overlap=num('overlap');
  if(!(pw>0&&ph>0&&pw<500&&ph<500))throw Error('Choose positive artwork dimensions under 500 inches.');
  if(!(margin>=.2&&margin<=1))throw Error('Choose a printer margin between 0.2 and 1 inch.');
@@ -124,34 +297,257 @@ function config(){const unit=$('unit').value, coef=unit==='cm'?1/2.54:1;const pw
  const stepW=usableW-overlap,stepH=usableH-overlap;
  const cols=Math.max(1,Math.ceil((pw-overlap-1e-10)/stepW)),rows=Math.max(1,Math.ceil((ph-overlap-1e-10)/stepH));
  if(cols*rows>120)throw Error('This would use more than 120 pages. Reduce the artwork size or print at a shop.');
- return {pw,ph,paperW,paperH,margin,overlap,usableW,usableH,stepW,stepH,cols,rows,gray:$('gray').checked,grid:$('gridToggle').checked,gridIn:num('gridIn')};}
-function getCrop(conf){if(!img)return null;let ar=conf.pw/conf.ph,iw=img.naturalWidth,ih=img.naturalHeight;
- let bw,bh;if(iw/ih>ar){bh=ih;bw=ih*ar;}else{bw=iw;bh=iw/ar;}
- let cw=bw/zoom,ch=bh/zoom;let x=clamp(centerX*iw-cw/2,0,iw-cw),y=clamp(centerY*ih-ch/2,0,ih-ch);
- centerX=(x+cw/2)/iw;centerY=(y+ch/2)/ih;return {x,y,w:cw,h:ch};}
-function drawCrop(conf){if(!img){cropCanvas.hidden=true;$('empty').style.display='block';return}cropCanvas.hidden=false;$('empty').style.display='none';
- const crop=getCrop(conf),baseW=560;cropCanvas.width=baseW;cropCanvas.height=Math.round(baseW*conf.ph/conf.pw);
- cctx.clearRect(0,0,cropCanvas.width,cropCanvas.height);cctx.imageSmoothingEnabled=true;cctx.imageSmoothingQuality='high';
- cctx.drawImage(img,crop.x,crop.y,crop.w,crop.h,0,0,cropCanvas.width,cropCanvas.height);
- cctx.lineWidth=1;cctx.strokeStyle='rgba(255,255,255,.48)';
- for(let i=1;i<3;i++){cctx.beginPath();cctx.moveTo(cropCanvas.width*i/3,0);cctx.lineTo(cropCanvas.width*i/3,cropCanvas.height);cctx.stroke();cctx.beginPath();cctx.moveTo(0,cropCanvas.height*i/3);cctx.lineTo(cropCanvas.width,cropCanvas.height*i/3);cctx.stroke();}
+ return {pw,ph,shape,paperW,paperH,margin,overlap,usableW,usableH,stepW,stepH,cols,rows,gray:$('gray').checked,grid:$('gridToggle').checked,gridIn:num('gridIn'),registration:$('registration').checked};}
+// A placement separates source cropping from destination layout. The default "contain"
+// uses the ENTIRE source image and fits it inside the artwork area without stretching.
+function getPlacement(conf){
+ if(!img)return null;
+ const sx=sourceCrop.x*img.naturalWidth,sy=sourceCrop.y*img.naturalHeight;
+ const iw=sourceCrop.w*img.naturalWidth,ih=sourceCrop.h*img.naturalHeight;
+ if($('fitMode').value==='contain'){
+  const k=conf.shape==='rect'?Math.min(conf.pw/iw,conf.ph/ih):1/Math.hypot(iw/conf.pw,ih/conf.ph),dw=iw*k,dh=ih*k;
+  return {x:sx,y:sy,w:iw,h:ih,dx:(conf.pw-dw)*containX,dy:(conf.ph-dh)*containY,dw,dh};
+ }
+ if($('fitMode').value==='free'){
+  const k=(conf.shape==='rect'?Math.min(conf.pw/iw,conf.ph/ih):1/Math.hypot(iw/conf.pw,ih/conf.ph))*zoom;
+  const dw=iw*k,dh=ih*k;
+  return {x:sx,y:sy,w:iw,h:ih,dx:freeX*conf.pw-dw/2,dy:freeY*conf.ph-dh/2,dw,dh};
+ }
+ const ar=conf.pw/conf.ph;let bw,bh;
+ if(iw/ih>ar){bh=ih;bw=ih*ar;}else{bw=iw;bh=iw/ar;}
+ const cw=bw/zoom,ch=bh/zoom,x=clamp(centerX*iw-cw/2,0,iw-cw),y=clamp(centerY*ih-ch/2,0,ih-ch);
+ centerX=(x+cw/2)/iw;centerY=(y+ch/2)/ih;
+ return {x:sx+x,y:sy+y,w:cw,h:ch,dx:0,dy:0,dw:conf.pw,dh:conf.ph};
 }
-function drawLayout(conf){let can=layoutCanvas,W=800,H=Math.round(800*conf.ph/conf.pw);if(H>1000){W=Math.round(W*1000/H);H=1000};can.width=W;can.height=H;
+function paintPlaced(context,conf,place,x,y,W,H){
+ // Source selection's ellipse is transformed with the photo. It is distinct
+ // from the finished artwork boundary, which is controlled separately.
+ const dx=x+place.dx/conf.pw*W, dy=y+place.dy/conf.ph*H;
+ const dw=place.dw/conf.pw*W, dh=place.dh/conf.ph*H;
+ context.save();
+ if(selectedAreaClip){
+  const r=selectedAreaClip;
+  context.beginPath();context.rect(x+r.x/conf.pw*W,y+r.y/conf.ph*H,r.w/conf.pw*W,r.h/conf.ph*H);context.clip();
+ }
+ if(sourceCropShape!=='rect'){
+  const iw=img.naturalWidth,ih=img.naturalHeight;
+  const sourceCX=(sourceCrop.x+sourceCrop.w/2)*iw,sourceCY=(sourceCrop.y+sourceCrop.h/2)*ih;
+  const cx=dx+(sourceCX-place.x)/place.w*dw, cy=dy+(sourceCY-place.y)/place.h*dh;
+  const rx=(sourceCrop.w*iw/2)/place.w*dw,ry=(sourceCrop.h*ih/2)/place.h*dh;
+  context.beginPath();context.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);context.clip();
+ }
+ context.drawImage(img,place.x,place.y,place.w,place.h,dx,dy,dw,dh);
+ context.restore();
+}
+function clipArtwork(ctx,conf,x,y,W,H){
+ if(conf.shape==='rect')return;
+ ctx.beginPath();ctx.ellipse(x+W/2,y+H/2,W/2,H/2,0,0,Math.PI*2);ctx.clip();
+}
+function strokeArtwork(ctx,conf,x,y,W,H){
+ if(conf.shape==='rect')return;
+ ctx.beginPath();ctx.ellipse(x+W/2,y+H/2,W/2,H/2,0,0,Math.PI*2);
+ ctx.stroke();
+}
+function artworkName(shape){return shape==='circle'?'Circular artwork':shape==='oval'?'Oval artwork':'Rectangular artwork'}
+function drawCrop(conf){ /* v06 uses ONE interactive preview instead of an independent mini-crop preview. */ }
+function imageCropBounds(){
+ const W=layoutCanvas.width,H=layoutCanvas.height,iw=img.naturalWidth,ih=img.naturalHeight;
+ const k=Math.min((W-40)/iw,(H-40)/ih);return {x:(W-iw*k)/2,y:(H-ih*k)/2,w:iw*k,h:ih*k};
+}
+function cropDisplayBox(){
+ if(!cropDraft)return null;
+ const b=imageCropBounds(),r=cropDraft;
+ return {x:b.x+r.x*b.w,y:b.y+r.y*b.h,w:r.w*b.w,h:r.h*b.h};
+}
+function cropHandlePoints(r,shape='rect'){
+ const points=[[r.x,r.y],[r.x+r.w/2,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.h/2],[r.x+r.w,r.y+r.h],[r.x+r.w/2,r.y+r.h],[r.x,r.y+r.h],[r.x,r.y+r.h/2]];
+ return shape==='circle'?points.map((p,i)=>[...p,i]).filter(p=>p[2]%2===0):points.map((p,i)=>[...p,i]);
+}
+function drawSourceCrop(){
+ const can=layoutCanvas,base=800;
+ let W=base,H=Math.round(base*img.naturalHeight/img.naturalWidth);
+ if(H>1060){W=Math.round(W*1060/H);H=1060}
+ can.width=W;can.height=H;
+ lctx.fillStyle='#f7f7f4';lctx.fillRect(0,0,W,H);
+ layoutCanvas.style.maxWidth=Math.min(800,Math.round(760*img.naturalWidth/img.naturalHeight))+'px';
+ const b=imageCropBounds(),r=cropDisplayBox();
+ lctx.drawImage(img,b.x,b.y,b.w,b.h);
+ if(!r){
+  lctx.fillStyle='rgba(22,42,36,.85)';lctx.fillRect(b.x+7,b.y+7,Math.min(b.w-14,245),31);
+  lctx.fillStyle='#fff';lctx.font='bold 15px system-ui';lctx.fillText('Click and drag to draw a crop',b.x+15,b.y+28,Math.max(20,b.w-27));
+  return;
+ }
+ lctx.fillStyle='rgba(12,23,20,.56)';lctx.fillRect(b.x,b.y,b.w,b.h);
+ lctx.save();lctx.beginPath();
+ if(cropDraftShape==='rect')lctx.rect(r.x,r.y,r.w,r.h);
+ else lctx.ellipse(r.x+r.w/2,r.y+r.h/2,r.w/2,r.h/2,0,0,Math.PI*2);
+ lctx.clip();lctx.drawImage(img,b.x,b.y,b.w,b.h);lctx.restore();
+ lctx.beginPath();
+ if(cropDraftShape==='rect')lctx.rect(r.x,r.y,r.w,r.h);
+ else lctx.ellipse(r.x+r.w/2,r.y+r.h/2,r.w/2,r.h/2,0,0,Math.PI*2);
+ lctx.strokeStyle='#fff';lctx.lineWidth=Math.max(2,W/320);lctx.stroke();
+ lctx.strokeStyle='#17655a';lctx.lineWidth=Math.max(1,W/620);lctx.stroke();
+ lctx.fillStyle='#fff';lctx.strokeStyle='#17655a';lctx.lineWidth=2;
+ for(const [hx,hy] of cropHandlePoints(r,cropDraftShape)){
+  lctx.beginPath();lctx.rect(hx-5,hy-5,10,10);lctx.fill();lctx.stroke();
+ }
+}
+function circleCrop(r){
+ // A real circular source crop: equal width and height in source pixels.
+ const iw=img.naturalWidth,ih=img.naturalHeight;
+ const cx=(r.x+r.w/2)*iw,cy=(r.y+r.h/2)*ih;
+ const side=Math.max(1,Math.min(r.w*iw,r.h*ih,2*cx,2*(iw-cx),2*cy,2*(ih-cy)));
+ return {x:(cx-side/2)/iw,y:(cy-side/2)/ih,w:side/iw,h:side/ih};
+}
+function drawnCrop(p0,p1,shape){
+ const b=imageCropBounds();
+ let x0=clamp(p0.x,b.x,b.x+b.w),y0=clamp(p0.y,b.y,b.y+b.h);
+ let x1=clamp(p1.x,b.x,b.x+b.w),y1=clamp(p1.y,b.y,b.y+b.h);
+ if(shape==='circle'){
+  const side=Math.min(Math.abs(x1-x0),Math.abs(y1-y0));
+  x1=x0+Math.sign(x1-x0)*side;y1=y0+Math.sign(y1-y0)*side;
+ }
+ return {x:(Math.min(x0,x1)-b.x)/b.w,y:(Math.min(y0,y1)-b.y)/b.h,
+  w:Math.abs(x1-x0)/b.w,h:Math.abs(y1-y0)/b.h};
+}
+
+function drawLayout(conf){layoutCanvas.style.maxWidth='100%';let can=layoutCanvas,W=800,H=Math.round(800*conf.ph/conf.pw);if(H>1000){W=Math.round(W*1000/H);H=1000};can.width=W;can.height=H;
  lctx.fillStyle='#fff';lctx.fillRect(0,0,W,H);
- if(img){const crop=getCrop(conf);lctx.filter=conf.gray?'grayscale(1)':'none';lctx.drawImage(img,crop.x,crop.y,crop.w,crop.h,0,0,W,H);lctx.filter='none';}
+ lctx.save();clipArtwork(lctx,conf,0,0,W,H);
+ if(img){const place=getPlacement(conf);lctx.filter=conf.gray?'grayscale(1)':'none';paintPlaced(lctx,conf,place,0,0,W,H);lctx.filter='none';}
  if(conf.grid&&conf.gridIn>0){lctx.strokeStyle='rgba(20,48,43,.32)';lctx.lineWidth=.8;for(let x=conf.gridIn;x<conf.pw;x+=conf.gridIn){let px=x/conf.pw*W;lctx.beginPath();lctx.moveTo(px,0);lctx.lineTo(px,H);lctx.stroke()};for(let y=conf.gridIn;y<conf.ph;y+=conf.gridIn){let py=y/conf.ph*H;lctx.beginPath();lctx.moveTo(0,py);lctx.lineTo(W,py);lctx.stroke()}}
+ lctx.restore();lctx.strokeStyle='#286858';lctx.lineWidth=3;strokeArtwork(lctx,conf,0,0,W,H);
+ // Screen-only guide aligns the CENTER of the selected photo bounding box,
+ // not the uncropped original or a generic decorative grid.
+ if(viewMode==='position' && img && $('snapMode').value!=='none'){
+  const guide=$('snapMode').value==='tiles'?selectedBounds(conf):{x:0,y:0,w:conf.pw,h:conf.ph};
+  if(guide){
+   const gx=(guide.x+guide.w/2)/conf.pw*W,gy=(guide.y+guide.h/2)/conf.ph*H;
+   lctx.save();lctx.strokeStyle='rgba(31,88,184,.78)';lctx.lineWidth=1.35;lctx.setLineDash([6,5]);
+   lctx.beginPath();lctx.moveTo(gx,0);lctx.lineTo(gx,H);lctx.moveTo(0,gy);lctx.lineTo(W,gy);lctx.stroke();lctx.restore();
+  }
+ }
  lctx.strokeStyle='rgba(3,57,48,.9)';lctx.lineWidth=1.7;
  for(let c=1;c<conf.cols;c++){let x=c*conf.stepW/conf.pw*W;lctx.beginPath();lctx.moveTo(x,0);lctx.lineTo(x,H);lctx.stroke()}
  for(let r=1;r<conf.rows;r++){let y=r*conf.stepH/conf.ph*H;lctx.beginPath();lctx.moveTo(0,y);lctx.lineTo(W,y);lctx.stroke()}
- lctx.fillStyle='#063b32';lctx.font='bold 17px system-ui';for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
- const xx=col*conf.stepW/conf.pw*W+7,yy=row*conf.stepH/conf.ph*H+22;if(xx<W-5&&yy<H-5)lctx.fillText(colName(col)+(row+1),xx,yy);
+ for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
+  const key=tileKey(col,row),sx=col*conf.stepW/conf.pw*W,sy=row*conf.stepH/conf.ph*H;
+  const x1=Math.min(W,sx+conf.stepW/conf.pw*W),y1=Math.min(H,sy+conf.stepH/conf.ph*H);
+  if(!selectedTiles.has(key)){
+   lctx.fillStyle='rgba(240,242,240,.67)';lctx.fillRect(sx,sy,x1-sx,y1-sy);
+   lctx.strokeStyle='rgba(115,120,115,.45)';lctx.strokeRect(sx,sy,x1-sx,y1-sy);
+  }
+  lctx.fillStyle=selectedTiles.has(key)?'#064535':'#777f7a';
+  lctx.font='bold 18px system-ui';
+  const xx=sx+7,yy=sy+22;if(xx<W-5&&yy<H-5)lctx.fillText(colName(col)+(row+1)+(selectedTiles.has(key)?'':' – skip'),xx,yy);
  }
+ if(viewMode==='crop' && img){
+  // Manual crop outline is displayed directly on the output/page preview.
+  lctx.save();
+  if(manualDestCrop){
+   const d=manualDestCrop;
+   lctx.fillStyle='rgba(12,25,25,.24)';lctx.fillRect(0,0,W,H);
+   const x=d.x*W,y=d.y*H,w=d.w*W,h=d.h*H;
+   lctx.save();lctx.beginPath();if(cropDraftShape==='rect')lctx.rect(x,y,w,h);else lctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);lctx.clip();
+   lctx.clearRect(x,y,w,h);
+   lctx.filter=conf.gray?'grayscale(1)':'none';
+   if(img)paintPlaced(lctx,conf,getPlacement(conf),0,0,W,H);
+   lctx.filter='none';lctx.restore();
+   lctx.beginPath();if(cropDraftShape==='rect')lctx.rect(x,y,w,h);else lctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);
+   lctx.strokeStyle='#fff';lctx.lineWidth=4;lctx.stroke();
+   lctx.strokeStyle='#17655a';lctx.lineWidth=2;lctx.stroke();
+  }else{
+   lctx.fillStyle='rgba(11,37,29,.8)';lctx.fillRect(8,8,Math.min(340,W-16),35);
+   lctx.fillStyle='#fff';lctx.font='bold 13px system-ui';
+   lctx.fillText('Drag to define a crop, directly here',17,30,Math.max(80,W-34));
+  }
+  lctx.restore();
+ }
+
 }
 function colName(n){let s='';do{s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)-1}while(n>=0);return s}
-function refresh(){resetGenerated();const m=$('message');m.className='';try{const conf=config();$('nPages').textContent=conf.cols*conf.rows;$('nLayout').textContent=conf.cols+' × '+conf.rows;
- $('dpi').textContent=img?String(Math.round(Math.min(getCrop(conf).w/conf.pw,getCrop(conf).h/conf.ph))):'—';
- drawCrop(conf);drawLayout(conf);const suffix=$('unit').value; $('detail').textContent=`Finished image: ${num('w')} × ${num('h')} ${suffix}. Paper: ${conf.cols} columns × ${conf.rows} rows. Pages repeat ${conf.overlap} in of adjacent image. ${img?'Crop and page positions are ready.':'Upload an image to export.'}`;
- $('download').disabled=!img;if(m.dataset.error==='yes'){m.textContent='';delete m.dataset.error}
+function tileKey(col,row){return colName(col)+(row+1)}
+function tileIntersectsPhoto(conf,place,col,row){
+ if(!place)return true; // A blank startup preview should not silently omit tiles.
+ const sx=col*conf.stepW,sy=row*conf.stepH;
+ const x0=Math.max(sx,place.dx),y0=Math.max(sy,place.dy);
+ const x1=Math.min(sx+conf.usableW,conf.pw,place.dx+place.dw);
+ const y1=Math.min(sy+conf.usableH,conf.ph,place.dy+place.dh);
+ if(x1-x0<=.001||y1-y0<=.001)return false;
+ if(sourceCropShape!=='rect'){
+  const iw=img.naturalWidth,ih=img.naturalHeight;
+  const ccx=(sourceCrop.x+sourceCrop.w/2)*iw,ccy=(sourceCrop.y+sourceCrop.h/2)*ih;
+  const ecx=place.dx+(ccx-place.x)/place.w*place.dw;
+  const ecy=place.dy+(ccy-place.y)/place.h*place.dh;
+  const erx=(sourceCrop.w*iw/2)/place.w*place.dw;
+  const ery=(sourceCrop.h*ih/2)/place.h*place.dh;
+  const mx=(Math.max(x0,Math.min(x1,ecx))-ecx)/erx;
+  const my=(Math.max(y0,Math.min(y1,ecy))-ecy)/ery;
+  if(mx*mx+my*my>1)return false;
+ }
+ if(conf.shape==='rect')return true;
+ // Nearest point of the tile/image overlap to the ellipse center.
+ const ex=conf.pw/2,ey=conf.ph/2;
+ const nx=(Math.max(x0,Math.min(x1,ex))-ex)/(conf.pw/2);
+ const ny=(Math.max(y0,Math.min(y1,ey))-ey)/(conf.ph/2);
+ return nx*nx+ny*ny<=1;
+}
+function syncTileSelection(conf,place){
+ const layout=[conf.cols,conf.rows,conf.stepW.toFixed(5),conf.stepH.toFixed(5),conf.pw.toFixed(5),conf.ph.toFixed(5),conf.shape].join(':');
+ if(layout!==selectionLayout){selectionLayout=layout;selectedAreaClip=null;if(selectionMode==='custom')selectionMode='image';}
+ if(selectionMode!=='custom'){
+  selectedTiles=new Set();
+  for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
+   if(selectionMode==='all'||tileIntersectsPhoto(conf,place,col,row))selectedTiles.add(tileKey(col,row));
+  }
+ }
+}
+function renderTileChoices(conf){
+ const target=$('tileChoices');target.replaceChildren();
+ for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
+  const key=tileKey(col,row),wrap=document.createElement('label');wrap.className='tilePick'+(selectedTiles.has(key)?'':' skipped');
+  const input=document.createElement('input');input.type='checkbox';input.dataset.tile=key;input.checked=selectedTiles.has(key);
+  wrap.append(input,document.createTextNode(key));target.appendChild(wrap);
+ }
+ const total=conf.cols*conf.rows,n=selectedTiles.size;
+ $('selectionSummary').textContent=`${n} of ${total} sheets selected. `+(selectionMode==='image'?'Auto: tiles intersecting the photo.':'Selections are manual or include all pages.')+(n<total?' Omitted tiles will not be in the PDF.':'');
+ $('nPages').textContent=`${n} / ${total}`;
+}
+function refresh(){resetGenerated();$('zoomReadout').textContent=img?'Image scale: '+zoom.toFixed(2)+'× · pinch or use +/-':'Load a photo to zoom';const m=$('message');m.className='';try{const conf=config();$('nPages').textContent=conf.cols*conf.rows;$('nLayout').textContent=conf.cols+' × '+conf.rows;
+ const place=img?getPlacement(conf):null;
+ syncTileSelection(conf,place);
+ $('dpi').textContent=place?String(Math.round(Math.min(place.w/place.dw,place.h/place.dh))):'—';
+ $('matchRatio').disabled=!img||conf.shape!=='rect';
+ const mode=$('fitMode').value;
+ $('zoom').min=mode==='free'?'0.15':'1';
+ $('zoom').max=String(Math.max(8,Math.ceil(zoom*1.2)));
+ $('zoomLabel').textContent=mode==='free'?'Image scale (0.15× – 8×)':'Zoom / crop closer';
+ $('cropSummary').textContent=(sourceCrop.w>.999999&&sourceCrop.h>.999999)?'Source crop: entire original photo.':`Source crop: ${sourceCropShape==='rect'?'rectangle':sourceCropShape} · ${Math.round(100*sourceCrop.w)}% width × ${Math.round(100*sourceCrop.h)}% height. Restore whole source to undo.`;
+ $('cropActions').hidden=true;$('cropShapeBar').hidden=viewMode!=='crop';$('applyCrop').disabled=true;
+ for(const name of ['position','crop','tiles']){const btn=$('mode'+name[0].toUpperCase()+name.slice(1));btn.classList.toggle('active',viewMode===name);btn.setAttribute('aria-pressed',String(viewMode===name));}
+ $('previewHint').textContent=viewMode==='crop'?'Draw a rectangle directly over the photo in this same grid preview. Releasing applies the crop; print-page boundaries remain in the preview.':viewMode==='tiles'?'Tap any page tile to include or exclude it. This same preview shows exactly which pages will print.':'Drag to position, pinch with two fingers to zoom, or use +/−. Lines are real print page boundaries. Blue guides are screen-only.';
+ if(place){
+  const cropping=mode==='cover';
+  const cutoff=(1-place.w*place.h/(sourceCrop.w*sourceCrop.h*img.naturalWidth*img.naturalHeight))*100;
+  const whiteMargin=place.dw<conf.pw-0.005||place.dh<conf.ph-0.005;
+  $('fitMessage').textContent=mode==='free'?
+    'Free placement: drag and adjust image scale. Portions outside the artwork boundary will be cropped from the print.':conf.shape!=='rect'?
+   (cropping?`Fill is ON: the photo is cropped to cover the ${conf.shape} (the curved boundary hides some original image content). The original file remains unchanged.`:
+    `Full photo preserved inside the ${conf.shape}. White space near the curved edges is normal; choose Fill or Free placement to deliberately crop.`):cropping?
+   `Cropping is ON: ${cutoff.toFixed(1)}% of the original photo is outside the selected frame. The original photo file remains intact.`:
+   (whiteMargin?
+    `Full image preserved. Photo size ${place.dw.toFixed(2)} × ${place.dh.toFixed(2)} in. Drag to align it within the ${conf.pw.toFixed(2)} × ${conf.ph.toFixed(2)} in artwork. Remaining margin varies with its position.`:
+    'Full image preserved and fills the artwork area without cropping.');
+ } else $('fitMessage').textContent='Upload a photo; the full image will be preserved.';
+ drawLayout(conf);renderTileChoices(conf);const suffix=$('unit').value;
+ $('detail').textContent=`${artworkName(conf.shape)}: ${conf.shape==='circle'?num('w')+' diameter':num('w')+' × '+num('h')} ${suffix}. Paper: ${conf.cols} columns × ${conf.rows} rows. Pages repeat ${conf.overlap} in of adjacent image. ${img?'Source selection, artwork placement and print tiles are synchronized.':'Upload an image to export.'}`;
+ $('fitToSelected').disabled=!img||selectedTiles.size===0;$('fillSelected').disabled=!img||selectedTiles.size===0;
+ $('nudgePanel').hidden=viewMode!=='position';
+ $('positionSummary').textContent=place?`Cropped image: left ${place.dx.toFixed(2)} in, top ${place.dy.toFixed(2)} in; visible crop bounds ${place.dw.toFixed(2)} × ${place.dh.toFixed(2)} in. (All relative to the top-left canvas corner.)`:'Load a photograph to position it.';
+ const selectedCenter=selectedBounds(conf);
+ const selectedComment=selectedCenter?` Selected-sheet center: ${(selectedCenter.x+selectedCenter.w/2).toFixed(2)}, ${(selectedCenter.y+selectedCenter.h/2).toFixed(2)} in.`:'';
+ $('alignSummary').textContent=place?`Canvas center: ${(conf.pw/2).toFixed(2)}, ${(conf.ph/2).toFixed(2)} in.${selectedComment} Use the corresponding button to align the selected crop, without changing its size.`:'Load a photo to use center alignment.';
+ $('download').disabled=!img||selectedTiles.size===0;if(m.dataset.error==='yes'){m.textContent='';delete m.dataset.error}
  }catch(e){$('nPages').textContent='—';$('nLayout').textContent='—';$('dpi').textContent='—';$('download').disabled=true;m.textContent=e.message;m.className='error';m.dataset.error='yes';}}
 // Use the same loading path for the file picker, drag/drop, and clipboard paste.
 let imageLoadSeq=0;
@@ -168,7 +564,7 @@ function loadImageFile(file,source='file'){
    if(seq!==imageLoadSeq)return; // Ignore any older file that finished loading late.
    img=photo;
    fileStem=source==='paste'?'pasted-reference':(file.name||'art-reference').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,40)||'art-reference';
-   zoom=1;centerX=.5;centerY=.5;$('zoom').value='1';
+   sourceCrop={x:0,y:0,w:1,h:1};sourceCropShape='rect';selectedAreaClip=null;cropDraft=null;cropDraftShape='rect';viewMode='position';resetPosition();selectionMode='image';selectionLayout='';
    refresh();
    const m=$('message');m.className='';m.textContent=source==='paste'?'Pasted image loaded.':source==='drop'?'Dropped image loaded.':'Image loaded.';
  };
@@ -222,34 +618,396 @@ document.addEventListener('paste',e=>{
  if(!file)return;
  e.preventDefault();loadImageFile(file,'paste');
 },true);
-$('zoom').addEventListener('input',()=>{zoom=num('zoom');refresh()});$('reset').addEventListener('click',()=>{zoom=1;centerX=.5;centerY=.5;$('zoom').value='1';refresh()});
-$('unit').addEventListener('change',e=>{const factor=e.target.value==='cm'?2.54:1/2.54;for(const id of ['w','h'])$(id).value=String(Math.round(num(id)*factor*100)/100);refresh()});
+function resetPosition(){zoom=1;centerX=.5;centerY=.5;containX=.5;containY=.5;freeX=.5;freeY=.5;$('zoom').value='1'}
+$('fitMode').addEventListener('change',()=>{selectedAreaClip=null;resetPosition();refresh()});
+$('matchRatio').addEventListener('click',()=>{
+ if(!img)return;
+ // Retain the user's chosen height, updating width to the photo's natural aspect ratio.
+ const hh=num('h'),ww=hh*(sourceCrop.w*img.naturalWidth)/(sourceCrop.h*img.naturalHeight);
+ $('w').value=String(Math.round(ww*10000)/10000);
+ $('sizePreset').value='custom';$('fitMode').value='contain';selectedAreaClip=null;resetPosition();refresh();
+});
+$('zoom').addEventListener('input',()=>{if($('fitMode').value==='contain')enablePrecisePlacement(config());zoom=num('zoom');refresh()});$('reset').addEventListener('click',()=>{resetPosition();refresh()});
+$('unit').addEventListener('change',e=>{const factor=e.target.value==='cm'?2.54:1/2.54;for(const id of ['w','h'])$(id).value=String(Math.round(num(id)*factor*1000)/1000);refresh()});
+$('shape').addEventListener('change',()=>{selectedAreaClip=null;rebuildPresets();resetPosition();refresh()});
+$('sizePreset').addEventListener('change',()=>{selectedAreaClip=null;applyPreset();resetPosition();refresh()});
+for(const id of ['w','h'])$(id).addEventListener('input',()=>{selectedAreaClip=null;setCustom();refresh()});
 $('gridToggle').addEventListener('change',()=>{$('gridOpts').style.display=$('gridToggle').checked?'flex':'none';refresh()});
-for(const id of ['w','h','paper','margin','overlap','gray','gridIn'])$(id).addEventListener('input',refresh);
-cropCanvas.addEventListener('pointerdown',e=>{if(!img)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,cx:centerX,cy:centerY};cropCanvas.setPointerCapture(e.pointerId)});
-cropCanvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;let conf;try{conf=config()}catch(_){return}const c=getCrop(conf),b=cropCanvas.getBoundingClientRect();centerX=clamp(drag.cx-(e.clientX-drag.x)/b.width*c.w/img.naturalWidth,0,1);centerY=clamp(drag.cy-(e.clientY-drag.y)/b.height*c.h/img.naturalHeight,0,1);refresh()});
-for(const en of ['pointerup','pointercancel','lostpointercapture'])cropCanvas.addEventListener(en,()=>{drag=null});
-function makePageImage(conf,crop,col,row,scale=180){const cvs=document.createElement('canvas');cvs.width=Math.round(conf.paperW*scale);cvs.height=Math.round(conf.paperH*scale);const g=cvs.getContext('2d',{alpha:false});g.fillStyle='#fff';g.fillRect(0,0,cvs.width,cvs.height);
+for(const id of ['paper','margin','overlap','gray','gridIn','registration','assemblyPage'])$(id).addEventListener('input',()=>{if(['paper','margin','overlap'].includes(id))selectedAreaClip=null;refresh()});
+$('snapMode').addEventListener('change',refresh);
+function setViewMode(mode){
+ if(mode==='crop'&&!img)return;
+ if(viewMode==='crop'&&mode!=='crop'){cropDraft=null;manualDestCrop=null;} // discard unfinished crop
+ viewMode=mode;
+ if(mode==='crop'){
+  cropDraft=null;manualDestCrop=null;cropDraftShape='rect';cropDrawNew=true;
+  $('cropShape').value=cropDraftShape;
+ }
+ refresh();
+}
+$('modePosition').addEventListener('click',()=>setViewMode('position'));
+$('modeCrop').addEventListener('click',()=>setViewMode('crop'));
+$('modeTiles').addEventListener('click',()=>setViewMode('tiles'));
+$('startCrop').addEventListener('click',()=>setViewMode('crop'));
+$('clearCrop').addEventListener('click',()=>{sourceCrop={x:0,y:0,w:1,h:1};sourceCropShape='rect';selectedAreaClip=null;if(viewMode==='crop'){cropDraft=null;cropDraftShape='rect';cropDrawNew=true;$('cropShape').value='rect';}resetPosition();refresh()});
+$('cropShape').addEventListener('change',()=>{
+ cropDraftShape=$('cropShape').value;
+ if(cropDraft&&cropDraftShape==='circle')cropDraft=circleCrop(cropDraft);
+ refresh();
+});
+$('newCrop').addEventListener('click',()=>{cropDraft=null;cropDrawNew=true;refresh()});
+$('applyCrop').addEventListener('click',()=>{
+ if(!cropDraft)return;
+ sourceCrop={...cropDraft};sourceCropShape=cropDraftShape;selectedAreaClip=null;cropDraft=null;cropDrawNew=false;
+ resetPosition();viewMode='position';selectionMode='image';refresh();
+});
+$('cancelCrop').addEventListener('click',()=>{cropDraft=null;cropDrawNew=false;viewMode='position';refresh()});
+$('fullCrop').addEventListener('click',()=>{cropDraft={x:0,y:0,w:1,h:1};cropDraftShape='rect';$('cropShape').value='rect';cropDrawNew=false;refresh()});
+// Coordinate conversion works even when the canvas is CSS-scaled.
+function cursorPoint(e){const b=layoutCanvas.getBoundingClientRect();return {x:(e.clientX-b.left)/b.width*layoutCanvas.width,y:(e.clientY-b.top)/b.height*layoutCanvas.height,u:(e.clientX-b.left)/b.width,v:(e.clientY-b.top)/b.height}}
+function selectHandle(px,py,box){
+ if(!box)return null;
+ for(const [hx,hy,i] of cropHandlePoints(box,cropDraftShape)){
+  if(Math.hypot(px-hx,py-hy)<=14)return i;
+ }
+ const cx=box.x+box.w/2,cy=box.y+box.h/2;
+ if(cropDraftShape==='rect'){
+  return px>=box.x&&px<=box.x+box.w&&py>=box.y&&py<=box.y+box.h?'move':null;
+ }
+ return ((px-cx)/(box.w/2))**2+((py-cy)/(box.h/2))**2<=1?'move':null;
+}
+// Enter Free placement without changing what the user currently sees.
+// For Fill mode, reconstruct the entire source placement from the displayed
+// source window; this avoids a jump or reset when the user first nudges.
+function enablePrecisePlacement(conf){
+ if(!img || $('fitMode').value==='free')return;
+ const old=getPlacement(conf),iw=sourceCrop.w*img.naturalWidth,ih=sourceCrop.h*img.naturalHeight;
+ const base=conf.shape==='rect'?Math.min(conf.pw/iw,conf.ph/ih):1/Math.hypot(iw/conf.pw,ih/conf.ph);
+ const ratio=old.dw/old.w;
+ const dw=iw*ratio,dh=ih*ratio;
+ const dx=old.dx-(old.x-sourceCrop.x*img.naturalWidth)*ratio;
+ const dy=old.dy-(old.y-sourceCrop.y*img.naturalHeight)*ratio;
+ zoom=ratio/base;
+ $('zoom').max=String(Math.max(8,Math.ceil(zoom*1.2)));
+ $('zoom').value=String(zoom);
+ freeX=(dx+dw/2)/conf.pw;freeY=(dy+dh/2)/conf.ph;
+ $('fitMode').value='free';
+}
+// Physical distances rather than screen pixels, so arrow increments are stable
+// regardless of browser zoom, preview dimensions or paper size.
+function nudgeArtwork(dx,dy){
+ if(!img || viewMode!=='position')return;
+ let conf;try{conf=config()}catch(_){return}
+ selectedAreaClip=null;
+ enablePrecisePlacement(conf);
+ freeX+=dx/conf.pw;freeY+=dy/conf.ph;
+ refresh();
+}
+function arrowDelta(key,step){
+ return key==='ArrowLeft'?[-step,0]:key==='ArrowRight'?[step,0]:key==='ArrowUp'?[0,-step]:[0,step];
+}
+document.addEventListener('keydown',e=>{
+ if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)||!img||viewMode!=='position'||e.altKey||e.ctrlKey||e.metaKey)return;
+ const t=e.target;
+ if(t && (t.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(t.tagName)||t.closest('[role="slider"]')))return;
+ e.preventDefault();const [x,y]=arrowDelta(e.key,e.shiftKey?.2:.02);nudgeArtwork(x,y);
+});
+document.querySelectorAll('[data-dir]').forEach(btn=>btn.addEventListener('click',e=>{
+ const key='Arrow'+btn.dataset.dir[0].toUpperCase()+btn.dataset.dir.slice(1);
+ const [x,y]=arrowDelta(key,e.shiftKey?.2:.02);
+ if(viewMode!=='position')setViewMode('position');
+ nudgeArtwork(x,y);
+}));
+function selectedBounds(conf){
+ let xmin=Infinity,ymin=Infinity,xmax=-Infinity,ymax=-Infinity;
+ for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
+  if(!selectedTiles.has(tileKey(col,row)))continue;
+  const x=col*conf.stepW,y=row*conf.stepH;
+  xmin=Math.min(xmin,x);ymin=Math.min(ymin,y);
+  xmax=Math.max(xmax,Math.min(conf.pw,x+conf.usableW));
+  ymax=Math.max(ymax,Math.min(conf.ph,y+conf.usableH));
+ }
+ return Number.isFinite(xmin)?{x:xmin,y:ymin,w:xmax-xmin,h:ymax-ymin}:null;
+}
+function fitToSheets(fill){
+ if(!img||!selectedTiles.size)return;
+ let conf;try{conf=config()}catch(_){return}
+ const box=selectedBounds(conf);if(!box||box.w<=0||box.h<=0)return;
+ const iw=sourceCrop.w*img.naturalWidth,ih=sourceCrop.h*img.naturalHeight;
+ const k=fill?Math.max(box.w/iw,box.h/ih):Math.min(box.w/iw,box.h/ih);
+ const base=conf.shape==='rect'?Math.min(conf.pw/iw,conf.ph/ih):1/Math.hypot(iw/conf.pw,ih/conf.ph);
+ zoom=k/base;
+ $('zoom').max=String(Math.max(8,Math.ceil(zoom*1.2)));
+ $('zoom').value=String(zoom);
+ freeX=(box.x+box.w/2)/conf.pw;freeY=(box.y+box.h/2)/conf.ph;
+ $('fitMode').value='free';
+ selectionMode='custom'; // preserve the chosen A1/A2 sheets even after moving
+ selectedAreaClip=fill?box:null;
+ viewMode='position';refresh();
+}
+// Align using the physical bounding box of the selected crop. In free mode,
+// freeX/freeY are EXACTLY the crop-bounds center divided by artwork dimensions.
+function centerPhoto(target,axis='both'){
+ if(!img)return;
+ let conf;try{conf=config()}catch(_){return}
+ const b=target==='tiles'?selectedBounds(conf):{x:0,y:0,w:conf.pw,h:conf.ph};
+ if(!b)return;
+ selectedAreaClip=null; // manual alignment must not retain a previous Fit-selected clipping mask
+ enablePrecisePlacement(conf);
+ $('snapMode').value=target==='tiles'?'tiles':'art';
+ if(axis==='both'||axis==='x')freeX=(b.x+b.w/2)/conf.pw;
+ if(axis==='both'||axis==='y')freeY=(b.y+b.h/2)/conf.ph;
+ if(viewMode!=='position')viewMode='position';
+ refresh();
+}
+$('centerArtBoth').addEventListener('click',()=>centerPhoto('art'));
+$('centerArtX').addEventListener('click',()=>centerPhoto('art','x'));
+$('centerArtY').addEventListener('click',()=>centerPhoto('art','y'));
+$('centerSelected').addEventListener('click',()=>centerPhoto('tiles'));
+$('fitToSelected').addEventListener('click',()=>fitToSheets(false));
+$('fillSelected').addEventListener('click',()=>fitToSheets(true));
+function zoomAt(e,delta){
+ if(!img||viewMode!=='position')return;
+ let conf;try{conf=config()}catch(_){return;}
+ const px=cursorPoint(e),wx=px.u*conf.pw,wy=px.v*conf.ph;
+ let old=getPlacement(conf),before=zoom;
+ if($('fitMode').value==='contain'){
+  // Switch to free while preserving the visual position of the current fitted image.
+  $('fitMode').value='free';zoom=1;
+  freeX=(old.dx+old.dw/2)/conf.pw;freeY=(old.dy+old.dh/2)/conf.ph;
+  before=1;
+ }
+ const newZoom=clamp(before*Math.exp(-delta*.0017),$('fitMode').value==='cover'?1:.15,30);
+ if(Math.abs(newZoom-before)<1e-7)return;
+ if($('fitMode').value==='free'){
+  const ratio=newZoom/before,newDw=old.dw*ratio,newDh=old.dh*ratio;
+  const newDx=wx+(old.dx-wx)*ratio,newDy=wy+(old.dy-wy)*ratio;
+  freeX=(newDx+newDw/2)/conf.pw;
+  freeY=(newDy+newDh/2)/conf.ph;
+ } else if($('fitMode').value==='cover'){
+  const fracX=clamp(wx/conf.pw,0,1),fracY=clamp(wy/conf.ph,0,1);
+  const sourceX=old.x+old.w*fracX,sourceY=old.y+old.h*fracY;
+  const newW=old.w*before/newZoom,newH=old.h*before/newZoom;
+  centerX=clamp((sourceX-(fracX-.5)*newW-sourceCrop.x*img.naturalWidth)/(sourceCrop.w*img.naturalWidth),0,1);
+  centerY=clamp((sourceY-(fracY-.5)*newH-sourceCrop.y*img.naturalHeight)/(sourceCrop.h*img.naturalHeight),0,1);
+ }
+ zoom=newZoom;$('zoom').value=String(zoom);refresh();
+}
+layoutCanvas.addEventListener('wheel',e=>{if(!img||viewMode!=='position')return;e.preventDefault();zoomAt(e,e.deltaY);},{passive:false});
+layoutCanvas.addEventListener('pointerdown',e=>{
+ if(!img||viewMode==='tiles')return;
+ const p=cursorPoint(e);let conf;try{conf=config()}catch(_){return;}
+ if(viewMode==='crop'){
+  const b=imageCropBounds();
+  if(p.x<b.x||p.x>b.x+b.w||p.y<b.y||p.y>b.y+b.h)return;
+  const box=cropDisplayBox(),handle=cropDrawNew?null:selectHandle(p.x,p.y,box);
+  if(handle===null){
+   // A new click-drag creates a fresh shape instead of requiring a preset rectangle.
+   previewDrag={id:e.pointerId,kind:'draw-crop',start:{x:p.x,y:p.y},previous:cropDraft?{...cropDraft}:null};
+   cropDraft=null;cropDrawNew=false;
+  }else{
+   previewDrag={id:e.pointerId,kind:'crop',handle,x:p.x,y:p.y,r:{...cropDraft}};
+  }
+ }else{
+  // Switch to unconstrained positioning while preserving appearance, so a drag
+  // cannot get stuck against the Keep Whole photo frame.
+  selectedAreaClip=null;
+  enablePrecisePlacement(conf);
+  previewDrag={id:e.pointerId,kind:'position',x:p.x,y:p.y,cx:centerX,cy:centerY,px:containX,py:containY,fx:freeX,fy:freeY,place:getPlacement(conf)};
+ }
+ layoutCanvas.setPointerCapture(e.pointerId);
+});
+layoutCanvas.addEventListener('pointermove',e=>{
+ if(!previewDrag||previewDrag.id!==e.pointerId)return;
+ let conf;try{conf=config()}catch(_){return;}
+ const p=cursorPoint(e),d=previewDrag;
+ if(d.kind==='draw-crop'){
+  cropDraft=drawnCrop(d.start,p,cropDraftShape);
+  if(cropDraft.w<.0001||cropDraft.h<.0001)cropDraft=null;
+  drawSourceCrop();return;
+ }
+ if(d.kind==='crop'){
+  const b=imageCropBounds(),min=Math.max(.008,12/Math.min(b.w,b.h));
+  const dx=(p.x-d.x)/b.w,dy=(p.y-d.y)/b.h,r=d.r;
+  let x0=r.x,y0=r.y,x1=r.x+r.w,y1=r.y+r.h;
+  if(d.handle==='move'){
+   cropDraft={x:clamp(r.x+dx,0,1-r.w),y:clamp(r.y+dy,0,1-r.h),w:r.w,h:r.h};
+  }else if(cropDraftShape==='circle'){
+   // Opposite corner is fixed. The dragged corner stays equidistant in image pixels.
+   const opposite={0:[x1,y1],2:[x0,y1],4:[x0,y0],6:[x1,y0]}[d.handle];
+   const ox=b.x+opposite[0]*b.w,oy=b.y+opposite[1]*b.h;
+   const signX=[0,6].includes(d.handle)?-1:1;
+   const signY=[0,2].includes(d.handle)?-1:1;
+   const availableX=signX>0?b.x+b.w-ox:ox-b.x;
+   const availableY=signY>0?b.y+b.h-oy:oy-b.y;
+   const side=Math.max(10,Math.min(Math.max(0,signX*(p.x-ox)),Math.max(0,signY*(p.y-oy)),availableX,availableY));
+   const nx=ox+signX*side,ny=oy+signY*side;
+   cropDraft=drawnCrop({x:ox,y:oy},{x:nx,y:ny},'circle');
+  }else{
+   if([0,6,7].includes(d.handle))x0=clamp(r.x+dx,0,x1-min);
+   if([2,3,4].includes(d.handle))x1=clamp(r.x+r.w+dx,x0+min,1);
+   if([0,1,2].includes(d.handle))y0=clamp(r.y+dy,0,y1-min);
+   if([4,5,6].includes(d.handle))y1=clamp(r.y+r.h+dy,y0+min,1);
+   cropDraft={x:x0,y:y0,w:x1-x0,h:y1-y0};
+  }
+  drawSourceCrop();return;
+ }
+ const ax=(p.x-d.x)/layoutCanvas.width*conf.pw,ay=(p.y-d.y)/layoutCanvas.height*conf.ph;
+ const q=d.place,mode=$('fitMode').value;
+ if(mode==='contain'){
+  const slackX=conf.pw-q.dw,slackY=conf.ph-q.dh;
+  containX=slackX>1e-6?clamp(d.px+ax/slackX,0,1):.5;
+  containY=slackY>1e-6?clamp(d.py+ay/slackY,0,1):.5;
+ }else if(mode==='free'){
+  freeX=d.fx+ax/conf.pw;freeY=d.fy+ay/conf.ph;
+  const snap=$('snapMode').value;
+  const sb=snap==='tiles'?selectedBounds(conf):snap==='art'?{x:0,y:0,w:conf.pw,h:conf.ph}:null;
+  if(sb){
+   const tol=Math.max(.06,10*conf.pw/layoutCanvas.width); // roughly 10 screen pixels
+   const tx=(sb.x+sb.w/2)/conf.pw,ty=(sb.y+sb.h/2)/conf.ph;
+   if(Math.abs(freeX-tx)*conf.pw<tol)freeX=tx;
+   if(Math.abs(freeY-ty)*conf.ph<tol)freeY=ty;
+  }
+ }else{
+  centerX=clamp(d.cx-ax/conf.pw*q.w/(sourceCrop.w*img.naturalWidth),0,1);
+  centerY=clamp(d.cy-ay/conf.ph*q.h/(sourceCrop.h*img.naturalHeight),0,1);
+ }
+ refresh();
+});
+for(const en of ['pointerup','pointercancel','lostpointercapture'])layoutCanvas.addEventListener(en,()=>{
+ if(previewDrag&&previewDrag.kind==='draw-crop'&&(!cropDraft||cropDraft.w*img.naturalWidth<7||cropDraft.h*img.naturalHeight<7)){
+  cropDraft=previewDrag.previous; // a click without dragging should not erase the last selection
+  drawSourceCrop();
+ }
+ previewDrag=null;if(viewMode==='crop')$('applyCrop').disabled=!cropDraft;
+});
+$('selectAll').addEventListener('click',()=>{selectedAreaClip=null;selectionMode='all';refresh()});
+$('onlyPhoto').addEventListener('click',()=>{selectedAreaClip=null;selectionMode='image';refresh()});
+$('selectNone').addEventListener('click',()=>{selectedAreaClip=null;selectionMode='custom';selectedTiles.clear();refresh()});
+function toggleTile(key,checked){selectedAreaClip=null;selectionMode='custom';if(checked)selectedTiles.add(key);else selectedTiles.delete(key);refresh()}
+$('tileChoices').addEventListener('change',e=>{if(e.target.matches('input[data-tile]'))toggleTile(e.target.dataset.tile,e.target.checked)});
+layoutCanvas.addEventListener('click',e=>{
+ if(viewMode!=='tiles')return;
+ let conf;try{conf=config()}catch(_){return}
+ const b=layoutCanvas.getBoundingClientRect(),xx=(e.clientX-b.left)/b.width*conf.pw,yy=(e.clientY-b.top)/b.height*conf.ph;
+ const col=Math.min(conf.cols-1,Math.max(0,Math.floor(xx/conf.stepW)));
+ const row=Math.min(conf.rows-1,Math.max(0,Math.floor(yy/conf.stepH)));
+ const key=tileKey(col,row);toggleTile(key,!selectedTiles.has(key));
+});
+function makePageImage(conf,place,col,row,scale=180){const cvs=document.createElement('canvas');cvs.width=Math.round(conf.paperW*scale);cvs.height=Math.round(conf.paperH*scale);const g=cvs.getContext('2d',{alpha:false});g.fillStyle='#fff';g.fillRect(0,0,cvs.width,cvs.height);
  const sx=col*conf.stepW,sy=row*conf.stepH;const tileW=Math.min(conf.usableW,conf.pw-sx),tileH=Math.min(conf.usableH,conf.ph-sy);
  const mx=conf.margin*scale,my=conf.margin*scale;
  // The world-coordinate mapping ensures adjacent pages agree to subpixel accuracy.
- g.save();g.beginPath();g.rect(mx,my,tileW*scale,tileH*scale);g.clip();g.filter=conf.gray?'grayscale(1)':'none';
- g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(img,crop.x,crop.y,crop.w,crop.h,mx-sx*scale,my-sy*scale,conf.pw*scale,conf.ph*scale);g.filter='none';
+ g.save();g.beginPath();g.rect(mx,my,tileW*scale,tileH*scale);g.clip();
+ g.save();
+ if(conf.shape!=='rect'){
+  g.beginPath();g.ellipse(mx+(conf.pw/2-sx)*scale,my+(conf.ph/2-sy)*scale,conf.pw*scale/2,conf.ph*scale/2,0,0,Math.PI*2);g.clip();
+ }
+ g.filter=conf.gray?'grayscale(1)':'none';
+ g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';paintPlaced(g,conf,place,mx-sx*scale,my-sy*scale,conf.pw*scale,conf.ph*scale);g.filter='none';
  if(conf.grid&&conf.gridIn>0){g.strokeStyle='rgba(40,58,57,.35)';g.lineWidth=.6*scale/72;for(let x=Math.ceil(sx/conf.gridIn)*conf.gridIn;x<=sx+tileW+1e-8;x+=conf.gridIn){const px=mx+(x-sx)*scale;g.beginPath();g.moveTo(px,my);g.lineTo(px,my+tileH*scale);g.stroke()}
  for(let y=Math.ceil(sy/conf.gridIn)*conf.gridIn;y<=sy+tileH+1e-8;y+=conf.gridIn){const py=my+(y-sy)*scale;g.beginPath();g.moveTo(mx,py);g.lineTo(mx+tileW*scale,py);g.stroke()}}
  g.restore();
- // Light outer boundary shows where the finished image ends, particularly on partial tiles.
- g.strokeStyle='#a3aaa6';g.lineWidth=Math.max(1,scale/150);g.strokeRect(mx,my,tileW*scale,tileH*scale);
- // Trim duplicate left/top overlap on all but first row/column.
- if(col>0&&conf.overlap>0){const x=mx+conf.overlap*scale;g.strokeStyle='#1d312b';g.setLineDash([scale*.055,scale*.045]);g.lineWidth=scale*.008;g.beginPath();g.moveTo(x,my);g.lineTo(x,my+tileH*scale);g.stroke();g.setLineDash([])}
- if(row>0&&conf.overlap>0){const y=my+conf.overlap*scale;g.strokeStyle='#1d312b';g.setLineDash([scale*.055,scale*.045]);g.lineWidth=scale*.008;g.beginPath();g.moveTo(mx,y);g.lineTo(mx+tileW*scale,y);g.stroke();g.setLineDash([])}
+ if(conf.shape!=='rect'){
+  g.strokeStyle='#355c51';g.lineWidth=Math.max(1,scale*.012);
+  g.beginPath();g.ellipse(mx+(conf.pw/2-sx)*scale,my+(conf.ph/2-sy)*scale,conf.pw*scale/2,conf.ph*scale/2,0,0,Math.PI*2);g.stroke();
+ }
+ g.restore();
+ // Distinguish the page's image region (light gray) from the actual 12x18
+ // artwork boundary (dark gray). The latter is fixed in artwork coordinates.
+ g.strokeStyle='#bec5c0';g.lineWidth=Math.max(1,scale/175);g.strokeRect(mx,my,tileW*scale,tileH*scale);
+ if(conf.registration){
+  const edges=[{axis:'x',value:0},{axis:'x',value:conf.pw},{axis:'y',value:0},{axis:'y',value:conf.ph}];
+  g.save();g.strokeStyle='#4b6260';g.lineWidth=Math.max(1.4,scale*.008);
+  for(const edge of edges){
+   if(edge.axis==='x'){
+    if(edge.value<sx-1e-8||edge.value>sx+tileW+1e-8)continue;
+    const px=mx+(edge.value-sx)*scale;
+    g.beginPath();g.moveTo(px,my);g.lineTo(px,my+tileH*scale);g.stroke();
+   }else{
+    if(edge.value<sy-1e-8||edge.value>sy+tileH+1e-8)continue;
+    const py=my+(edge.value-sy)*scale;
+    g.beginPath();g.moveTo(mx,py);g.lineTo(mx+tileW*scale,py);g.stroke();
+   }
+  }
+  // Short registration ticks at the TRUE midpoint of each artwork edge.
+  const tick=Math.max(10,scale*.13);
+  function vTick(wx,wy){if(wx<sx-1e-8||wx>sx+tileW+1e-8||wy<sy-1e-8||wy>sy+tileH+1e-8)return;
+   const x=mx+(wx-sx)*scale,y=my+(wy-sy)*scale;
+   g.beginPath();g.moveTo(x,y-tick/2);g.lineTo(x,y+tick/2);g.stroke();}
+  function hTick(wx,wy){if(wx<sx-1e-8||wx>sx+tileW+1e-8||wy<sy-1e-8||wy>sy+tileH+1e-8)return;
+   const x=mx+(wx-sx)*scale,y=my+(wy-sy)*scale;
+   g.beginPath();g.moveTo(x-tick/2,y);g.lineTo(x+tick/2,y);g.stroke();}
+  vTick(conf.pw/2,0);vTick(conf.pw/2,conf.ph);
+  hTick(0,conf.ph/2);hTick(conf.pw,conf.ph/2);
+  // Corner cross-marks make the exact canvas origin detectable even when the
+  // photograph itself has blank margins.
+  g.restore();
+ }
+ // On subsequent pages, the first strip is duplicated image from the prior page.
+ // It must be removed, not treated as part of the reference drawing.
+ if(col>0&&conf.overlap>0){
+  const x=mx+conf.overlap*scale;
+  g.strokeStyle='#a43426';g.setLineDash([scale*.052,scale*.035]);g.lineWidth=scale*.01;
+  g.beginPath();g.moveTo(x,my);g.lineTo(x,my+tileH*scale);g.stroke();g.setLineDash([]);
+  g.save();g.translate(x-scale*.045,my+Math.min(scale*2,tileH*scale*.45));g.rotate(-Math.PI/2);
+  g.fillStyle='#fff';g.fillRect(-scale*1.2,-scale*.104,scale*2.4,scale*.14);
+  g.fillStyle='#8c291f';g.font=`bold ${Math.round(scale*.095)}px Arial`;
+  g.textAlign='center';g.textBaseline='middle';g.fillText('CUT HERE — discard LEFT strip',0,-scale*.036);g.restore();
+ }
+ if(row>0&&conf.overlap>0){
+  const y=my+conf.overlap*scale;
+  g.strokeStyle='#a43426';g.setLineDash([scale*.052,scale*.035]);g.lineWidth=scale*.01;
+  g.beginPath();g.moveTo(mx,y);g.lineTo(mx+tileW*scale,y);g.stroke();g.setLineDash([]);
+  g.save();g.fillStyle='rgba(255,255,255,.92)';g.fillRect(mx+scale*.08,my+scale*.025,Math.min(scale*3.3,tileW*scale-scale*.16),Math.min(scale*.15,conf.overlap*scale*.68));
+  g.fillStyle='#8c291f';g.font=`bold ${Math.round(scale*.085)}px Arial`;g.textBaseline='top';
+  g.fillText('CUT HERE ↓ — discard strip ABOVE',mx+scale*.1,my+scale*.04);g.restore();
+ }
  g.fillStyle='#1f342e';g.font=`600 ${Math.round(scale*.10)}px Arial, sans-serif`;g.textBaseline='middle';
- const code=colName(col)+(row+1);g.fillText(`${code}  (${row*conf.cols+col+1}/${conf.cols*conf.rows})`,mx,Math.max(scale*.13,my/2));
+  const code=colName(col)+(row+1);g.fillText(`${code}  (tile ${row*conf.cols+col+1} of ${conf.cols*conf.rows})`,mx,Math.max(scale*.13,my/2));
  g.font=`${Math.round(scale*.075)}px Arial, sans-serif`;
- g.fillText(`${conf.pw.toFixed(2)} × ${conf.ph.toFixed(2)} in · PRINT AT 100%`,mx,Math.min(cvs.height-scale*.12,my+tileH*scale+scale*.16));
+ g.fillText(`${conf.shape==='circle'?conf.pw.toFixed(2)+' in diameter':conf.pw.toFixed(2)+' × '+conf.ph.toFixed(2)+' in'} · PRINT AT 100%`,mx,Math.min(cvs.height-scale*.12,my+tileH*scale+scale*.12));
+ if(row>0||col>0){const note=`ASSEMBLY: cut dashed ${row>0?'TOP ':''}${row>0&&col>0?'+ ':''}${col>0?'LEFT ':''}line; remove repeated strip.`;g.fillStyle='#8c291f';g.font=`${Math.round(scale*.065)}px Arial`;g.fillText(note,mx,Math.min(cvs.height-scale*.04,my+tileH*scale+scale*.28));}
  // A real 1-inch ruler, placed in the top margin if room allows.
  const x0=cvs.width-scale*(1.35),y0=Math.max(scale*.13,my/2);if(x0>mx+scale*.8){g.strokeStyle='#1f342e';g.lineWidth=scale*.005;g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+scale,y0);g.moveTo(x0,y0-scale*.05);g.lineTo(x0,y0+scale*.05);g.moveTo(x0+scale,y0-scale*.05);g.lineTo(x0+scale,y0+scale*.05);g.stroke();g.textAlign='center';g.fillText('1 in',x0+scale*.5,y0-scale*.07);g.textAlign='left'}
  return new Promise((resolve,reject)=>cvs.toBlob(b=>{if(!b)reject(Error('Could not rasterize page'));else b.arrayBuffer().then(a=>resolve(new Uint8Array(a))).catch(reject)},'image/jpeg',.92));
+}
+function makeAssemblyGuide(conf,place,scale=180){
+ const canvas=document.createElement('canvas');canvas.width=Math.round(conf.paperW*scale);canvas.height=Math.round(conf.paperH*scale);
+ const g=canvas.getContext('2d',{alpha:false});g.fillStyle='#fff';g.fillRect(0,0,canvas.width,canvas.height);
+ const pad=scale*.5,usable=canvas.width-2*pad;let y=pad;
+ function line(t,size=11,bold=false,color='#263b32',height=1.38){g.fillStyle=color;g.font=`${bold?'bold ':''}${Math.round(scale*size/72)}px Arial`;g.textBaseline='top';g.fillText(t,pad,y);y+=scale*size/72*height;}
+ line('ART REFERENCE ENLARGER - ASSEMBLY',17,true);line(`Artwork: ${conf.pw.toFixed(2)} x ${conf.ph.toFixed(2)} in | ${conf.cols} columns x ${conf.rows} rows`,10);
+ line(`Selected sheets: ${Array.from(selectedTiles).join(', ')}`,9,false);
+ y+=scale*.15;
+ const availableH=Math.min(scale*3.15,canvas.height-scale*5.0),maxW=usable*.9;
+ const cell=Math.min(maxW/conf.cols,availableH/conf.rows);
+ const ox=(canvas.width-cell*conf.cols)/2,oy=y;
+ for(let r=0;r<conf.rows;r++)for(let c=0;c<conf.cols;c++){
+  const x=ox+c*cell,yy=oy+r*cell,key=tileKey(c,r),on=selectedTiles.has(key);
+  g.fillStyle=on?'#dfebe6':'#f1f2f1';g.fillRect(x,yy,cell,cell);
+  g.strokeStyle=on?'#295a50':'#acb5b1';g.lineWidth=Math.max(1,scale*.008);g.strokeRect(x,yy,cell,cell);
+  g.fillStyle=on?'#20483b':'#7d8782';g.font=`bold ${Math.round(scale*.14)}px Arial`;g.fillText(key,x+scale*.055,yy+scale*.055);
+  if(!on){g.beginPath();g.moveTo(x+cell*.2,yy+cell*.2);g.lineTo(x+cell*.8,yy+cell*.8);g.stroke()}
+ }
+ y=oy+cell*conf.rows+scale*.24;
+ const lines=[
+ '1. Print at Actual Size / 100%. Measure the 1-inch ruler on a photo page.',
+ '2. Arrange selected sheets by code: A1 upper left, A2 below A1, B1 right of A1.',
+ `3. Each joining sheet repeats ${conf.overlap.toFixed(2)} inch of its preceding neighbor.`,
+ '4. Red dashed line: cut off the preceding overlap strip on LATER sheets.',
+ '    A2: remove TOP strip; B1: remove LEFT strip; B2: remove BOTH strips.',
+ '5. Trim the EARLIER sheet at the outer edge of its printed tile; join edges.',
+ '6. Align image features across seams. Tape joined sheets together from behind.',
+ '7. Align the GRAY ARTWORK FRAME to your canvas corners/edges.',
+ '    Short marks at artwork edges indicate the exact midpoint of each side.',
+ '8. Tape assembled pattern at top as a hinge; use transfer paper or pouncing.'
+ ];
+ for(const t of lines)line(t,9,false,t.startsWith('4.')?'#922d27':'#263b32',1.37);
+ y+=scale*.08;
+ line('IMPORTANT: Crop center, sheet center, and artwork center can differ.',9,true);
+ line('Only selected photo sheets are exported; unselected sheets are omitted.',9,false);
+ return new Promise((resolve,reject)=>canvas.toBlob(b=>b?b.arrayBuffer().then(a=>resolve(new Uint8Array(a))).catch(reject):reject(Error('Could not create guide')),'image/jpeg',.92));
 }
 function makePDF(pages,paperW,paperH){const enc=new TextEncoder();const chunks=[];let count=0;const offsets=[0];const add=b=>{chunks.push(b);count+=b.length};const write=s=>add(enc.encode(s));const obj=(n,fn)=>{offsets[n]=count;write(`${n} 0 obj\n`);fn();write('\nendobj\n')};
  write('%PDF-1.4\n');add(new Uint8Array([37,255,255,255,255,10]));
@@ -264,56 +1022,179 @@ function makePDF(pages,paperW,paperH){const enc=new TextEncoder();const chunks=[
  const xref=count;write(`xref\n0 ${total+1}\n0000000000 65535 f \n`);for(let i=1;i<=total;i++)write(String(offsets[i]).padStart(10,'0')+' 00000 n \n');write(`trailer\n<< /Size ${total+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
  return new Blob(chunks,{type:'application/pdf'});
 }
-$('download').addEventListener('click',async()=>{if(!img)return;const button=$('download');const msg=$('message');try{let conf=config(),crop=getCrop(conf);button.disabled=true;button.textContent='Creating PDF…';msg.textContent='Preparing pages locally…';msg.className='';let pages=[];
- for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
- msg.textContent=`Creating ${row*conf.cols+col+1} of ${conf.cols*conf.rows} pages…`;
- await new Promise(r=>setTimeout(r,0));const data=await makePageImage(conf,crop,col,row);pages.push({data,width:Math.round(conf.paperW*180),height:Math.round(conf.paperH*180)});
+$('download').addEventListener('click',async()=>{if(!img||!selectedTiles.size)return;const button=$('download');const msg=$('message');try{let conf=config(),place=getPlacement(conf);button.disabled=true;button.textContent='Creating PDF…';msg.textContent='Preparing pages locally…';msg.className='';let pages=[];
+ if($('assemblyPage').checked){msg.textContent='Creating assembly guide…';const guide=await makeAssemblyGuide(conf,place);pages.push({data:guide,width:Math.round(conf.paperW*180),height:Math.round(conf.paperH*180)});}
+ const wanted=[];for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++)if(selectedTiles.has(tileKey(col,row)))wanted.push([col,row]);
+ for(let i=0;i<wanted.length;i++){
+ const [col,row]=wanted[i];msg.textContent=`Creating ${tileKey(col,row)} (${i+1} of ${wanted.length} selected sheets)…`;
+ await new Promise(r=>setTimeout(r,0));const data=await makePageImage(conf,place,col,row);pages.push({data,width:Math.round(conf.paperW*180),height:Math.round(conf.paperH*180)});
  }
- const blob=makePDF(pages,conf.paperW,conf.paperH),url=URL.createObjectURL(blob),a=document.createElement('a');generatedPDF=blob;generatedPDFURL=url;generatedPDFName=`${fileStem}_${num('w')}x${num('h')}${$('unit').value}_tiled.pdf`;$('sharePdf').disabled=false;$('openPdf').disabled=false;a.href=url;a.download=generatedPDFName;document.body.append(a);a.click();a.remove();msg.textContent=`PDF ready: ${pages.length} pages. Use Share PDF to printer, or open the PDF and print at Actual Size (100%).`;
- }catch(e){console.error(e);msg.textContent='Export error: '+e.message;msg.className='error'}finally{button.textContent='Create / download multi-page PDF';button.disabled=false}});
+ const blob=makePDF(pages,conf.paperW,conf.paperH);resetGenerated();generatedPDF=blob;generatedPDFURL=URL.createObjectURL(blob);generatedPDFName=`${fileStem}_${conf.shape}_${num('w')}x${conf.shape==='circle'?num('w'):num('h')}${$('unit').value}_crop-${sourceCropShape}_tiled.pdf`;const a=document.createElement('a');a.href=generatedPDFURL;a.download=generatedPDFName;document.body.append(a);a.click();a.remove();$('sharePdf').disabled=false;$('openPdf').disabled=false;msg.textContent=`PDF created: ${pages.length} pages (${wanted.length} selected photo sheets${$('assemblyPage').checked?' + assembly guide':''}). Print at Actual Size (100%).`;
+ }catch(e){console.error(e);msg.textContent='Export error: '+e.message;msg.className='error'}finally{button.textContent='Download selected sheets PDF';button.disabled=!img||selectedTiles.size===0}});
+
+// v10 quick crop presets use the ORIGINAL uploaded photograph and a centered aspect crop.
+function sourcePreset(aspect){
+ if(!img)return;
+ if(aspect==='full')sourceCrop={x:0,y:0,w:1,h:1};
+ else{
+  let wanted={'1:1':1,'4:3':4/3,'3:4':3/4,'16:9':16/9}[aspect];
+  if(!wanted)return;
+  const iw=img.naturalWidth,ih=img.naturalHeight;
+  let w=1,h=1;
+  if(iw/ih>wanted)w=(ih*wanted)/iw;
+  else h=iw/(ih*wanted);
+  sourceCrop={x:(1-w)/2,y:(1-h)/2,w,h};
+ }
+ sourceCropShape='rect';selectedAreaClip=null;cropDraft=null;manualDestCrop=null;
+ $('fitMode').value='contain';resetPosition();viewMode='position';selectionMode='image';
+ document.querySelectorAll('[data-croppreset]').forEach(b=>b.classList.toggle('active',b.dataset.croppreset===aspect));
+ refresh();
+}
+document.querySelectorAll('[data-croppreset]').forEach(b=>b.addEventListener('click',()=>sourcePreset(b.dataset.croppreset)));
+$('manualCropPreset').addEventListener('click',()=>setViewMode('crop'));
+$('quickZoomReset').addEventListener('click',()=>{resetPosition();viewMode='position';refresh()});
+function quickZoom(sign){
+ if(!img)return;
+ if(viewMode!=='position')setViewMode('position');
+ const r=layoutCanvas.getBoundingClientRect();
+ zoomAt({clientX:r.left+r.width/2,clientY:r.top+r.height/2},sign>0?-155:155);
+}
+$('quickZoomIn').addEventListener('click',()=>quickZoom(1));
+$('quickZoomOut').addEventListener('click',()=>quickZoom(-1));
+
+// Crop on the SAME output preview. The final tile boundaries stay visible.
+// Source coordinates are recovered from the image's current physical placement.
+function applyManualCrop(d,placement,conf){
+ const x1=d.x*conf.pw,y1=d.y*conf.ph,x2=(d.x+d.w)*conf.pw,y2=(d.y+d.h)*conf.ph;
+ const srcX1=placement.x+(x1-placement.dx)/placement.dw*placement.w;
+ const srcY1=placement.y+(y1-placement.dy)/placement.dh*placement.h;
+ const srcX2=placement.x+(x2-placement.dx)/placement.dw*placement.w;
+ const srcY2=placement.y+(y2-placement.dy)/placement.dh*placement.h;
+ const iw=img.naturalWidth,ih=img.naturalHeight;
+ const ax=clamp(Math.min(srcX1,srcX2)/iw,0,1),ay=clamp(Math.min(srcY1,srcY2)/ih,0,1);
+ const bx=clamp(Math.max(srcX1,srcX2)/iw,0,1),by=clamp(Math.max(srcY1,srcY2)/ih,0,1);
+ if((bx-ax)*iw<10||(by-ay)*ih<10){$('message').textContent='Crop too small; drag a larger area.';return;}
+ sourceCrop={x:ax,y:ay,w:bx-ax,h:by-ay};sourceCropShape=$('cropShape').value;
+ if(sourceCropShape==='circle')sourceCrop=circleCrop(sourceCrop);
+ selectedAreaClip=null;manualDestCrop=null;cropDraft=null;
+ $('fitMode').value='contain';resetPosition();viewMode='position';selectionMode='image';
+ document.querySelectorAll('[data-croppreset]').forEach(b=>b.classList.remove('active'));
+ refresh();
+}
+const touchPoints=new Map();let pinchRun=false,wasPinching=false,manualStart=null,manualPlacement=null,manualConfig=null;
+function midpoint(){const a=Array.from(touchPoints.values());return {x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2,dist:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};}
+let lastPinch=null;
+layoutCanvas.addEventListener('pointerdown',e=>{
+ if(!img)return;
+ if(viewMode==='crop' && e.isPrimary){
+  e.preventDefault();e.stopImmediatePropagation();
+  manualStart=cursorPoint(e);manualDestCrop=null;
+  manualPlacement=getPlacement(config());manualConfig=config();
+  try{layoutCanvas.setPointerCapture(e.pointerId)}catch(_){}
+  return;
+ }
+ if(e.pointerType==='touch'&&viewMode==='position'){
+  touchPoints.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(touchPoints.size>=2){
+   pinchRun=true;wasPinching=true;previewDrag=null;lastPinch=midpoint();
+   e.preventDefault();e.stopImmediatePropagation();
+   try{layoutCanvas.setPointerCapture(e.pointerId)}catch(_){}
+  }
+ }
+},true);
+layoutCanvas.addEventListener('pointermove',e=>{
+ if(!img)return;
+ if(viewMode==='crop' && manualStart){
+  e.preventDefault();e.stopImmediatePropagation();
+  const p=cursorPoint(e),x=Math.max(0,Math.min(1,Math.min(p.u,manualStart.u))),
+        y=Math.max(0,Math.min(1,Math.min(p.v,manualStart.v))),
+        r=Math.max(0,Math.min(1,Math.max(p.u,manualStart.u))),
+        b=Math.max(0,Math.min(1,Math.max(p.v,manualStart.v)));
+  manualDestCrop={x,y,w:r-x,h:b-y};drawLayout(config());return;
+ }
+ if(e.pointerType==='touch'&&touchPoints.has(e.pointerId)){
+  touchPoints.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinchRun && touchPoints.size>=2){
+   e.preventDefault();e.stopImmediatePropagation();
+   const now=midpoint(),old=lastPinch;
+   if(old&&old.dist>4&&now.dist>4){
+    zoomAt({clientX:old.x,clientY:old.y},-Math.log(now.dist/old.dist)/.0017);
+    if($('fitMode').value==='free'){
+     const box=layoutCanvas.getBoundingClientRect();
+     freeX+=(now.x-old.x)/box.width;
+     freeY+=(now.y-old.y)/box.height;
+     refresh();
+    }
+   }
+   lastPinch=now;return;
+  }
+  if(wasPinching){e.stopImmediatePropagation();return;}
+ }
+},true);
+function endGesture(e){
+ if(viewMode==='crop'&&manualStart){
+  e.preventDefault();e.stopImmediatePropagation();
+  const d=manualDestCrop,p=manualPlacement,c=manualConfig;
+  manualStart=null;manualDestCrop=null;manualPlacement=null;manualConfig=null;
+  if(d && d.w>0.018 && d.h>0.018)applyManualCrop(d,p,c);
+  else{drawLayout(config());$('message').textContent='Drag across the photograph to choose a crop.';}
+  return;
+ }
+ if(e.pointerType==='touch'){
+  const old=wasPinching;
+  touchPoints.delete(e.pointerId);
+  if(touchPoints.size<2){pinchRun=false;lastPinch=null;}
+  if(old){
+   e.preventDefault();e.stopImmediatePropagation();previewDrag=null;
+   if(touchPoints.size===0)wasPinching=false;
+  }
+ }
+}
+layoutCanvas.addEventListener('pointerup',endGesture,true);
+layoutCanvas.addEventListener('pointercancel',endGesture,true);
+window.addEventListener('pointerup',e=>{touchPoints.delete(e.pointerId);if(touchPoints.size===0){pinchRun=false;wasPinching=false;lastPinch=null;}},true);
+
+// Share a generated PDF through Android's native share sheet when available.
 $('sharePdf').addEventListener('click',async()=>{
  if(!generatedPDF)return;
  const file=new File([generatedPDF],generatedPDFName,{type:'application/pdf'});
- if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-  try{await navigator.share({files:[file],title:'Print art reference'});return}
-  catch(e){if(e.name==='AbortError')return}
- }
- const w=window.open(generatedPDFURL,'_blank');
- if(!w)$('message').textContent='Sharing is unavailable here. Tap Open PDF, or find the downloaded PDF in Downloads and print from the PDF viewer.';
+ try{
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   await navigator.share({files:[file],title:'Art template for printing'});return;
+  }
+ }catch(e){if(e.name==='AbortError')return;}
+ $('message').textContent='Sharing is not supported by this browser. Open the downloaded PDF to print it.';
 });
-$('openPdf').addEventListener('click',()=>{if(!generatedPDFURL)return;const w=window.open(generatedPDFURL,'_blank');if(!w)$('message').textContent='Open the downloaded PDF from your phone’s Downloads folder.'});
-refresh();
+$('openPdf').addEventListener('click',()=>{
+ if(!generatedPDFURL)return;
+ const w=window.open(generatedPDFURL,'_blank');
+ if(!w)$('message').textContent='Open the PDF from Downloads in your PDF viewer.';
+});
+
+// Crop and fit are adjacent to the only live print preview.
+const cropPanel=document.createElement('div');cropPanel.className='unifiedCropPanel';
+cropPanel.style.cssText='background:#f6faf7;border:1px solid #d9e6df;border-radius:9px;padding:10px 12px;margin:9px 0 10px';
+cropPanel.innerHTML='<strong style="font-size:13px">Photo crop and fit</strong>';
+const fitField=$('fitMode').closest('.field');
+cropPanel.append(fitField,document.querySelector('.cropPresets'),$('cropShapeBar'),$('cropSummary'));
+document.querySelector('#previewHint').before(cropPanel);
+// Advanced options and print assembly instructions are available but not in the main workflow.
+const nudges=$('nudgePanel'),nudgeDisclosure=document.createElement('details');
+nudgeDisclosure.className='nudgeDisclosure';nudgeDisclosure.innerHTML='<summary>Advanced positioning and alignment</summary>';
+while(nudges.firstChild)nudgeDisclosure.append(nudges.firstChild);nudges.append(nudgeDisclosure);
+const assemblySection=document.querySelector('#output>section.help');
+if(assemblySection){const assemblyDisclosure=document.createElement('details');
+ assemblyDisclosure.className='assemblyFold';assemblyDisclosure.innerHTML='<summary>Assembly instructions and trim diagram</summary>';
+ while(assemblySection.firstChild)assemblyDisclosure.append(assemblySection.firstChild);
+ assemblySection.append(assemblyDisclosure);
+}
+rebuildPresets(7);refresh();
 </script>
 <script>
-// Offline-install status: cache is considered ready only after a verified cached document is present.
-window.addEventListener('load',async()=>{
- const status=document.createElement('div');
- status.id='artOfflineStatus';
- status.setAttribute('role','status');
- status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
- status.textContent='Checking offline access…';document.body.appendChild(status);
- const key='art-tools-poster-print-v4';
- async function check(){
-  try{
-   const cache=await caches.open(key);
-   const hit=await cache.match(new URL('./index.html',location.href).href);
-   if(hit){status.textContent=navigator.onLine?'Offline ready':'Offline ready · no connection';status.style.background='#176458'}
-   else{status.textContent='Offline not ready · open while online';status.style.background='#91561d'}
-  }catch(e){status.textContent='Offline not available';status.style.background='#91561d'}
- }
- if(!('serviceWorker' in navigator)||!('caches' in window)||!location.protocol.startsWith('http')){
-  status.textContent='Offline unavailable in this browser';return;
- }
- try{
-  const reg=await navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'});
-  await reg.update();
-  await navigator.serviceWorker.ready;
-  await check();
-  navigator.serviceWorker.addEventListener('controllerchange',check);
-  window.addEventListener('online',check);window.addEventListener('offline',check);
- }catch(e){status.textContent='Offline not ready · reconnect and reload';status.style.background='#91561d';console.warn('Offline setup:',e)}
-});
+// Offline capability: only report ready after the main page is in cache.
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+ navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'}).catch(err=>console.warn('Offline registration failed',err));
+}
 </script>
-<div style="position:fixed;bottom:8px;left:8px;font:11px system-ui;color:#536c6b;pointer-events:none;background:#ffffffaa;padding:4px;border-radius:4px">v4</div>
 </body>
 </html>

@@ -71,12 +71,29 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 #modal .modalBottom{width:min(96vw,1100px)}
 .thumb,.thumb canvas{touch-action:manipulation}
 @media(max-width:560px){#modal canvas{max-width:96vw;max-height:calc(100dvh - 146px)}#modal .modalFrame{gap:0}#modal .viewerHint{order:2;flex:1 1 100%;font-size:11px}}
+
+/* v8: value balance controls stay alongside the comparison images. */
+.resultsArea{position:relative;isolation:isolate}
+.balanceNearResults{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 15px;margin:11px 0 14px;border:1px solid #b7d6d4;border-radius:12px;background:rgba(246,251,250,.98);box-shadow:0 3px 14px rgba(20,65,65,.13)}
+.balanceNearResults .balanceInfo{display:flex;flex-direction:column;gap:1px;font-size:13px;line-height:1.35}
+.balanceNearResults .balanceInfo span{font-size:12px;color:#607078}
+.balanceNearResults .buttonSet{gap:6px}
+.balanceNearResults .buttonSet button{font-size:13px;padding:8px 10px;min-height:37px}
+@media(max-width:560px){.balanceNearResults{padding:10px 9px;gap:8px;border-radius:8px}.balanceNearResults .balanceInfo{width:100%;flex-direction:row;justify-content:space-between;gap:6px}.balanceNearResults .balanceInfo span{font-size:11px}.balanceNearResults .buttonSet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:4px}.balanceNearResults .buttonSet button{font-size:11px;line-height:1.2;min-height:43px;padding:6px 4px;white-space:normal}}
+/* v8: full-viewport viewer, original aspect ratio preserved. */
+#modal.open{display:block!important;position:fixed;inset:0;width:100vw;height:100dvh;margin:0;padding:0!important;background:#111719;overflow:hidden;z-index:200}
+#modal .modalFrame{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;width:100%!important;height:100%!important;max-width:none!important;min-height:0;margin:0!important;padding:0!important;overflow:hidden;touch-action:none!important;cursor:grab}
+#modal canvas{display:block;max-width:100vw!important;max-height:100dvh!important;width:auto!important;height:auto!important;object-fit:contain;touch-action:none!important}
+#modal .modalTop{position:absolute;top:0;left:0;width:100%!important;max-width:none!important;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent)}
+#modal .modalBottom{position:absolute;bottom:0;left:0;width:100%!important;max-width:none!important;z-index:10;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:14px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(0,0,0,.75),transparent)}
+#modal .viewerHint{display:none!important}
+#modal .modalNav{display:none!important}
 </style>
 <link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#153d42"><meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v4</span></div>
-<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v5</span></h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v8</span></div>
+<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v8</span></h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
 <main>
   <div class="controls" id="toolbar">
     <label for="fileInput" class="fileLabel primary">+ Choose a photo</label><input type="file" id="fileInput" accept="image/*">
@@ -100,21 +117,23 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
         <div class="buttonSet" id="detailBtns"><button data-option="big" class="active">Big shapes</button><button data-option="detail">Keep more structure</button></div>
         <div class="subtle" style="margin-top:7px">Big shapes ignores fine texture, small reflections, and little facial marks.</div>
       </div>
-      <div class="optionblock">
-        <span class="optlabel">Where the light/dark boundaries fall</span>
-        <div class="buttonSet" id="balanceBtns"><button data-option="light">More light area</button><button data-option="neutral" class="active">Balanced</button><button data-option="dark">More dark area</button></div>
-        <div class="subtle" style="margin-top:7px">If a shadow or background is grouped oddly, try one of the other choices. No sliders.</div>
-      </div>
+
       <div class="tip"><b>What the values mean</b><br>Every pixel, including the background and cast shadows, belongs to a value group. Each grouped picture has exactly 2, 3, or 4 possible grays. The crop recalculates the value boundaries for that composition.</div>
     </div>
   </section>
+  <section class="resultsArea" id="resultsArea">
   <div class="resultsHeader"><div><h2>3 · Compare and select</h2><div class="subtle">Tap a picture to view it full size. Use its + Select button to choose it for saving.</div></div><div class="saveOptions"><span id="selectionCount">0 selected</span><button id="selectAll">Select all</button><button id="clearSelection">Clear</button><button class="primary" id="saveIndividuals">Save individual PNGs</button><button id="savePdf">Save one-page PDF</button><button id="saveComparison">Save comparison PNG</button><span id="saveFeedback" aria-live="polite"></span></div></div>
+  <div class="balanceNearResults" aria-label="Adjust values while comparing">
+    <div class="balanceInfo"><strong>Value balance</strong><span>Compare the images as you click</span></div>
+    <div class="buttonSet" id="balanceBtns" role="group" aria-label="Choose value grouping balance"><button data-option="light">More light area</button><button data-option="neutral" class="active">Balanced</button><button data-option="dark">More dark area</button></div>
+  </div>
   <section class="preview-grid" id="previewGrid">
    <div class="photoCard top"><div class="cardHead"><strong>Original color</strong><button type="button" class="selectChip" data-select="original" aria-pressed="false">+ Select</button><span class="type">Reference</span></div><div class="thumb" data-key="original" role="button" tabindex="0"><canvas id="out-original"></canvas></div><div class="cardFoot"><span class="desc">Color and materials</span><button data-download="original">Save PNG</button></div></div>
    <div class="photoCard top"><div class="cardHead"><strong>Grayscale</strong><button type="button" class="selectChip" data-select="gray" aria-pressed="false">+ Select</button><span class="type">All tones</span></div><div class="thumb" data-key="gray" role="button" tabindex="0"><canvas id="out-gray"></canvas></div><div class="cardFoot"><span class="desc">Compare actual lightness</span><button data-download="gray">Save PNG</button></div></div>
    <div class="photoCard group"><div class="cardHead"><strong>2 values</strong><button type="button" class="selectChip" data-select="2" aria-pressed="false">+ Select</button><span class="type">Light · dark</span></div><div class="thumb" data-key="2" role="button" tabindex="0"><canvas id="out-2"></canvas></div><div class="swatches" id="sw-2"></div><div class="cardFoot"><span class="desc">Find the largest masses</span><button data-download="2">Save PNG</button></div></div>
    <div class="photoCard group"><div class="cardHead"><strong>3 values</strong><button type="button" class="selectChip" data-select="3" aria-pressed="false">+ Select</button><span class="type">Light · middle · dark</span></div><div class="thumb" data-key="3" role="button" tabindex="0"><canvas id="out-3"></canvas></div><div class="swatches" id="sw-3"></div><div class="cardFoot"><span class="desc">Best starting thumbnail</span><button data-download="3">Save PNG</button></div></div>
    <div class="photoCard group"><div class="cardHead"><strong>4 values</strong><button type="button" class="selectChip" data-select="4" aria-pressed="false">+ Select</button><span class="type">Add a second middle</span></div><div class="thumb" data-key="4" role="button" tabindex="0"><canvas id="out-4"></canvas></div><div class="swatches" id="sw-4"></div><div class="cardFoot"><span class="desc">Clarify turning planes</span><button data-download="4">Save PNG</button></div></div>
+  </section>
   </section>
   <footer><b>Drawing guidance:</b> Treat these as initial maps, not perfect artistic answer keys. Automatic cutoffs group photographed brightness, not the physical cause of that brightness. Local color (dark wood or hair) and cast/form shadow can end up in the same value group. If a boundary looks wrong, change the crop or click a different light/dark balance. Keep the manually drawn thumbnail small, flat, and simple; add gradients only in the later shaded drawing. All photo processing happens on your device; this standalone file works offline.</footer>
 </main>
@@ -339,39 +358,37 @@ window.addEventListener('keydown',e=>{
   moveModal(e.key==='ArrowLeft'?-1:1);
  }
 },true);
-// Use pointer capture for gestures across the whole enlarged image and surrounding area.
-// With touch-action:none, browser scrolling cannot intercept horizontal gestures.
+// Swipe across the entire enlarged viewer. Both pointer and touch events are supported;
+// ignore the second event when browsers dispatch both for the same gesture.
 const modalElement=$('#modal');
-let swipeStart=null;
+let gesturePointer=null,gestureTouch=null,lastSwipeAt=-10000;
+function navigateSwipe(dx,dy,when){
+ if(Math.abs(dx)<36 || Math.abs(dx)<=Math.abs(dy)*1.12)return;
+ if(when-lastSwipeAt<450)return;
+ lastSwipeAt=when;
+ moveModal(dx<0?1:-1);
+}
 modalElement.addEventListener('pointerdown',e=>{
- if(!state.modalKey || e.target.closest('button') || !e.isPrimary)return;
- swipeStart={id:e.pointerId,x:e.clientX,y:e.clientY};
- try{modalElement.setPointerCapture(e.pointerId)}catch(err){}
+ if(!state.modalKey || !e.isPrimary || e.target.closest('button'))return;
+ gesturePointer={id:e.pointerId,x:e.clientX,y:e.clientY};
+ try{modalElement.setPointerCapture(e.pointerId)}catch(_){}
 });
 modalElement.addEventListener('pointerup',e=>{
- if(!swipeStart || e.pointerId!==swipeStart.id)return;
- const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y;
- swipeStart=null;
- if(Math.abs(dx)>=38 && Math.abs(dx)>=Math.abs(dy)*1.12){
-  e.preventDefault();moveModal(dx<0?1:-1);
- }
+ if(!gesturePointer || gesturePointer.id!==e.pointerId)return;
+ const {x,y}=gesturePointer;gesturePointer=null;
+ navigateSwipe(e.clientX-x,e.clientY-y,e.timeStamp);
 });
-modalElement.addEventListener('pointercancel',()=>{swipeStart=null});
-modalElement.addEventListener('lostpointercapture',()=>{swipeStart=null});
-if(!window.PointerEvent){
- let touchStart=null;
- modalElement.addEventListener('touchstart',e=>{
-  if(!state.modalKey||e.target.closest('button')||e.touches.length!==1)return;
-  touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
- },{passive:true});
- modalElement.addEventListener('touchend',e=>{
-  if(!touchStart||!e.changedTouches.length)return;
-  const dx=e.changedTouches[0].clientX-touchStart.x,dy=e.changedTouches[0].clientY-touchStart.y;
-  touchStart=null;
-  if(Math.abs(dx)>=38 && Math.abs(dx)>=Math.abs(dy)*1.12)moveModal(dx<0?1:-1);
- },{passive:true});
- modalElement.addEventListener('touchcancel',()=>{touchStart=null});
-}
+modalElement.addEventListener('pointercancel',()=>{gesturePointer=null});
+modalElement.addEventListener('touchstart',e=>{
+ if(!state.modalKey||e.touches.length!==1||e.target.closest('button'))return;
+ const p=e.touches[0];gestureTouch={x:p.clientX,y:p.clientY};
+},{passive:true});
+modalElement.addEventListener('touchend',e=>{
+ if(!gestureTouch || e.changedTouches.length===0)return;
+ const p=e.changedTouches[0];const {x,y}=gestureTouch;gestureTouch=null;
+ navigateSwipe(p.clientX-x,p.clientY-y,e.timeStamp);
+},{passive:true});
+modalElement.addEventListener('touchcancel',()=>{gestureTouch=null});
 $('#modalSave').onclick=()=>{if(state.modalKey)downloadCanvas(state.out[state.modalKey],filenameFor(state.modalKey))};
 function orderedSelection(){return SELECT_KEYS.filter(k=>selectedKeys.has(k))}
 function makeComparisonCanvas(keys){
@@ -464,7 +481,7 @@ window.addEventListener('load',async()=>{
  status.setAttribute('role','status');
  status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
  status.textContent='Checking offline access…';document.body.appendChild(status);
- const key='art-tools-value-study-v5';
+ const key='art-tools-value-study-v8';
  async function check(){
   try{
    const cache=await caches.open(key);
