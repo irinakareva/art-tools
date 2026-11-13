@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Value Shape Blur Trainer v2</title>
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --panel: #ffffff;
+    --ink: #252525;
+    --muted: #6f6f6f;
+    --line: #d9d7d1;
+    --accent: #27344a;
+    --accent2: #eef1f6;
+    --danger: #9b3d35;
+    --pagew: 8.5in;
+    --pageh: 11in;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  main { max-width: 1160px; margin: 0 auto; padding: 22px 14px 54px; }
+  h1 { font-size: 2rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); margin: 0 0 24px; max-width: 850px; line-height: 1.5; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    margin: 0 0 18px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.025);
+  }
+  .drop-zone {
+    border: 2px dashed #a7a49c;
+    border-radius: 12px;
+    padding: 28px 18px;
+    text-align: center;
+    background: #fbfaf7;
+    transition: .15s ease;
+  }
+  .drop-zone.active { border-color: var(--accent); background: var(--accent2); }
+  .drop-zone strong { display: block; font-size: 1.08rem; margin-bottom: 6px; }
+  .drop-zone small { color: var(--muted); }
+  button, select, input[type="number"] {
+    font: inherit;
+  }
+  button {
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 9px 13px;
+    background: white;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { background: #f3f2ef; }
+  button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  button.primary:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .45; cursor: default; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 14px;
+  }
+  label.field { display: flex; flex-direction: column; gap: 6px; font-size: .9rem; font-weight: 650; }
+  label.field span.help { color: var(--muted); font-size: .78rem; font-weight: 400; line-height: 1.3; }
+  select, input[type="number"] {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+  }
+  .checkline { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: .9rem; }
+  .source-wrap { display: none; margin-top: 16px; gap: 16px; align-items: start; }
+  .source-wrap.show { display: grid; grid-template-columns: 210px 1fr; }
+  .source-wrap img { max-width: 210px; max-height: 160px; object-fit: contain; border: 1px solid var(--line); background: #eee; }
+  .source-meta { color: var(--muted); font-size: .86rem; line-height: 1.5; }
+  .sliders { margin-top: 14px; display: grid; gap: 9px; }
+  .slider-row { display: grid; grid-template-columns: 90px 1fr 86px; gap: 10px; align-items: center; }
+  .slider-row .stage-label { font-weight: 700; font-size: .9rem; }
+  input[type="range"] { width: 100%; }
+  .blur-readout { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; font-size: .85rem; }
+  .preview-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .preview-title h2 { margin: 0; font-size: 1.25rem; }
+  .preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+  .preview-card { background: #f7f7f5; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .preview-head { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: .86rem; color: var(--muted); }
+  .preview-head strong { color: var(--ink); }
+  .preview-card img { display: block; width: 100%; max-height: 420px; object-fit: contain; background: white; }
+  .empty { color: var(--muted); padding: 30px 0; text-align: center; }
+  .status { margin-top: 10px; color: var(--muted); font-size: .86rem; min-height: 1.2em; }
+  details { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  summary { cursor: pointer; font-weight: 700; }
+  .guide { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 14px; }
+  .guide h3 { margin: 0 0 8px; font-size: 1rem; }
+  .guide ul { margin: 0; padding-left: 20px; line-height: 1.55; }
+  .prompt-box { margin-top: 14px; padding: 14px; border-radius: 10px; background: #f7f7f4; border: 1px solid var(--line); }
+  .prompt-text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: 10px 12px; background: white; border: 1px solid var(--line); border-radius: 8px; margin: 10px 0; line-height: 1.45; }
+  .privacy { color: var(--muted); font-size: .8rem; margin-top: 8px; }
+  #dragOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(39,52,74,.9);
+    color: white;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    font-weight: 750;
+    pointer-events: none;
+  }
+  #dragOverlay.show { display: flex; }
+  #printArea { display: none; }
+  @media (max-width: 800px) {
+    .slider-row {grid-template-columns: 74px 1fr 54px; gap: 6px;}
+    .controls-grid {grid-template-columns:1fr 1fr;}
+    .controls-grid { grid-template-columns: 1fr 1fr; }
+    .preview-grid { grid-template-columns: 1fr; }
+    .source-wrap.show { grid-template-columns: 1fr; }
+    .guide { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 490px) { .controls-grid {grid-template-columns:1fr;} .preview-title {display:block;} .preview-title .row {margin-top:10px;} }
+  @media print {
+    html, body { margin: 0 !important; padding: 0 !important; background: white; }
+    body > main, #dragOverlay { display: none !important; }
+    #printArea { display: block !important; margin: 0; padding: 0; }
+    .print-page {
+      width: var(--pagew);
+      height: var(--pageh);
+      padding: .28in .30in .28in;
+      display: flex;
+      flex-direction: column;
+      break-after: page;
+      page-break-after: always;
+      overflow: hidden;
+      background: white;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .print-page:last-child { break-after: auto; page-break-after: auto; }
+    .print-header {
+      height: .34in;
+      min-height: .34in;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding-right: .04in;
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1;
+      color: #333;
+    }
+    .print-image-wrap {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .print-image-wrap img {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      object-fit: contain;
+      display: block;
+    }
+  }
+</style>
+<style id="pageStyle">@page { size: letter portrait; margin: 0; }</style>
+<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#27344a"><meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Progressive Blur</span></div>
+<div id="dragOverlay">Drop image anywhere</div>
+<main>
+  <h1>Value Shape Blur Trainer <span style="font-size:.45em;color:#777;font-weight:600;vertical-align:middle;">v2</span></h1>
+  <p class="sub">Paste or drop one reference image, choose the blur progression, preview the stages, then print one stage per page. The goal is to make the large value masses visible before detail takes over.</p>
+
+  <section class="panel">
+    <div id="dropZone" class="drop-zone">
+      <strong>Drop an image here - or anywhere on the page</strong>
+      <small>Ctrl+V also works for screenshots. PNG, JPG/JPEG, and WEBP are supported.</small>
+      <div class="row" style="justify-content:center; margin-top:14px;">
+        <button id="chooseBtn" type="button">Choose image</button>
+        <button id="clearBtn" type="button" disabled>Clear</button>
+      </div>
+      <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" hidden />
+    </div>
+    <div id="sourceWrap" class="source-wrap">
+      <img id="sourcePreview" alt="Source preview" />
+      <div>
+        <strong id="sourceName">Source image</strong>
+        <div id="sourceMeta" class="source-meta"></div>
+        <div class="privacy">Everything happens locally on this device. The image is not uploaded anywhere by this tool.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="controls-grid">
+      <label class="field">Number of stages
+        <select id="stageCount">
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+        <span class="help">The last stage is sharp by default.</span>
+      </label>
+      <label class="field">Starting preset
+        <select id="preset">
+          <option value="class" selected>Class-like progression</option>
+          <option value="strong">Stronger separation</option>
+          <option value="gentle">Gentler progression</option>
+          <option value="custom">Custom / manual</option>
+        </select>
+        <span class="help">Use a preset, then fine-tune below.</span>
+      </label>
+      <label class="field">Print orientation
+        <select id="orientation">
+          <option value="auto" selected>Auto from image</option>
+          <option value="portrait">Portrait</option>
+          <option value="landscape">Landscape</option>
+        </select>
+        <span class="help">All stages use the same page orientation.</span>
+      </label>
+      <label class="field">Reference appearance
+        <select id="appearance">
+          <option value="grayscale" selected>Black & white</option>
+          <option value="color">Keep original color</option>
+        </select>
+        <span class="help">B&W is usually better for value-shape practice.</span>
+      </label>
+    </div>
+    <label class="checkline"><input id="sharpFinal" type="checkbox" checked /> Keep final stage completely sharp</label>
+
+    <details open>
+      <summary>Fine-tune blur levels</summary>
+      <div id="sliders" class="sliders"></div>
+      <div class="status" id="blurTip"><strong>Blur Strength</strong> uses a simple 0-100 scale: 0% = completely sharp; 100% = the strongest blur this tool uses. The tool converts that internally to an image-size-aware blur radius.</div>
+    </details>
+  </section>
+
+  <section class="panel">
+    <div class="preview-title">
+      <h2>Preview</h2>
+      <div class="row">
+        <button id="regenerateBtn" type="button" disabled>Regenerate</button>
+        <button id="printBtn" class="primary" type="button" disabled>Print / Save as PDF</button>
+      </div>
+    </div>
+    <div id="previewGrid" class="preview-grid"><div class="empty">Add an image to create the blur sequence.</div></div>
+    <div id="status" class="status"></div>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>Need a reference idea? What makes a good value-shape image</summary>
+      <div class="guide">
+        <div>
+          <h3>Usually works well</h3>
+          <ul>
+            <li>3-6 large value masses still read when you squint or blur the image.</li>
+            <li>Simple background and a small number of large forms.</li>
+            <li>One clear directional light source; side lighting is especially useful.</li>
+            <li>Strong light/dark separation with some soft transitions inside the forms.</li>
+            <li>Large overlapping forms rather than lots of isolated tiny details.</li>
+            <li>For faces/figures: one subject, simple pose, uncluttered background, clear light direction.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Usually harder for this exercise</h3>
+          <ul>
+            <li>Busy patterns, foliage, crowds, or lots of tiny objects.</li>
+            <li>Dappled or multiple competing light sources.</li>
+            <li>Very flat lighting with little separation between masses.</li>
+            <li>Images whose identity depends on tiny details.</li>
+            <li>Highly textured backgrounds or patterned clothing.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="row">
+          <label class="field" style="min-width:180px;">Prompt type
+            <select id="promptType">
+              <option value="mixed" selected>Surprise me</option>
+              <option value="stilllife">Still life</option>
+              <option value="portrait">Face / portrait</option>
+              <option value="figure">Figure</option>
+            </select>
+          </label>
+          <button id="randomPromptBtn" type="button">Generate random Pexels prompt</button>
+        </div>
+        <div id="promptText" class="prompt-text">black and white still life teapot fruit dark background side lighting</div>
+        <div class="row">
+          <button id="copyPromptBtn" type="button">Copy prompt</button>
+          <button id="searchPexelsBtn" type="button" class="primary">Search Pexels</button>
+        </div>
+      </div>
+    </details>
+  </section>
+</main>
+
+<div id="printArea" aria-hidden="true"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const els = {
+    fileInput: $('fileInput'), chooseBtn: $('chooseBtn'), clearBtn: $('clearBtn'), dropZone: $('dropZone'),
+    dragOverlay: $('dragOverlay'), sourceWrap: $('sourceWrap'), sourcePreview: $('sourcePreview'),
+    sourceName: $('sourceName'), sourceMeta: $('sourceMeta'), stageCount: $('stageCount'), preset: $('preset'),
+    orientation: $('orientation'), appearance: $('appearance'), sharpFinal: $('sharpFinal'), sliders: $('sliders'),
+    previewGrid: $('previewGrid'), regenerateBtn: $('regenerateBtn'), printBtn: $('printBtn'), status: $('status'),
+    printArea: $('printArea'), pageStyle: $('pageStyle'), promptType: $('promptType'), promptText: $('promptText'),
+    randomPromptBtn: $('randomPromptBtn'), copyPromptBtn: $('copyPromptBtn'), searchPexelsBtn: $('searchPexelsBtn')
+  };
+
+  let sourceFile = null;
+  let sourceImg = null;
+  let sourceURL = null;
+  let stageURLs = [];
+  let renderVersion = 0;
+  let dragDepth = 0;
+
+  const presets = {
+    class: {
+      3: [90, 40, 0],
+      4: [90, 55, 25, 0],
+      5: [95, 68, 45, 22, 0],
+      6: [95, 75, 56, 38, 19, 0]
+    },
+    strong: {
+      3: [100, 50, 0],
+      4: [100, 68, 32, 0],
+      5: [100, 78, 58, 30, 0],
+      6: [100, 82, 65, 47, 24, 0]
+    },
+    gentle: {
+      3: [70, 30, 0],
+      4: [72, 44, 20, 0],
+      5: [78, 55, 36, 17, 0],
+      6: [80, 62, 47, 32, 15, 0]
+    }
+  };
+
+  function currentBlurValues() {
+    return [...els.sliders.querySelectorAll('input[type="range"]')].map(x => Number(x.value));
+  }
+
+  function buildSliders(values) {
+    const n = Number(els.stageCount.value);
+    if (!values) {
+      const key = els.preset.value === 'custom' ? 'class' : els.preset.value;
+      values = (presets[key] && presets[key][n]) ? presets[key][n].slice() : presets.class[n].slice();
+    }
+    values = values.slice(0, n);
+    while (values.length < n) values.push(0);
+    if (els.sharpFinal.checked) values[n-1] = 0;
+
+    els.sliders.innerHTML = '';
+    values.forEach((value, i) => {
+      const row = document.createElement('div');
+      row.className = 'slider-row';
+      row.innerHTML = `
+        <div class="stage-label">Stage ${i+1}</div>
+        <input type="range" min="0" max="100" step="1" value="${Math.round(value)}" ${els.sharpFinal.checked && i === n-1 ? 'disabled' : ''} aria-label="Stage ${i+1} blur strength" />
+        <div class="blur-readout"><span>${Math.round(Number(value))}</span>%</div>`;
+      const slider = row.querySelector('input');
+      const readout = row.querySelector('.blur-readout span');
+      slider.addEventListener('input', () => {
+        readout.textContent = Math.round(Number(slider.value));
+        els.preset.value = 'custom';
+        scheduleGenerate();
+      });
+      els.sliders.appendChild(row);
+    });
+  }
+
+  function applyPreset() {
+    const n = Number(els.stageCount.value);
+    const key = els.preset.value;
+    if (key === 'custom') return;
+    buildSliders(presets[key][n]);
+    scheduleGenerate();
+  }
+
+  function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      els.status.textContent = 'Please use a PNG, JPG/JPEG, or WEBP image.';
+      return;
+    }
+    if (sourceURL) URL.revokeObjectURL(sourceURL);
+    sourceFile = file;
+    sourceURL = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      sourceImg = img;
+      els.sourcePreview.src = sourceURL;
+      els.sourceName.textContent = file.name || 'Pasted screenshot';
+      els.sourceMeta.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+      els.sourceWrap.classList.add('show');
+      els.clearBtn.disabled = false;
+      els.regenerateBtn.disabled = false;
+      els.printBtn.disabled = false;
+      updatePageOrientation();
+      generateStages();
+    };
+    img.onerror = () => { els.status.textContent = 'That image could not be read.'; };
+    img.src = sourceURL;
+  }
+
+  function clearImage() {
+    renderVersion++;
+    stageURLs.forEach(u => URL.revokeObjectURL(u));
+    stageURLs = [];
+    if (sourceURL) URL.revokeObjectURL(sourceURL);
+    sourceURL = null; sourceFile = null; sourceImg = null;
+    els.sourcePreview.removeAttribute('src');
+    els.sourceWrap.classList.remove('show');
+    els.previewGrid.innerHTML = '<div class="empty">Add an image to create the blur sequence.</div>';
+    els.printArea.innerHTML = '';
+    els.clearBtn.disabled = true;
+    els.regenerateBtn.disabled = true;
+    els.printBtn.disabled = true;
+    els.status.textContent = '';
+    els.fileInput.value = '';
+  }
+
+  function updatePageOrientation() {
+    let o = els.orientation.value;
+    if (o === 'auto' && sourceImg) o = sourceImg.naturalWidth / sourceImg.naturalHeight > 1.15 ? 'landscape' : 'portrait';
+    if (o === 'landscape') {
+      document.documentElement.style.setProperty('--pagew', '11in');
+      document.documentElement.style.setProperty('--pageh', '8.5in');
+      els.pageStyle.textContent = '@page { size: letter landscape; margin: 0; }';
+    } else {
+      document.documentElement.style.setProperty('--pagew', '8.5in');
+      document.documentElement.style.setProperty('--pageh', '11in');
+      els.pageStyle.textContent = '@page { size: letter portrait; margin: 0; }';
+    }
+  }
+
+  function makeBaseCanvas() {
+    const maxLong = 4096;
+    const sw = sourceImg.naturalWidth, sh = sourceImg.naturalHeight;
+    const scale = Math.min(1, maxLong / Math.max(sw, sh));
+    const w = Math.max(1, Math.round(sw * scale));
+    const h = Math.max(1, Math.round(sh * scale));
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d', { alpha: false });
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.filter = els.appearance.value === 'grayscale' ? 'grayscale(1)' : 'none';
+    ctx.drawImage(sourceImg, 0, 0, w, h);
+    ctx.filter = 'none';
+    return c;
+  }
+
+  function edgePad(base, pad) {
+    const w = base.width, h = base.height;
+    const c = document.createElement('canvas');
+    c.width = w + pad*2; c.height = h + pad*2;
+    const ctx = c.getContext('2d', { alpha: false });
+    ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+    ctx.drawImage(base, pad, pad);
+    // Extend edge pixels outward so blur does not create pale/transparent borders.
+    ctx.drawImage(base, 0, 0, w, 1, pad, 0, w, pad);
+    ctx.drawImage(base, 0, h-1, w, 1, pad, pad+h, w, pad);
+    ctx.drawImage(base, 0, 0, 1, h, 0, pad, pad, h);
+    ctx.drawImage(base, w-1, 0, 1, h, pad+w, pad, pad, h);
+    ctx.drawImage(base, 0, 0, 1, 1, 0, 0, pad, pad);
+    ctx.drawImage(base, w-1, 0, 1, 1, pad+w, 0, pad, pad);
+    ctx.drawImage(base, 0, h-1, 1, 1, 0, pad+h, pad, pad);
+    ctx.drawImage(base, w-1, h-1, 1, 1, pad+w, pad+h, pad, pad);
+    return c;
+  }
+
+  function canvasBlobURL(canvas, type='image/png') {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(blob => blob ? resolve(URL.createObjectURL(blob)) : reject(new Error('Could not render image')), type);
+    });
+  }
+
+  async function renderBlurred(base, strength) {
+    if (strength <= 0.001) return canvasBlobURL(base);
+    const maxRadiusFraction = 0.07;
+    const radius = Math.max(1, (strength / 100) * maxRadiusFraction * Math.max(base.width, base.height));
+    const pad = Math.min(Math.ceil(radius * 2.3), Math.round(Math.max(base.width, base.height) * .22));
+    const padded = edgePad(base, pad);
+    const blurred = document.createElement('canvas');
+    blurred.width = padded.width; blurred.height = padded.height;
+    const bctx = blurred.getContext('2d', { alpha: false });
+    bctx.fillStyle = '#fff'; bctx.fillRect(0,0,blurred.width,blurred.height);
+    bctx.filter = `blur(${radius.toFixed(1)}px)`;
+    bctx.drawImage(padded, 0, 0);
+    bctx.filter = 'none';
+    const out = document.createElement('canvas');
+    out.width = base.width; out.height = base.height;
+    const octx = out.getContext('2d', { alpha: false });
+    octx.fillStyle = '#fff'; octx.fillRect(0,0,out.width,out.height);
+    octx.drawImage(blurred, pad, pad, base.width, base.height, 0, 0, base.width, base.height);
+    return canvasBlobURL(out);
+  }
+
+  async function generateStages() {
+    if (!sourceImg) return;
+    const myVersion = ++renderVersion;
+    els.status.textContent = 'Generating previews…';
+    els.regenerateBtn.disabled = true;
+    els.printBtn.disabled = true;
+    updatePageOrientation();
+    const values = currentBlurValues();
+    const base = makeBaseCanvas();
+    const newURLs = [];
+    try {
+      for (let i=0; i<values.length; i++) {
+        if (myVersion !== renderVersion) return;
+        newURLs.push(await renderBlurred(base, values[i]));
+      }
+      if (myVersion !== renderVersion) { newURLs.forEach(u => URL.revokeObjectURL(u)); return; }
+      stageURLs.forEach(u => URL.revokeObjectURL(u));
+      stageURLs = newURLs;
+      buildPreview(values);
+      buildPrintArea(values);
+      els.status.textContent = 'Ready. If Stage 1 still makes you think in objects/details, increase its blur. If it becomes meaningless fog, reduce it.';
+    } catch (err) {
+      console.error(err);
+      els.status.textContent = 'Something went wrong while generating the blurs. Try a smaller image or reload the page.';
+    } finally {
+      if (myVersion === renderVersion) {
+        els.regenerateBtn.disabled = false;
+        els.printBtn.disabled = false;
+      }
+    }
+  }
+
+  function buildPreview(values) {
+    els.previewGrid.innerHTML = '';
+    stageURLs.forEach((url, i) => {
+      const card = document.createElement('div');
+      card.className = 'preview-card';
+      card.innerHTML = `<div class="preview-head"><strong>Stage ${i+1}</strong><span>${Math.round(values[i])}% blur strength</span></div><img alt="Blur stage ${i+1}" src="${url}" />`;
+      els.previewGrid.appendChild(card);
+    });
+  }
+
+  function buildPrintArea(values) {
+    els.printArea.innerHTML = '';
+    stageURLs.forEach((url, i) => {
+      const page = document.createElement('section');
+      page.className = 'print-page';
+      page.innerHTML = `<div class="print-header">${i+1}</div><div class="print-image-wrap"><img alt="Stage ${i+1}" src="${url}" /></div>`;
+      els.printArea.appendChild(page);
+    });
+  }
+
+  let genTimer = null;
+  function scheduleGenerate() {
+    if (!sourceImg) return;
+    clearTimeout(genTimer);
+    genTimer = setTimeout(generateStages, 280);
+  }
+
+  // File chooser / drop / paste
+  els.chooseBtn.addEventListener('click', () => els.fileInput.click());
+  els.fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+  els.clearBtn.addEventListener('click', clearImage);
+  els.regenerateBtn.addEventListener('click', generateStages);
+  els.printBtn.addEventListener('click', () => {
+    updatePageOrientation();
+    els.status.textContent = 'Print tip: use Scale 100% / Actual size. Each image is enlarged to the maximum printable size while keeping the whole image visible.';
+    setTimeout(() => window.print(), 120);
+  });
+
+  document.addEventListener('dragenter', e => {
+    if ([...e.dataTransfer.types].includes('Files')) { e.preventDefault(); dragDepth++; els.dragOverlay.classList.add('show'); }
+  });
+  document.addEventListener('dragover', e => { if ([...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
+  document.addEventListener('dragleave', e => { if (dragDepth > 0) dragDepth--; if (dragDepth === 0) els.dragOverlay.classList.remove('show'); });
+  document.addEventListener('drop', e => {
+    e.preventDefault(); dragDepth = 0; els.dragOverlay.classList.remove('show');
+    const file = [...e.dataTransfer.files].find(f => f.type.startsWith('image/'));
+    if (file) handleFile(file);
+  });
+  document.addEventListener('paste', e => {
+    const item = [...(e.clipboardData?.items || [])].find(it => it.type.startsWith('image/'));
+    if (!item) return;
+    e.preventDefault();
+    const blob = item.getAsFile();
+    const ext = blob.type.includes('jpeg') ? 'jpg' : blob.type.split('/')[1] || 'png';
+    const file = new File([blob], `pasted-screenshot-${new Date().toISOString().replace(/[:.]/g,'-')}.${ext}`, { type: blob.type });
+    handleFile(file);
+  });
+
+  // Controls
+  els.stageCount.addEventListener('change', () => {
+    const key = els.preset.value === 'custom' ? 'class' : els.preset.value;
+    buildSliders(presets[key][Number(els.stageCount.value)]);
+    if (els.preset.value === 'custom') els.preset.value = key;
+    scheduleGenerate();
+  });
+  els.preset.addEventListener('change', applyPreset);
+  els.sharpFinal.addEventListener('change', () => {
+    const vals = currentBlurValues();
+    if (els.sharpFinal.checked) vals[vals.length-1] = 0;
+    buildSliders(vals);
+    scheduleGenerate();
+  });
+  els.appearance.addEventListener('change', scheduleGenerate);
+  els.orientation.addEventListener('change', updatePageOrientation);
+
+  // Prompt generator
+  const promptParts = {
+    stilllife: [
+      'teapot and fruit still life', 'white pitcher and oranges still life', 'bowl of pears still life',
+      'ceramic mug and apple still life', 'bottle and fruit still life', 'simple geometric still life',
+      'single vase and fruit still life', 'ceramic vessels still life'
+    ],
+    portrait: [
+      'three quarter portrait', 'profile portrait', 'single face studio portrait', 'older face portrait',
+      'bald head portrait', 'short hair portrait', 'side lit portrait', 'dramatic monochrome portrait'
+    ],
+    figure: [
+      'single seated figure studio', 'standing figure side lighting', 'single dancer simple pose',
+      'figure silhouette studio', 'single person seated profile', 'standing person simple background',
+      'single figure dramatic light', 'full body portrait side lighting'
+    ],
+    lighting: [
+      'black and white dark background side lighting',
+      'monochrome dramatic directional light simple background',
+      'black and white chiaroscuro studio lighting',
+      'grayscale strong light shadow simple composition',
+      'black and white single light source dark background'
+    ]
+  };
+  function randomFrom(a) { return a[Math.floor(Math.random()*a.length)]; }
+  function generatePrompt() {
+    let type = els.promptType.value;
+    if (type === 'mixed') type = randomFrom(['stilllife','portrait','figure']);
+    const q = `${randomFrom(promptParts[type])} ${randomFrom(promptParts.lighting)}`;
+    els.promptText.textContent = q;
+  }
+  els.randomPromptBtn.addEventListener('click', generatePrompt);
+  els.copyPromptBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(els.promptText.textContent); els.copyPromptBtn.textContent = 'Copied'; setTimeout(() => els.copyPromptBtn.textContent = 'Copy prompt', 900); }
+    catch { /* clipboard may be unavailable for file://; selection still works */ }
+  });
+  els.searchPexelsBtn.addEventListener('click', () => {
+    const q = encodeURIComponent(els.promptText.textContent.trim());
+    window.open(`https://www.pexels.com/search/${q}/`, '_blank', 'noopener');
+  });
+
+  // Initial controls
+  buildSliders(presets.class[4]);
+})();
+</script>
+<script>if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));</script>
+</body>
+</html>

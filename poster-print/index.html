@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art Reference Enlarger — Crop, Tile & Print</title>
+<style>
+:root{--bg:#f6f5f1;--paper:#fff;--ink:#253330;--sub:#596763;--accent:#17655a;--line:#d9ddd7;--pale:#eaf1ee}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:var(--ink);color:#fff;padding:24px max(22px,calc((100vw - 1120px)/2));}
+header h1{font-weight:650;letter-spacing:-.04em;margin:0;font-size:clamp(24px,3vw,34px)} header p{opacity:.86;margin:4px 0 0;max-width:700px}
+main{max-width:1160px;padding:22px;margin:0 auto;display:grid;grid-template-columns:minmax(300px,420px) minmax(0,1fr);gap:20px;align-items:start}
+section{background:var(--paper);border:1px solid var(--line);border-radius:13px;box-shadow:0 1px 4px #1b29220c;padding:19px;margin-bottom:18px}
+section h2{font-size:18px;letter-spacing:-.02em;margin:0 0 15px;display:flex;align-items:center;gap:9px} section h2 .num{font-size:12px;display:inline-grid;place-items:center;background:var(--pale);border-radius:50%;width:23px;height:23px;color:var(--accent)}
+.formrow{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:13px 0}.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+label{font-size:13px;color:#485b56;font-weight:600}input[type=number],select,input[type=file]{width:100%;border:1px solid #bac9c1;background:#fff;padding:10px;border-radius:7px;color:var(--ink);font:inherit}
+input[type=number]:focus,select:focus{outline:2px solid #96c9b8;outline-offset:1px}
+input[type=range]{width:100%;accent-color:var(--accent)}input[type=file]{font-size:13px;padding:8px}
+small,.note{color:var(--sub);font-size:12px;line-height:1.5}.note{background:#f6f8f5;border-left:3px solid #98bab0;padding:9px 12px;margin-top:12px;border-radius:0 7px 7px 0}
+.check{display:flex;align-items:center;gap:9px;margin:11px 0;font-size:14px}.check input{accent-color:var(--accent);width:17px;height:17px}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:12px}
+button{font:inherit;border-radius:8px;border:1px solid #b9c8c0;padding:10px 16px;background:#fff;color:var(--ink);cursor:pointer;font-weight:600}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;width:100%;font-size:16px;padding:15px 18px}
+button:hover:not(:disabled){filter:brightness(.96)}button:disabled{opacity:.5;cursor:not-allowed}
+#cropWrap{border-radius:9px;border:1px solid var(--line);background:repeating-conic-gradient(#e4e9e4 0% 25%,#f1f3f0 0% 50%) 50% / 18px 18px;min-height:230px;display:grid;place-items:center;overflow:hidden}
+#cropCanvas{display:block;max-width:100%;max-height:400px;min-width:0;touch-action:none;cursor:grab}#cropCanvas:active{cursor:grabbing}
+.placeholder{padding:50px 20px;color:#708078;text-align:center;display:none}
+.statline{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}.stat{background:var(--pale);border-radius:8px;padding:9px 12px;flex:1;min-width:100px}
+.stat strong{display:block;font-size:18px;font-weight:700}.stat span{font-size:12px;color:#486357}
+#layoutCanvas{width:100%;height:auto;display:block;background:#e9eee8;border-radius:7px}
+#message{margin-top:10px;font-size:13px;color:#4c655a;min-height:20px}#message.error{color:#a13b2a}
+#output{position:sticky;top:15px}
+.help{font-size:13px;color:#52655c}.help ol{padding-left:21px;margin:8px 0 0}.help li{margin:6px 0}
+.foot{padding:8px 22px 30px;text-align:center;color:#78847d;font-size:12px}
+#dropOverlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(23,61,52,.21);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s,visibility .12s;padding:20px}
+#dropOverlay.active{opacity:1;visibility:visible}
+#dropOverlay .dropCard{border:3px dashed #17655a;border-radius:20px;background:#fff;box-shadow:0 12px 55px #15382a40;padding:36px 45px;text-align:center;max-width:490px;width:100%}
+#dropOverlay .dropCard strong{display:block;font-size:25px;margin-bottom:6px}
+@media(max-width:800px){main{grid-template-columns:1fr;padding:12px}#output{position:static}section{padding:16px}header{padding:22px 18px}}
+@media print{body{display:none}}
+</style>
+<link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#17655a"><meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing</span></div>
+<div id="dropOverlay" aria-hidden="true"><div class="dropCard"><strong>Drop image to load it</strong><span>Release your photo anywhere on this page</span></div></div>
+<header><h1>Art Reference Enlarger</h1><p>Crop a photo, choose the finished artwork size, and make a multi-sheet PDF with matched overlap and trim guides. All processing happens on this device; create a tiled PDF and share it for printing.</p></header>
+<main>
+<div>
+<section>
+<h2><span class="num">1</span> Choose a reference</h2>
+<p class="help" style="margin:-7px 0 12px"><strong>Drag and drop</strong> an image anywhere in this window, <strong>paste</strong> a copied image with <strong>Ctrl+V</strong> (or ⌘+V on Mac), or use the file picker below.</p>
+<input id="upload" type="file" accept="image/*" aria-label="Upload an image">
+<div class="note">Use JPG, PNG, or another image format your browser supports. Your photo stays on this device.</div>
+</section>
+<section>
+<h2><span class="num">2</span> Set the finished artwork size</h2>
+<div class="formrow">
+ <div class="field"><label for="w">Finished width</label><input type="number" id="w" min="1" max="1000" step="0.1" value="18"></div>
+ <div class="field"><label for="h">Finished height</label><input type="number" id="h" min="1" max="1000" step="0.1" value="24"></div>
+</div>
+<div class="field"><label for="unit">Measurements</label><select id="unit"><option value="in">Inches</option><option value="cm">Centimeters</option></select></div>
+<div class="note">The crop automatically matches this width-to-height proportion; the image is never stretched.</div>
+</section>
+<section>
+<h2><span class="num">3</span> Crop and reframe</h2>
+<div id="cropWrap"><canvas id="cropCanvas" width="560" height="740" hidden></canvas><div class="placeholder" id="empty" style="display:block">Drop an image anywhere, paste with Ctrl+V, or choose a file.</div></div>
+<div class="controls" style="margin-top:14px"><label for="zoom">Zoom / crop closer</label><button id="reset" type="button" style="padding:5px 9px;font-size:12px">Reset crop</button></div>
+<input id="zoom" type="range" min="1" max="4" step="0.01" value="1"><small>Drag the photo to reposition it. Move the zoom slider to crop closer.</small>
+</section>
+<section>
+<h2><span class="num">4</span> Choose your printing options</h2>
+<div class="field"><label for="paper">Printer paper</label><select id="paper"><option value="letterP">US Letter — portrait (8.5 × 11 in)</option><option value="letterL">US Letter — landscape (11 × 8.5 in)</option><option value="a4P">A4 — portrait (210 × 297 mm)</option><option value="a4L">A4 — landscape (297 × 210 mm)</option></select></div>
+<div class="formrow">
+ <div class="field"><label for="margin">Printer-safe margin (in)</label><input id="margin" type="number" min="0.2" max="1" step="0.05" value="0.4"></div>
+ <div class="field"><label for="overlap">Repeated overlap (in)</label><input id="overlap" type="number" min="0" max="1" step="0.05" value="0.25"></div>
+</div>
+<label class="check"><input type="checkbox" id="gray">Print photo in grayscale</label>
+<label class="check"><input type="checkbox" id="gridToggle">Add a faint square drawing grid</label>
+<div id="gridOpts" style="display:none" class="field"><label for="gridIn">Grid square size on finished artwork (in)</label><input id="gridIn" type="number" min="0.25" max="20" step="0.25" value="2"></div>
+<div class="note">Every page has a letter–number label and a 1-inch calibration ruler. Dashed trim lines appear on pages with left/top overlap.</div>
+</section>
+</div>
+<div id="output">
+<section>
+<h2>Preview &amp; export</h2>
+<div id="stats" class="statline"><div class="stat"><strong id="nPages">—</strong><span>paper sheets</span></div><div class="stat"><strong id="nLayout">—</strong><span>columns × rows</span></div><div class="stat"><strong id="dpi">—</strong><span>source pixels / inch</span></div></div>
+<canvas id="layoutCanvas" width="800" height="800"></canvas>
+<p class="note" id="detail">Upload a photo to see its finished crop and page layout.</p>
+<button id="download" class="primary" disabled>Create / download multi-page PDF</button><div class="formrow" style="margin-top:9px"><button id="sharePdf" disabled type="button">Share PDF to printer</button><button id="openPdf" disabled type="button">Open PDF</button></div>
+<div id="message" role="status"></div>
+</section>
+<section class="help">
+<h2>Assembly instructions</h2>
+<ol>
+<li>Open the PDF and print <strong>Actual size / 100%</strong>, one-sided, with the selected paper size. Turn off “Fit” and automatic scaling.</li>
+<li>Print the first page, measure its 1-inch ruler, and check that it really measures 1 inch before printing the rest.</li>
+<li>Arrange printed pages in reading order: <strong>A1, B1, C1…</strong>, then <strong>A2, B2…</strong>.</li>
+<li>At a vertical join, trim the <strong>right white margin</strong> of the left sheet at the image boundary. On the sheet to its right, cut off the <strong>left margin and repeated image strip</strong> at its dashed vertical line. At horizontal joins, similarly trim the upper sheet at its bottom image boundary and the lower sheet at its dashed horizontal line.</li>
+<li>Align the newly cut picture edges, tape on the back, and trim remaining blank paper outside the outermost artwork boundary. The dashed overlap guides are intended to be removed, not left showing in the assembled image.</li>
+</ol>
+<p>For carbon transfer: tape the assembled print over your canvas with transfer paper between them, then trace the important contours. For pouncing: perforate the key contours of this full-size print and pounce chalk or charcoal through the holes.</p>
+</section>
+</div>
+</main>
+<footer class="foot">Single-file, offline art utility · No tracking, photo upload, or external libraries</footer>
+<script>
+'use strict';
+const $=s=>document.getElementById(s);
+let img=null, fileStem='art-reference', centerX=0.5,centerY=0.5,zoom=1,drag=null;
+let generatedPDF=null,generatedPDFURL=null,generatedPDFName='';
+function resetGenerated(){generatedPDF=null;if(generatedPDFURL)URL.revokeObjectURL(generatedPDFURL);generatedPDFURL=null;$('sharePdf').disabled=true;$('openPdf').disabled=true;}
+
+const cropCanvas=$('cropCanvas'), cctx=cropCanvas.getContext('2d'), layoutCanvas=$('layoutCanvas'), lctx=layoutCanvas.getContext('2d');
+const sizes={letterP:[8.5,11],letterL:[11,8.5],a4P:[210/25.4,297/25.4],a4L:[297/25.4,210/25.4]};
+function num(id){return Number($(id).value)}
+function clamp(x,a,b){return Math.min(b,Math.max(a,x))}
+function config(){const unit=$('unit').value, coef=unit==='cm'?1/2.54:1;const pw=num('w')*coef, ph=num('h')*coef;
+ const [paperW,paperH]=sizes[$('paper').value]; const margin=num('margin'),overlap=num('overlap');
+ if(!(pw>0&&ph>0&&pw<500&&ph<500))throw Error('Choose positive artwork dimensions under 500 inches.');
+ if(!(margin>=.2&&margin<=1))throw Error('Choose a printer margin between 0.2 and 1 inch.');
+ const usableW=paperW-2*margin,usableH=paperH-2*margin;
+ if(overlap<0||overlap>=Math.min(usableW,usableH))throw Error('Overlap must be smaller than the printable area.');
+ const stepW=usableW-overlap,stepH=usableH-overlap;
+ const cols=Math.max(1,Math.ceil((pw-overlap-1e-10)/stepW)),rows=Math.max(1,Math.ceil((ph-overlap-1e-10)/stepH));
+ if(cols*rows>120)throw Error('This would use more than 120 pages. Reduce the artwork size or print at a shop.');
+ return {pw,ph,paperW,paperH,margin,overlap,usableW,usableH,stepW,stepH,cols,rows,gray:$('gray').checked,grid:$('gridToggle').checked,gridIn:num('gridIn')};}
+function getCrop(conf){if(!img)return null;let ar=conf.pw/conf.ph,iw=img.naturalWidth,ih=img.naturalHeight;
+ let bw,bh;if(iw/ih>ar){bh=ih;bw=ih*ar;}else{bw=iw;bh=iw/ar;}
+ let cw=bw/zoom,ch=bh/zoom;let x=clamp(centerX*iw-cw/2,0,iw-cw),y=clamp(centerY*ih-ch/2,0,ih-ch);
+ centerX=(x+cw/2)/iw;centerY=(y+ch/2)/ih;return {x,y,w:cw,h:ch};}
+function drawCrop(conf){if(!img){cropCanvas.hidden=true;$('empty').style.display='block';return}cropCanvas.hidden=false;$('empty').style.display='none';
+ const crop=getCrop(conf),baseW=560;cropCanvas.width=baseW;cropCanvas.height=Math.round(baseW*conf.ph/conf.pw);
+ cctx.clearRect(0,0,cropCanvas.width,cropCanvas.height);cctx.imageSmoothingEnabled=true;cctx.imageSmoothingQuality='high';
+ cctx.drawImage(img,crop.x,crop.y,crop.w,crop.h,0,0,cropCanvas.width,cropCanvas.height);
+ cctx.lineWidth=1;cctx.strokeStyle='rgba(255,255,255,.48)';
+ for(let i=1;i<3;i++){cctx.beginPath();cctx.moveTo(cropCanvas.width*i/3,0);cctx.lineTo(cropCanvas.width*i/3,cropCanvas.height);cctx.stroke();cctx.beginPath();cctx.moveTo(0,cropCanvas.height*i/3);cctx.lineTo(cropCanvas.width,cropCanvas.height*i/3);cctx.stroke();}
+}
+function drawLayout(conf){let can=layoutCanvas,W=800,H=Math.round(800*conf.ph/conf.pw);if(H>1000){W=Math.round(W*1000/H);H=1000};can.width=W;can.height=H;
+ lctx.fillStyle='#fff';lctx.fillRect(0,0,W,H);
+ if(img){const crop=getCrop(conf);lctx.filter=conf.gray?'grayscale(1)':'none';lctx.drawImage(img,crop.x,crop.y,crop.w,crop.h,0,0,W,H);lctx.filter='none';}
+ if(conf.grid&&conf.gridIn>0){lctx.strokeStyle='rgba(20,48,43,.32)';lctx.lineWidth=.8;for(let x=conf.gridIn;x<conf.pw;x+=conf.gridIn){let px=x/conf.pw*W;lctx.beginPath();lctx.moveTo(px,0);lctx.lineTo(px,H);lctx.stroke()};for(let y=conf.gridIn;y<conf.ph;y+=conf.gridIn){let py=y/conf.ph*H;lctx.beginPath();lctx.moveTo(0,py);lctx.lineTo(W,py);lctx.stroke()}}
+ lctx.strokeStyle='rgba(3,57,48,.9)';lctx.lineWidth=1.7;
+ for(let c=1;c<conf.cols;c++){let x=c*conf.stepW/conf.pw*W;lctx.beginPath();lctx.moveTo(x,0);lctx.lineTo(x,H);lctx.stroke()}
+ for(let r=1;r<conf.rows;r++){let y=r*conf.stepH/conf.ph*H;lctx.beginPath();lctx.moveTo(0,y);lctx.lineTo(W,y);lctx.stroke()}
+ lctx.fillStyle='#063b32';lctx.font='bold 17px system-ui';for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
+ const xx=col*conf.stepW/conf.pw*W+7,yy=row*conf.stepH/conf.ph*H+22;if(xx<W-5&&yy<H-5)lctx.fillText(colName(col)+(row+1),xx,yy);
+ }
+}
+function colName(n){let s='';do{s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)-1}while(n>=0);return s}
+function refresh(){resetGenerated();const m=$('message');m.className='';try{const conf=config();$('nPages').textContent=conf.cols*conf.rows;$('nLayout').textContent=conf.cols+' × '+conf.rows;
+ $('dpi').textContent=img?String(Math.round(Math.min(getCrop(conf).w/conf.pw,getCrop(conf).h/conf.ph))):'—';
+ drawCrop(conf);drawLayout(conf);const suffix=$('unit').value; $('detail').textContent=`Finished image: ${num('w')} × ${num('h')} ${suffix}. Paper: ${conf.cols} columns × ${conf.rows} rows. Pages repeat ${conf.overlap} in of adjacent image. ${img?'Crop and page positions are ready.':'Upload an image to export.'}`;
+ $('download').disabled=!img;if(m.dataset.error==='yes'){m.textContent='';delete m.dataset.error}
+ }catch(e){$('nPages').textContent='—';$('nLayout').textContent='—';$('dpi').textContent='—';$('download').disabled=true;m.textContent=e.message;m.className='error';m.dataset.error='yes';}}
+// Use the same loading path for the file picker, drag/drop, and clipboard paste.
+let imageLoadSeq=0;
+function showFileError(text){const m=$('message');m.textContent=text;m.className='error';m.dataset.error='yes';}
+function validImageFile(file){return file && (file.type.startsWith('image/') || /\.(png|jpe?g|gif|webp|bmp|avif|tiff?)$/i.test(file.name||''));}
+function loadImageFile(file,source='file'){
+ if(!file)return;
+ if(!validImageFile(file)){showFileError('Please use an image file (such as JPG, PNG, or WebP).');return;}
+ const seq=++imageLoadSeq;
+ const url=URL.createObjectURL(file);
+ const photo=new Image();
+ photo.onload=()=>{
+   URL.revokeObjectURL(url);
+   if(seq!==imageLoadSeq)return; // Ignore any older file that finished loading late.
+   img=photo;
+   fileStem=source==='paste'?'pasted-reference':(file.name||'art-reference').replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,40)||'art-reference';
+   zoom=1;centerX=.5;centerY=.5;$('zoom').value='1';
+   refresh();
+   const m=$('message');m.className='';m.textContent=source==='paste'?'Pasted image loaded.':source==='drop'?'Dropped image loaded.':'Image loaded.';
+ };
+ photo.onerror=()=>{
+   URL.revokeObjectURL(url);
+   if(seq===imageLoadSeq)showFileError('Cannot open this image. Try a JPG or PNG instead.');
+ };
+ photo.src=url;
+}
+$('upload').addEventListener('change',e=>{
+ const file=e.target.files&&e.target.files[0];
+ if(file)loadImageFile(file,'file');
+ e.target.value=''; // Re-selecting the same file should work.
+});
+// Intercept file drags at window level so a drop on ANY part of the page works.
+let dragDepth=0;
+const overlay=$('dropOverlay');
+function hasDraggedFiles(e){return !!e.dataTransfer && Array.from(e.dataTransfer.types||[]).includes('Files');}
+function hideDropOverlay(){dragDepth=0;overlay.classList.remove('active');}
+window.addEventListener('dragenter',e=>{
+ if(!hasDraggedFiles(e))return;
+ e.preventDefault();dragDepth++;overlay.classList.add('active');
+});
+window.addEventListener('dragover',e=>{
+ if(!hasDraggedFiles(e))return;
+ e.preventDefault();e.dataTransfer.dropEffect='copy';overlay.classList.add('active');
+});
+window.addEventListener('dragleave',e=>{
+ if(!hasDraggedFiles(e))return;
+ dragDepth=Math.max(0,dragDepth-1);
+ if(dragDepth===0||!e.relatedTarget)hideDropOverlay();
+});
+window.addEventListener('drop',e=>{
+ if(!hasDraggedFiles(e))return;
+ e.preventDefault();hideDropOverlay();
+ const files=Array.from(e.dataTransfer.files||[]);
+ const file=files.find(validImageFile);
+ if(file)loadImageFile(file,'drop');
+ else showFileError('No image found in the dropped files. Please drop a JPG, PNG, or another supported image.');
+});
+window.addEventListener('blur',hideDropOverlay);
+// Pasting a screenshot or copied image works even when focus is inside a form field.
+// If there is no image on the clipboard, normal text-paste behavior is untouched.
+document.addEventListener('paste',e=>{
+ const clipboard=e.clipboardData;
+ if(!clipboard)return;
+ const items=Array.from(clipboard.items||[]);
+ let file=null;
+ for(const item of items){if(item.kind==='file' && item.type.startsWith('image/')){file=item.getAsFile();if(file)break;}}
+ if(!file)file=Array.from(clipboard.files||[]).find(validImageFile);
+ if(!file)return;
+ e.preventDefault();loadImageFile(file,'paste');
+},true);
+$('zoom').addEventListener('input',()=>{zoom=num('zoom');refresh()});$('reset').addEventListener('click',()=>{zoom=1;centerX=.5;centerY=.5;$('zoom').value='1';refresh()});
+$('unit').addEventListener('change',e=>{const factor=e.target.value==='cm'?2.54:1/2.54;for(const id of ['w','h'])$(id).value=String(Math.round(num(id)*factor*100)/100);refresh()});
+$('gridToggle').addEventListener('change',()=>{$('gridOpts').style.display=$('gridToggle').checked?'flex':'none';refresh()});
+for(const id of ['w','h','paper','margin','overlap','gray','gridIn'])$(id).addEventListener('input',refresh);
+cropCanvas.addEventListener('pointerdown',e=>{if(!img)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,cx:centerX,cy:centerY};cropCanvas.setPointerCapture(e.pointerId)});
+cropCanvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;let conf;try{conf=config()}catch(_){return}const c=getCrop(conf),b=cropCanvas.getBoundingClientRect();centerX=clamp(drag.cx-(e.clientX-drag.x)/b.width*c.w/img.naturalWidth,0,1);centerY=clamp(drag.cy-(e.clientY-drag.y)/b.height*c.h/img.naturalHeight,0,1);refresh()});
+for(const en of ['pointerup','pointercancel','lostpointercapture'])cropCanvas.addEventListener(en,()=>{drag=null});
+function makePageImage(conf,crop,col,row,scale=180){const cvs=document.createElement('canvas');cvs.width=Math.round(conf.paperW*scale);cvs.height=Math.round(conf.paperH*scale);const g=cvs.getContext('2d',{alpha:false});g.fillStyle='#fff';g.fillRect(0,0,cvs.width,cvs.height);
+ const sx=col*conf.stepW,sy=row*conf.stepH;const tileW=Math.min(conf.usableW,conf.pw-sx),tileH=Math.min(conf.usableH,conf.ph-sy);
+ const mx=conf.margin*scale,my=conf.margin*scale;
+ // The world-coordinate mapping ensures adjacent pages agree to subpixel accuracy.
+ g.save();g.beginPath();g.rect(mx,my,tileW*scale,tileH*scale);g.clip();g.filter=conf.gray?'grayscale(1)':'none';
+ g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(img,crop.x,crop.y,crop.w,crop.h,mx-sx*scale,my-sy*scale,conf.pw*scale,conf.ph*scale);g.filter='none';
+ if(conf.grid&&conf.gridIn>0){g.strokeStyle='rgba(40,58,57,.35)';g.lineWidth=.6*scale/72;for(let x=Math.ceil(sx/conf.gridIn)*conf.gridIn;x<=sx+tileW+1e-8;x+=conf.gridIn){const px=mx+(x-sx)*scale;g.beginPath();g.moveTo(px,my);g.lineTo(px,my+tileH*scale);g.stroke()}
+ for(let y=Math.ceil(sy/conf.gridIn)*conf.gridIn;y<=sy+tileH+1e-8;y+=conf.gridIn){const py=my+(y-sy)*scale;g.beginPath();g.moveTo(mx,py);g.lineTo(mx+tileW*scale,py);g.stroke()}}
+ g.restore();
+ // Light outer boundary shows where the finished image ends, particularly on partial tiles.
+ g.strokeStyle='#a3aaa6';g.lineWidth=Math.max(1,scale/150);g.strokeRect(mx,my,tileW*scale,tileH*scale);
+ // Trim duplicate left/top overlap on all but first row/column.
+ if(col>0&&conf.overlap>0){const x=mx+conf.overlap*scale;g.strokeStyle='#1d312b';g.setLineDash([scale*.055,scale*.045]);g.lineWidth=scale*.008;g.beginPath();g.moveTo(x,my);g.lineTo(x,my+tileH*scale);g.stroke();g.setLineDash([])}
+ if(row>0&&conf.overlap>0){const y=my+conf.overlap*scale;g.strokeStyle='#1d312b';g.setLineDash([scale*.055,scale*.045]);g.lineWidth=scale*.008;g.beginPath();g.moveTo(mx,y);g.lineTo(mx+tileW*scale,y);g.stroke();g.setLineDash([])}
+ g.fillStyle='#1f342e';g.font=`600 ${Math.round(scale*.10)}px Arial, sans-serif`;g.textBaseline='middle';
+ const code=colName(col)+(row+1);g.fillText(`${code}  (${row*conf.cols+col+1}/${conf.cols*conf.rows})`,mx,Math.max(scale*.13,my/2));
+ g.font=`${Math.round(scale*.075)}px Arial, sans-serif`;
+ g.fillText(`${conf.pw.toFixed(2)} × ${conf.ph.toFixed(2)} in · PRINT AT 100%`,mx,Math.min(cvs.height-scale*.12,my+tileH*scale+scale*.16));
+ // A real 1-inch ruler, placed in the top margin if room allows.
+ const x0=cvs.width-scale*(1.35),y0=Math.max(scale*.13,my/2);if(x0>mx+scale*.8){g.strokeStyle='#1f342e';g.lineWidth=scale*.005;g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+scale,y0);g.moveTo(x0,y0-scale*.05);g.lineTo(x0,y0+scale*.05);g.moveTo(x0+scale,y0-scale*.05);g.lineTo(x0+scale,y0+scale*.05);g.stroke();g.textAlign='center';g.fillText('1 in',x0+scale*.5,y0-scale*.07);g.textAlign='left'}
+ return new Promise((resolve,reject)=>cvs.toBlob(b=>{if(!b)reject(Error('Could not rasterize page'));else b.arrayBuffer().then(a=>resolve(new Uint8Array(a))).catch(reject)},'image/jpeg',.92));
+}
+function makePDF(pages,paperW,paperH){const enc=new TextEncoder();const chunks=[];let count=0;const offsets=[0];const add=b=>{chunks.push(b);count+=b.length};const write=s=>add(enc.encode(s));const obj=(n,fn)=>{offsets[n]=count;write(`${n} 0 obj\n`);fn();write('\nendobj\n')};
+ write('%PDF-1.4\n');add(new Uint8Array([37,255,255,255,255,10]));
+ const total=2+3*pages.length;obj(1,()=>write('<< /Type /Catalog /Pages 2 0 R >>'));obj(2,()=>write(`<< /Type /Pages /Kids [${pages.map((_,i)=>3+3*i+' 0 R').join(' ')}] /Count ${pages.length} >>`));
+ const pdfW=(paperW*72).toFixed(5),pdfH=(paperH*72).toFixed(5);
+ for(let i=0;i<pages.length;i++){const pageId=3+3*i,streamId=pageId+1,imageId=pageId+2;
+ obj(pageId,()=>write(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pdfW} ${pdfH}] /Resources << /XObject << /Im${i} ${imageId} 0 R >> >> /Contents ${streamId} 0 R >>`));
+ const stream=enc.encode(`q\n${pdfW} 0 0 ${pdfH} 0 0 cm\n/Im${i} Do\nQ\n`);
+ obj(streamId,()=>{write(`<< /Length ${stream.length} >>\nstream\n`);add(stream);write('\nendstream')});
+ const j=pages[i];obj(imageId,()=>{write(`<< /Type /XObject /Subtype /Image /Width ${j.width} /Height ${j.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${j.data.length} >>\nstream\n`);add(j.data);write('\nendstream')});
+ }
+ const xref=count;write(`xref\n0 ${total+1}\n0000000000 65535 f \n`);for(let i=1;i<=total;i++)write(String(offsets[i]).padStart(10,'0')+' 00000 n \n');write(`trailer\n<< /Size ${total+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+ return new Blob(chunks,{type:'application/pdf'});
+}
+$('download').addEventListener('click',async()=>{if(!img)return;const button=$('download');const msg=$('message');try{let conf=config(),crop=getCrop(conf);button.disabled=true;button.textContent='Creating PDF…';msg.textContent='Preparing pages locally…';msg.className='';let pages=[];
+ for(let row=0;row<conf.rows;row++)for(let col=0;col<conf.cols;col++){
+ msg.textContent=`Creating ${row*conf.cols+col+1} of ${conf.cols*conf.rows} pages…`;
+ await new Promise(r=>setTimeout(r,0));const data=await makePageImage(conf,crop,col,row);pages.push({data,width:Math.round(conf.paperW*180),height:Math.round(conf.paperH*180)});
+ }
+ const blob=makePDF(pages,conf.paperW,conf.paperH),url=URL.createObjectURL(blob),a=document.createElement('a');generatedPDF=blob;generatedPDFURL=url;generatedPDFName=`${fileStem}_${num('w')}x${num('h')}${$('unit').value}_tiled.pdf`;$('sharePdf').disabled=false;$('openPdf').disabled=false;a.href=url;a.download=generatedPDFName;document.body.append(a);a.click();a.remove();msg.textContent=`PDF ready: ${pages.length} pages. Use Share PDF to printer, or open the PDF and print at Actual Size (100%).`;
+ }catch(e){console.error(e);msg.textContent='Export error: '+e.message;msg.className='error'}finally{button.textContent='Create / download multi-page PDF';button.disabled=false}});
+$('sharePdf').addEventListener('click',async()=>{
+ if(!generatedPDF)return;
+ const file=new File([generatedPDF],generatedPDFName,{type:'application/pdf'});
+ if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+  try{await navigator.share({files:[file],title:'Print art reference'});return}
+  catch(e){if(e.name==='AbortError')return}
+ }
+ const w=window.open(generatedPDFURL,'_blank');
+ if(!w)$('message').textContent='Sharing is unavailable here. Tap Open PDF, or find the downloaded PDF in Downloads and print from the PDF viewer.';
+});
+$('openPdf').addEventListener('click',()=>{if(!generatedPDFURL)return;const w=window.open(generatedPDFURL,'_blank');if(!w)$('message').textContent='Open the downloaded PDF from your phone’s Downloads folder.'});
+refresh();
+</script>
+<script>if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));</script>
+</body>
+</html>
