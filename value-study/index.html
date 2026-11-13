@@ -88,12 +88,76 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 #modal .modalBottom{position:absolute;bottom:0;left:0;width:100%!important;max-width:none!important;z-index:10;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:14px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:linear-gradient(to top,rgba(0,0,0,.75),transparent)}
 #modal .viewerHint{display:none!important}
 #modal .modalNav{display:none!important}
+
+/* v9 — compact studio layout: all five comparisons visible at normal laptop zoom. */
+@media (min-width: 920px) {
+  header {padding:10px max(18px,calc((100vw - 1550px)/2));}
+  header h1 {font-size:25px; margin-bottom:2px;}
+  header p {font-size:12px;line-height:1.3;}
+  main {max-width:1550px; padding:11px 16px 18px; display:grid;
+    grid-template-columns:minmax(260px,300px) minmax(0,1fr); gap:10px 14px;align-items:start;}
+  .controls {grid-column:1 / -1; grid-row:1; margin:0; gap:6px;}
+  .controls button,.controls label {padding:6px 10px;min-height:33px;font-size:12px;}
+  .workspace {grid-column:1;grid-row:2;display:flex; flex-direction:column;gap:10px;min-width:0;}
+  .cropPanel,.optionsPanel {padding:10px;}
+  .panel-title {font-size:14px;margin-bottom:3px;}
+  .subtle {font-size:11px;line-height:1.35;}
+  .cropArea {min-height:75px;max-height:clamp(125px,23vh,215px);margin:8px 0;}
+  #cropCanvas {max-height:clamp(125px,23vh,215px);max-width:100%;object-fit:contain;}
+  .crop-actions {gap:4px;}
+  .crop-actions button {font-size:11px;min-height:29px;padding:4px 7px;}
+  .crop-actions .grow {flex-basis:100%; text-align:left!important;}
+  .optionsPanel .optionblock {margin-top:7px;padding-top:7px;}
+  .optionsPanel .buttonSet button {font-size:11px;min-height:29px;padding:5px 7px;}
+  .optionsPanel .tip {margin-top:7px;padding:7px 9px;font-size:11px;line-height:1.4;}
+  .resultsArea {grid-column:2;grid-row:2;min-width:0;}
+  .resultsHeader {margin:0 0 7px;gap:8px;align-items:center;}
+  .resultsHeader h2 {font-size:20px;}
+  .resultsHeader .subtle {font-size:11px;}
+  .saveOptions {gap:4px;}
+  .saveOptions button {min-height:29px;font-size:10.5px;padding:4px 7px;white-space:nowrap;}
+  #selectionCount {font-size:11px;}
+  .balanceNearResults {top:0;gap:6px;margin:5px 0 8px;padding:7px 9px;border-radius:8px;}
+  .balanceNearResults .balanceInfo {font-size:11px;}
+  .balanceNearResults .balanceInfo span {font-size:10px;}
+  .balanceNearResults .buttonSet button {min-height:29px;font-size:11px;padding:5px 8px;}
+  .preview-grid {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;}
+  .photoCard.top,.photoCard.group {grid-column:span 2;}
+  .photoCard {padding:7px;box-shadow:none;}
+  .photoCard.selected {padding:6px;}
+  .cardHead {gap:4px;margin-bottom:5px;}
+  .cardHead strong {font-size:12px;}
+  .cardHead .type {font-size:10px;}
+  .cardHead .selectChip {font-size:10px;min-height:23px;padding:2px 6px;}
+  .thumb {height:clamp(95px,16vh,160px);min-height:0;}
+  .thumb canvas {max-height:100%;max-width:100%;object-fit:contain;}
+  .swatches {margin-top:4px;min-height:13px;}
+  .swatches span {width:20px;height:14px;font-size:9px;}
+  .cardFoot {gap:4px;margin-top:5px;}
+  .cardFoot button {font-size:10px;padding:3px 5px;min-height:25px;}
+  .cardFoot .desc {font-size:10px;}
+  footer {grid-column:1/-1;margin-top:2px;font-size:11px;line-height:1.45;}
+}
+@media (min-width:920px) and (max-height:790px) {
+  header {padding-top:7px;padding-bottom:7px;}
+  header p {display:none;}
+  main {padding-top:7px;gap:7px 12px;}
+  .thumb {height:clamp(84px,14vh,123px);}
+  .cropArea,#cropCanvas {max-height:clamp(110px,20vh,165px);}
+  .resultsHeader h2 {font-size:18px;}
+  .optionsPanel .tip {font-size:10px;line-height:1.25;}
+}
+@media (max-width:919px) {
+  .cropArea {max-height:clamp(180px,35dvh,300px);}
+  #cropCanvas {max-height:clamp(180px,35dvh,300px);}
+  .thumb canvas {max-height:clamp(125px,27dvh,230px);}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#153d42"><meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v8</span></div>
-<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v8</span></h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v9</span></div>
+<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v9</span></h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
 <main>
   <div class="controls" id="toolbar">
     <label for="fileInput" class="fileLabel primary">+ Choose a photo</label><input type="file" id="fileInput" accept="image/*">
@@ -481,7 +545,7 @@ window.addEventListener('load',async()=>{
  status.setAttribute('role','status');
  status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
  status.textContent='Checking offline access…';document.body.appendChild(status);
- const key='art-tools-value-study-v8';
+ const key='art-tools-value-study-v9';
  async function check(){
   try{
    const cache=await caches.open(key);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Value Shape Blur Trainer v2</title>
+<title>Progressive Blur — compact v5</title>
 <style>
   :root {
     --bg: #f6f5f2;
@@ -178,12 +178,95 @@
 </style>
 <style id="pageStyle">@page { size: letter portrait; margin: 0; }</style>
 <link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#27344a"><meta name="apple-mobile-web-app-capable" content="yes">
+<style id="compactBlurLayout">
+/* v5: preview-first layout that fits a normal laptop at 100% zoom.
+   This affects screen only; @media print above continues to control the printed pages. */
+@media screen and (min-width: 920px) {
+  main { max-width:1550px; margin:auto; padding:12px 16px 18px; display:grid;
+    grid-template-columns:minmax(252px,304px) minmax(0,1fr); grid-template-rows:auto auto auto auto auto;
+    column-gap:13px; row-gap:8px; align-items:start; }
+  main > h1 { grid-column:1/-1; grid-row:1; font-size:clamp(21px,2vw,26px); margin:0; line-height:1.15; }
+  main > .sub { grid-column:1/-1; grid-row:2; margin:0 0 1px; font-size:12px;line-height:1.35;max-width:none; }
+  main > section.panel:nth-of-type(1) { grid-column:1;grid-row:3; }
+  main > section.panel:nth-of-type(2) { grid-column:1;grid-row:4; }
+  main > section.panel:nth-of-type(3) { grid-column:2;grid-row:3 / 5; min-width:0; }
+  main > section.panel:nth-of-type(4) { grid-column:1 / -1; grid-row:5; }
+  main > section.panel { padding:10px 11px; margin:0; min-width:0; border-radius:10px; }
+  .drop-zone { padding:9px 8px; border-radius:8px; }
+  .drop-zone strong {font-size:13px;margin-bottom:2px}
+  .drop-zone small {font-size:10px}
+  .drop-zone .row {margin-top:8px!important;gap:6px}
+  button, select {padding:6px 8px;font-size:12px;min-height:31px}
+  .source-wrap.show {grid-template-columns:72px minmax(0,1fr);gap:7px;margin-top:7px;}
+  .source-wrap img {max-width:72px;max-height:70px;}
+  .source-wrap strong {font-size:11px;overflow-wrap:anywhere}
+  .source-meta,.privacy {font-size:10px;line-height:1.2}
+  .controls-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  label.field {font-size:11px;gap:4px}
+  label.field span.help {display:none}
+  select, input[type="number"] {min-width:0;width:100%;padding:6px 5px;font-size:11px;}
+  .checkline {font-size:11px;margin:9px 0 5px;}
+  details {margin-top:8px;padding-top:8px;font-size:11px;}
+  .sliders {margin-top:6px;gap:5px}
+  .slider-row {grid-template-columns:57px minmax(0,1fr) 37px;gap:5px}
+  .slider-row .stage-label,.blur-readout {font-size:10px}
+  .status {font-size:11px;margin-top:6px}
+  .preview-title {margin-bottom:8px;align-items:center;gap:7px}
+  .preview-title h2 {font-size:19px;}
+  .preview-title .row {gap:6px;justify-content:flex-end}
+  .preview-title button {font-size:11px;padding:5px 8px;min-height:31px}
+  .preview-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .preview-card {min-width:0;padding:7px;border-radius:8px;}
+  .preview-head {font-size:11px;margin-bottom:5px;gap:8px;}
+  .preview-card img {width:100%;height:clamp(116px,26vh,212px);max-height:none;object-fit:contain;cursor:zoom-in;}
+  #referenceHelp {padding:8px 11px}
+  #referenceHelp > details {padding:0;margin:0;border:0}
+  #referenceHelp summary {font-size:11px;color:#66717b}
+}
+@media screen and (min-width: 920px) and (max-height:790px) {
+  main {padding-top:7px;row-gap:5px;}
+  main > h1 {font-size:20px;}
+  main > .sub {font-size:11px;}
+  .preview-card img {height:clamp(95px,23vh,180px)}
+  .preview-title h2 {font-size:17px;}
+}
+@media screen and (min-width:920px) {
+  .preview-grid[data-count="5"], .preview-grid[data-count="6"] {grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media screen and (max-width:919px) {
+  main {padding:13px 12px 35px;}
+  h1 {font-size:25px;}
+  .sub {margin-bottom:12px;font-size:13px}
+  .panel {padding:12px;margin-bottom:10px}
+  .drop-zone {padding:13px 9px}
+  .preview-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .preview-card {padding:6px;min-width:0}
+  .preview-card img {max-height:clamp(135px,28dvh,250px);min-height:0;object-fit:contain;cursor:zoom-in}
+  .preview-head{font-size:11px;gap:4px}
+  .controls-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+}
+@media screen and (max-width:480px) {
+  .preview-card img {max-height:clamp(128px,25dvh,210px)}
+  .preview-title {display:block}
+  .preview-title .row{margin-top:7px}
+  .controls-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .source-wrap.show{grid-template-columns:80px 1fr}
+}
+/* Enlarged stage viewer; screen-only overlay. */
+#blurLightbox {display:none;position:fixed;inset:0;background:rgba(12,20,26,.96);z-index:1005;align-items:center;justify-content:center;touch-action:none;overscroll-behavior:contain}
+#blurLightbox.open {display:flex}
+#blurLightbox img {display:block;max-width:100vw;max-height:100dvh;object-fit:contain;user-select:none;-webkit-user-drag:none;touch-action:none}
+#blurLightbox .lightbox-header{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:12px;color:white;padding:12px 15px;background:linear-gradient(#000b,transparent);z-index:2;pointer-events:none}
+#blurLightbox .lightbox-header button{pointer-events:auto;background:white;color:#14242b}
+#blurLightbox .lightbox-tip{position:absolute;bottom:max(10px,env(safe-area-inset-bottom));color:#fff9;background:#151d21a0;border-radius:20px;padding:6px 13px;font-size:12px;pointer-events:none}
+@media print{#blurLightbox,.art-tools-nav,#artOfflineStatus,body>div[style*="position:fixed"]{display:none!important}}
+</style>
 </head>
 <body>
 <div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Progressive Blur</span></div>
 <div id="dragOverlay">Drop image anywhere</div>
 <main>
-  <h1>Value Shape Blur Trainer <span style="font-size:.45em;color:#777;font-weight:600;vertical-align:middle;">v2</span></h1>
+  <h1>Value Shape Blur Trainer <span style="font-size:.45em;color:#777;font-weight:600;vertical-align:middle;">v5</span></h1>
   <p class="sub">Paste or drop one reference image, choose the blur progression, preview the stages, then print one stage per page. The goal is to make the large value masses visible before detail takes over.</p>
 
   <section class="panel">
@@ -244,7 +327,7 @@
     </div>
     <label class="checkline"><input id="sharpFinal" type="checkbox" checked /> Keep final stage completely sharp</label>
 
-    <details open>
+    <details>
       <summary>Fine-tune blur levels</summary>
       <div id="sliders" class="sliders"></div>
       <div class="status" id="blurTip"><strong>Blur Strength</strong> uses a simple 0-100 scale: 0% = completely sharp; 100% = the strongest blur this tool uses. The tool converts that internally to an image-size-aware blur radius.</div>
@@ -263,7 +346,7 @@
     <div id="status" class="status"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="referenceHelp">
     <details>
       <summary>Need a reference idea? What makes a good value-shape image</summary>
       <div class="guide">
@@ -551,6 +634,7 @@
   }
 
   function buildPreview(values) {
+    els.previewGrid.dataset.count = String(values.length);
     els.previewGrid.innerHTML = '';
     stageURLs.forEach((url, i) => {
       const card = document.createElement('div');
@@ -678,7 +762,7 @@ window.addEventListener('load',async()=>{
  status.setAttribute('role','status');
  status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
  status.textContent='Checking offline access…';document.body.appendChild(status);
- const key='art-tools-progressive-blur-v4';
+ const key='art-tools-progressive-blur-v5';
  async function check(){
   try{
    const cache=await caches.open(key);
@@ -700,6 +784,30 @@ window.addEventListener('load',async()=>{
  }catch(e){status.textContent='Offline not ready · reconnect and reload';status.style.background='#91561d';console.warn('Offline setup:',e)}
 });
 </script>
-<div style="position:fixed;bottom:8px;left:8px;font:11px system-ui;color:#536c6b;pointer-events:none;background:#ffffffaa;padding:4px;border-radius:4px">v4</div>
+<div style="position:fixed;bottom:8px;left:8px;font:11px system-ui;color:#536c6b;pointer-events:none;background:#ffffffaa;padding:4px;border-radius:4px">v5</div>
+<div id="blurLightbox" role="dialog" aria-modal="true" aria-label="Full-size blur stage" tabindex="-1">
+  <div class="lightbox-header"><strong id="blurLightboxLabel">Stage</strong><button id="blurClose" type="button">Close ×</button></div>
+  <img id="blurFullImg" alt="Enlarged blur stage">
+  <div class="lightbox-tip">Swipe left / right or use keyboard arrows · Esc to close</div>
+</div>
+<script>
+(() => {
+ const overlay=document.getElementById('blurLightbox');
+ const photo=document.getElementById('blurFullImg');
+ const title=document.getElementById('blurLightboxLabel');
+ const grid=document.getElementById('previewGrid');
+ let index=-1,point=null;
+ const images=()=>Array.from(grid.querySelectorAll('.preview-card img'));
+ function show(n){const all=images();if(!all.length)return;index=(n+all.length)%all.length;photo.src=all[index].src;photo.alt=all[index].alt;title.textContent=`Stage ${index+1} of ${all.length}`;overlay.classList.add('open');overlay.focus({preventScroll:true});document.body.style.overflow='hidden';}
+ function close(){index=-1;overlay.classList.remove('open');document.body.style.overflow='';photo.removeAttribute('src');}
+ grid.addEventListener('click',e=>{const el=e.target.closest('.preview-card img');if(el){show(images().indexOf(el));}});
+ document.getElementById('blurClose').addEventListener('click',close);
+ overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+ document.addEventListener('keydown',e=>{if(index<0)return;if(e.key==='Escape'){e.preventDefault();close();}else if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();show(index+(e.key==='ArrowRight'?1:-1));}});
+ overlay.addEventListener('pointerdown',e=>{if(index<0||e.target.closest('button')||!e.isPrimary)return;point={x:e.clientX,y:e.clientY,id:e.pointerId};});
+ overlay.addEventListener('pointerup',e=>{if(!point||e.pointerId!==point.id)return;const dx=e.clientX-point.x,dy=e.clientY-point.y;point=null;if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy)*1.1){e.preventDefault();show(index+(dx<0?1:-1));}});
+ overlay.addEventListener('pointercancel',()=>{point=null});
+})();
+</script>
 </body>
 </html>
