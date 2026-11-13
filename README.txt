@@ -1,24 +1,15 @@
-ART TOOLS - ANDROID HOME-SCREEN PACK
-====================================
+ART TOOLS REFERENCES + NESTED VALUES UPDATE (November 2026)
 
-Contents:
-- Value Studies: Crop photos and generate 2/3/4-flat-tone studies, select and save images.
-- Progressive Blur: Original value-shape blur trainer v2 with stages and Print/Save as PDF.
-- Poster Printing: Original tiled-art reference enlarger with a mobile Share PDF to printer action.
+Replace index.html and service-worker.js in all three app folders. Leave the icons and manifest unchanged.
 
-OPEN OFFLINE WITHOUT INSTALLING
-- The three separate *_Offline.html files can open from your phone's file manager in an HTML-capable browser.
-- No hosting or connection is necessary for image processing.
+CUP: Newly generated AI visual reference; not a third-party photo.
+CLASSICAL HEAD: Newly generated AI visual reference; not a historic museum photograph.
+COLORED APPLES: Real photograph by Goose friend (21 July 2015), CC0 1.0.
+Source: https://commons.wikimedia.org/wiki/File:A_photo_with_apples_of_different_color.jpg
+License: https://creativecommons.org/publicdomain/zero/1.0/
 
-INSTALL AS THREE HOME-SCREEN ICONS IN ANDROID CHROME
-1. Unzip Art_Tools_Android_PWA_Package.zip.
-2. Upload ALL CONTENTS of the Art_Tools_Android folder (including its subfolders) to an HTTPS static site (for example, a GitHub Pages repository).
-3. Visit the full HTTPS address of each tool folder in Chrome: .../value-study/, .../progressive-blur/, and .../poster-print/.
-4. Open Chrome's menu and choose Install app or Add to Home screen. Repeat for all three if desired.
-5. Open each icon online once to let its service worker cache the app. Future image-processing sessions should work offline.
+Because this build environment cannot retrieve remote image bytes, the CC0 apple photograph is NOT physically bundled in the ZIP. When you select it while online, your browser downloads it from Wikimedia and attempts to keep it in IndexedDB for offline use. If its download fails, the apps show a message. The two generated reference images ARE embedded and work offline immediately. After the first successful apple load, test it offline before relying on it. Browser storage may be cleared or evicted.
 
-IMPORTANT
-- Extracting the ZIP alone does NOT install the PWA. A HTTPS web address (or localhost developer server) is required for Chrome installation and a service worker.
-- For Poster Printing: generate the PDF then tap Share PDF to printer or Open PDF. On Android choose an available Print service or a PDF viewer. Print at Actual size / 100%, no fit-to-page; check the one-inch ruler first.
-- Not a native APK. Google AI Studio can create a separate native Android app, but this PWA package preserves the existing tools without rewriting them.
-- Files and photographs stay on your device; no external dependencies are required for normal operation.
+The image rights section is shown near the reference selector in all three tools. User-supplied images remain under their original licenses.
+
+VALUE STUDIES v12: Each new value group subdivides one existing group. Previously established light/dark boundaries stay fixed within a crop and balance setting. The app chooses the next split from the group with the largest remaining measured tonal variation, not a predetermined light-first or dark-first order. A three-row value scale illustrates the retained boundaries. The balance setting shifts every boundary consistently.

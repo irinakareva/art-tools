@@ -266,18 +266,86 @@ body.previewOpen{overflow:hidden}
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#17655a">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+/* Practice examples: one discoverable group adjacent to the image. */
+.practiceRefs{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:9px 10px;margin:8px 0;border:1px solid #ccdcda;background:#f1f7f6;border-radius:9px;color:#233d40;font:13px system-ui,sans-serif}
+.practiceRefs .refsHeading{font-weight:750;margin-right:4px}
+.practiceRefs button{min-height:30px;padding:5px 9px;font-size:12px;border:1px solid #b8c8c5;border-radius:7px;background:#fff;color:#214c50;font-weight:650;cursor:pointer}
+.practiceRefs button.active{background:#1d686c;color:white;border-color:#1d686c}
+.practiceRefs .refStatus{flex-basis:100%;color:#52676b;font-size:11px;line-height:1.35}
+.practiceRefRights{margin:6px 0 3px!important;font:11px/1.5 system-ui,sans-serif;color:#53696d!important}
+.practiceRefRights summary{cursor:pointer;font-weight:600;color:#315e62}
+.practiceRefRights p{margin:5px 0!important;font-size:11px!important}
+.practiceRefRights a{color:#1a6167}
+#headLightHint{padding:7px 10px;border-radius:7px;background:#fff8e8;border:1px solid #ecdca9;color:#5a513a;font:12px/1.45 system-ui,sans-serif;margin:0 0 7px}
+#headLightHint[hidden]{display:none!important}
+#headLightHint button{font-size:11px;padding:4px 8px;min-height:25px;border:1px solid #beac75;background:white;color:#5b4c29;border-radius:5px;cursor:pointer}
+@media(max-width:600px){.practiceRefs{padding:7px;gap:5px}.practiceRefs button{font-size:11px;padding:5px 7px}.practiceRefs .refsHeading{flex-basis:100%}}
+</style>
+<script>
+/* Copyright-safe real photo: Goose friend (2015), CC0 1.0.
+   https://commons.wikimedia.org/wiki/File:A_photo_with_apples_of_different_color.jpg
+   This optional photo downloads once, then persists in IndexedDB (unless browser data is cleared). */
+window.ArtRefs=(function(){
+ const URL_PHOTO='https://upload.wikimedia.org/wikipedia/commons/e/ed/A_photo_with_apples_of_different_color.jpg';
+ const DB_NAME='art-tools-practice-images-v1', STORE='photos', KEY='goose-friend-colored-apples';
+ function dbOpen(){return new Promise((resolve,reject)=>{
+  if(!('indexedDB' in window))return reject(Error('Local storage unavailable'));
+  const request=indexedDB.open(DB_NAME,1);
+  request.onupgradeneeded=()=>request.result.createObjectStore(STORE);
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error||Error('Storage error'));
+ });}
+ async function stored(){const db=await dbOpen();try{return await new Promise((resolve,reject)=>{
+  const r=db.transaction(STORE,'readonly').objectStore(STORE).get(KEY);
+  r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);
+ });}finally{db.close();}}
+ async function save(blob){const db=await dbOpen();try{await new Promise((resolve,reject)=>{
+  const t=db.transaction(STORE,'readwrite');t.objectStore(STORE).put(blob,KEY);
+  t.oncomplete=resolve;t.onerror=()=>reject(t.error);
+ });}finally{db.close();}}
+ async function apple(){
+  let blob=null;
+  try{blob=await stored()}catch(e){console.warn('Image cache read:',e)}
+  if(blob instanceof Blob && blob.size>1000)return blob;
+  if(!navigator.onLine)throw Error('Colored apples needs internet on its first use; choose Cup or Classical head offline.');
+  let response;
+  try{response=await fetch(URL_PHOTO,{mode:'cors',credentials:'omit',cache:'force-cache'})}
+  catch(e){throw Error('Unable to retrieve the CC0 photo. Check your connection, or use the source link below.');}
+  if(!response.ok)throw Error('The Wikimedia image could not be loaded (HTTP '+response.status+').');
+  blob=await response.blob();
+  if(!blob.type.startsWith('image/')||blob.size<1000)throw Error('The photo returned an invalid image file.');
+  try{await save(blob)}catch(e){console.warn('Could not store the photograph for offline access:',e)}
+  return blob;
+ }
+ function info(kind){const el=document.getElementById('refSelectionNote');if(!el)return;
+  el.textContent=kind==='apples'?'Real photo by Goose friend · CC0 1.0 · saved for offline use after first successful download':
+    kind==='head'?'AI-generated classical head · try More light area in Value Studies':
+    kind==='cup'?'AI-generated cup study · directional light and cast shadow':
+    'Your own image · any copyright remains with its creator';}
+ function active(kind){for(const [id,k] of [['stillDemo','cup'],['portraitDemo','head'],['applesDemo','apples'],['sampleCup','cup'],['sampleHead','head'],['sampleApples','apples']]){
+  const b=document.getElementById(id);if(b)b.classList.toggle('active',kind===k);
+ }info(kind);}
+ function error(msg){const el=document.getElementById('refSelectionNote');if(el)el.textContent=msg;
+  else alert(msg);}
+ return {apple,active,error,info};
+})();
+</script>
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v16</span></div>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v17</span></div>
 <div id="dropOverlay" aria-hidden="true"><div class="dropCard"><strong>Drop image to load it</strong><span>Release your photo anywhere on this page</span></div></div>
-<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v16</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
+<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v17</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
 <main class="app-layout">
 <div class="settings-col">
  <section class="compact">
   <h2><span class="num">1</span> Your photograph</h2>
   <input id="upload" type="file" accept="image/*" aria-label="Upload an image">
   <p class="smallHelp">Or drag a photo here, or paste one with Ctrl+V. Photos stay on your device.</p>
-  <div class="row" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;align-items:center"><span class="smallHelp">Practice examples:</span><button type="button" id="sampleCup">Cup</button><button type="button" id="sampleHead">Classical head</button></div>
+  <div class="practiceRefs"><span class="refsHeading">Practice references</span><button type="button" id="sampleCup">Cup &amp; shadow</button><button type="button" id="sampleHead">Classical head</button><button type="button" id="sampleApples">Colored apples · CC0</button><span id="refSelectionNote" class="refStatus" role="status">Choose a reference, or upload, paste, or drop an image.</span></div><details class="practiceRefRights"><summary>Image sources, copyright, and reuse</summary>
+<p><b>Cup / Classical head:</b> AI-generated practice references supplied for these art tools; not documentary photographs or replicas attributed to a museum. They are not labeled CC0 or public-domain photographs.</p>
+<p><b>Colored apples:</b> real photograph <em>A photo with apples of different color</em>, <b>Goose friend</b>, 21 July 2015, original work, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener noreferrer">CC0 1.0</a> public-domain dedication. <a href="https://commons.wikimedia.org/wiki/File:A_photo_with_apples_of_different_color.jpg" target="_blank" rel="noopener noreferrer">View photo and source record on Wikimedia Commons</a>. Attribution is appreciated but not required by CC0.</p>
+<p><b>Your own images:</b> remain subject to the original creator's copyright. Importing or transforming an image here does not grant permission to redistribute it. The tools process images in your browser; only the optional CC0 reference is fetched from Wikimedia when first selected.</p></details>
  </section>
  <section class="compact">
   <h2><span class="num">2</span> Finished drawing size</h2>
@@ -415,7 +483,7 @@ body.previewOpen{overflow:hidden}
   <button id="previewExport" type="button" class="primary">Save selected print pages as PDF</button>
  </div>
 </div>
-<footer class="foot">Art Reference Enlarger v16 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
+<footer class="foot">Art Reference Enlarger v17 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
 <script>
 'use strict';
 const $=s=>document.getElementById(s);
@@ -744,6 +812,7 @@ let imageLoadSeq=0;
 function showFileError(text){const m=$('message');m.textContent=text;m.className='error';m.dataset.error='yes';}
 function validImageFile(file){return file && (file.type.startsWith('image/') || /\.(png|jpe?g|gif|webp|bmp|avif|tiff?)$/i.test(file.name||''));}
 function loadImageFile(file,source='file'){
+ if(source!=='example')ArtRefs.active('user');
  if(!file)return;
  if(!validImageFile(file)){showFileError('Please use an image file (such as JPG, PNG, or WebP).');return;}
  const seq=++imageLoadSeq;
@@ -768,10 +837,11 @@ function openExample(which){
  const raw=atob(which==='head'?DEMO_HEAD_B64:DEMO_CUP_B64);
  const bytes=new Uint8Array(raw.length);
  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
- loadImageFile(new File([bytes],which==='head'?'classical-head-practice.jpg':'cup-shadow-practice.jpg',{type:'image/jpeg'}),'example');
+ loadImageFile(new File([bytes],which==='head'?'classical-head-practice.jpg':'cup-shadow-practice.jpg',{type:'image/jpeg'}),'example');ArtRefs.active(which==='head'?'head':'cup');
 }
 $('sampleCup').addEventListener('click',()=>openExample('cup'));
 $('sampleHead').addEventListener('click',()=>openExample('head'));
+$('sampleApples').addEventListener('click',async()=>{try{const blob=await ArtRefs.apple();loadImageFile(new File([blob],'colored-apples-goose-friend-cc0.jpg',{type:blob.type||'image/jpeg'}),'example');ArtRefs.active('apples')}catch(e){ArtRefs.error(e.message)}});
 $('upload').addEventListener('change',e=>{
  const file=e.target.files&&e.target.files[0];
  if(file)loadImageFile(file,'file');

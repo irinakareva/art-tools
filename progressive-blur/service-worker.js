@@ -1,5 +1,5 @@
-/* Offline app shell; build v6 for progressive-blur. */
-const CACHE_NAME = 'art-tools-progressive-blur-v6';
+/* Offline app shell; build v7 for progressive-blur. */
+const CACHE_NAME = 'art-tools-progressive-blur-v7';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
  event.waitUntil((async () => {
