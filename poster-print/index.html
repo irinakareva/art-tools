@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Art Reference Enlarger v12 — Clear guides and print preview</title>
+<title>Art Reference Enlarger v13 — Clear guides and print preview</title>
 <style>
 :root{--bg:#f6f5f1;--paper:#fff;--ink:#253330;--sub:#596763;--accent:#17655a;--line:#d9ddd7;--pale:#eaf1ee}*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -161,15 +161,46 @@ main.app-layout{grid-template-columns:minmax(260px,325px) minmax(0,1fr);gap:15px
 #previewExport{font-size:14px;padding:12px;flex:none}
 body.previewOpen{overflow:hidden}
 @media (max-width:530px){.previewDialog{padding:9px}.previewPager button{font-size:12px;padding:8px}.previewInfo{font-size:10px;margin:4px 0 6px}}
+
+/* v13: Print-time overview and assembly guidance (not part of placement setup). */
+.previewDialog{max-width:1240px;overflow-y:auto;overflow-x:hidden;height:100dvh;display:flex;flex-direction:column;gap:0}
+.previewDialog>.previewDescription,.previewDialog>.previewInfo{flex:0 0 auto}
+.previewDialogHead{position:sticky;top:-12px;z-index:3;background:#f8faf8;padding:7px 0 9px;border-bottom:1px solid #d9e1da}
+.previewCompare{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:14px;align-items:start;min-height:auto;flex:0 0 auto}
+.previewCompare>section{margin:0;padding:12px;box-shadow:none;min-width:0;min-height:0}
+.previewCompare h3{font-size:15px;margin:0 0 4px;color:#1f4037}
+.previewCompare .overviewCaption{font-size:12px;line-height:1.45;margin:5px 0;color:#526a5c}
+#overviewCanvas{width:100%;height:auto;max-height:54vh;object-fit:contain;display:block;border:1px solid #cbd7cd;border-radius:7px;background:white;cursor:pointer;touch-action:manipulation}
+.previewPaper{flex:none;height:min(53vh,560px);min-height:190px}
+.previewPaper img{max-height:100%;max-width:100%}
+.previewPager{margin:7px 0 0}
+.assemblyAtPrint{flex:0 0 auto;margin:12px 0 10px;padding:12px 14px;background:#fff;border:1px solid #d7e1d9;border-radius:10px;font-size:13px;line-height:1.55}
+.assemblyAtPrint>p{margin:5px 0 8px;color:#3d5a4c}
+.assemblyAtPrint .assemblyFold{margin-top:7px;border-top:1px solid #e3eae4;padding-top:5px}
+.assemblyAtPrint .assemblyFold summary{font-weight:700;cursor:pointer;color:#17655a;padding:4px 0}
+.assemblyAtPrint .assemblyFold ol{padding-left:20px}
+.assemblyAtPrint .assemblyFold li{margin:6px 0}
+.assemblyInclude{margin:9px 0 0!important;font-size:13px!important}
+#previewExport{position:sticky;bottom:-12px;z-index:4;margin-top:4px;box-shadow:0 -4px 20px #f8faf8}
+@media(max-width:700px){
+ .previewDialog{padding:10px;}
+ .previewDialogHead{top:-10px}
+ .previewCompare{grid-template-columns:1fr;gap:8px}
+ .previewCompare>section{padding:9px}
+ #overviewCanvas{max-height:31vh}
+ .previewPaper{height:42vh;min-height:180px}
+ .assemblyAtPrint{margin-top:9px;padding:11px}
+ #previewExport{bottom:-10px}
+}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#17655a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v12</span></div>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v13</span></div>
 <div id="dropOverlay" aria-hidden="true"><div class="dropCard"><strong>Drop image to load it</strong><span>Release your photo anywhere on this page</span></div></div>
-<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v12</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
+<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v13</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
 <main class="app-layout">
 <div class="settings-col">
  <section class="compact">
@@ -195,7 +226,6 @@ body.previewOpen{overflow:hidden}
    <div class="formrow"><div class="field"><label for="margin">Printer margin (in)</label><input id="margin" type="number" min="0.2" max="1" step="0.05" value="0.4"></div><div class="field"><label for="overlap">Repeated overlap (in)</label><input id="overlap" type="number" min="0" max="1" step="0.05" value="0.25"></div></div>
 
    <label class="check"><input type="checkbox" id="registration" checked>Print artwork-edge alignment marks</label>
-   <label class="check"><input type="checkbox" id="assemblyPage">Include assembly instruction page in PDF</label>
    <p class="smallHelp">Printer margins and overlap affect the number of sheets. The default settings usually work; change them only if your printer requires it.</p>
    <div id="nudgePanel" class="nudgePanel"><details><summary>Fine positioning (optional)</summary>
     <p class="smallHelp">Keyboard arrows adjust image position by 0.02 in; Shift + arrow by 0.20 in.</p>
@@ -236,7 +266,39 @@ body.previewOpen{overflow:hidden}
   <p class="smallHelp">Print at <strong>Actual size / 100%</strong>. Check the printed 1-inch ruler before assembling.</p>
   <div id="detail" class="sr-only" aria-live="polite"></div>
  </section>
-<section class="help"><details class="assemblyFold"><summary>How to assemble printed sheets</summary>
+
+</div>
+<div class="legacyHidden" aria-hidden="true">
+ <select id="fitMode"><option value="contain" selected>Keep whole selected photo</option><option value="cover">Fill</option><option value="free">Free placement</option></select>
+ <input id="zoom" type="range" min="0.15" max="8" value="1"><label id="zoomLabel"></label><button id="reset">Reset</button><button id="matchRatio"></button><button id="startCrop"></button><button id="clearCrop"></button><button id="manualCropPreset"></button><p id="cropSummary"></p><p id="fitMessage"></p>
+ <div class="modeToolbar"><button id="modePosition"></button><button id="modeCrop"></button><button id="modeTiles"></button></div>
+ <button id="quickZoomOut"></button><button id="quickZoomIn"></button>
+ <div id="cropActions" hidden><button id="newCrop"></button><button id="applyCrop"></button><button id="cancelCrop"></button><button id="fullCrop"></button></div>
+ <div id="tileChoices"></div>
+</div>
+</main>
+<div id="printPreviewModal" class="printPreviewModal" hidden role="dialog" aria-modal="true" aria-label="Print preview">
+ <div class="previewDialog">
+  <div class="previewDialogHead"><strong>Print preview</strong><button id="previewClose" type="button" aria-label="Close print preview">Close ×</button></div>
+  <p class="previewDescription" id="previewDescription">Selected pages and their assembled layout</p>
+  <div class="previewCompare">
+   <section class="previewAssemblyMap">
+    <h3>Assembled artwork</h3>
+    <p id="overviewSummary" class="overviewCaption">Finished drawing and where each printed sheet belongs</p>
+    <canvas id="overviewCanvas" tabindex="0" role="img" aria-label="Assembled artwork with the printable sheets arranged in their final positions"></canvas>
+    <p id="overviewHint" class="overviewCaption">Tap a labeled sheet to inspect its actual printed page. Gray sheets were not selected for printing.</p>
+   </section>
+   <section class="previewSingleSheet">
+    <h3>One printed sheet</h3>
+    <p class="overviewCaption" id="currentPageLabel">Sheet A1: print at Actual Size / 100%</p>
+    <div class="previewPaper" id="previewPaper" tabindex="0"><img id="previewImage" alt="Printable sheet with margins and cutting guides"></div>
+    <div class="previewPager"><button id="previewPrev" type="button">Previous</button><strong id="previewPosition">Page 1</strong><button id="previewNext" type="button">Next</button></div>
+   </section>
+  </div>
+  <div class="assemblyAtPrint">
+   <strong>After printing: how to join the pages</strong>
+   <p>Lay out A1 at top left; B1 goes to its right, A2 below. On later sheets, cut at the <strong>red dashed line</strong> to remove the repeated strip. Trim the earlier sheet at its image edge, match the picture across the seam, and tape from behind.</p>
+   <details class="assemblyFold"><summary>How to assemble printed sheets</summary>
 <p><strong>Red dashed = TRIM REPEATED STRIP.</strong> On A2, remove the top strip; on B1, remove the left strip. The dashed line is the new edge of the later sheet, not an image or artwork-center line.</p>
 <div class="assemblyTip"><strong>Gray artwork outline and short midpoint ticks (optional):</strong> These show the finished canvas edges and its true horizontal/vertical centers, based on your 12 × 18-inch dimensions. They are independent of the photograph's crop. <strong>Keep the artwork outline</strong> when positioning the template; only trim the dashed red overlap strips to join sheets.</div>
 <svg class="assemblyDiagram" viewBox="0 0 540 226" role="img" aria-label="How to join A1 above A2: A2 has a repeated top strip ending at a dashed trim line; cut it off then join it to the image bottom of A1">
@@ -272,28 +334,14 @@ body.previewOpen{overflow:hidden}
 <li><strong>For tracing:</strong> Tape the aligned pattern along the top as a hinge, lift it, insert appropriate graphite/chalk transfer paper, and trace the contours. For pouncing, perforate the assembled pattern along the lines first.</li>
 </ol>
 <p><strong>Important:</strong> If the picture is centered within only A1+A2, it is <em>not necessarily centered within the entire canvas</em>. Choose Center on artwork if you want the subject itself centered on the 12 × 18 surface. If overlap is 0, no repeated strip is present: align the printed image edges without a dashed trim.</p>
-</details></section>
-</div>
-<div class="legacyHidden" aria-hidden="true">
- <select id="fitMode"><option value="contain" selected>Keep whole selected photo</option><option value="cover">Fill</option><option value="free">Free placement</option></select>
- <input id="zoom" type="range" min="0.15" max="8" value="1"><label id="zoomLabel"></label><button id="reset">Reset</button><button id="matchRatio"></button><button id="startCrop"></button><button id="clearCrop"></button><button id="manualCropPreset"></button><p id="cropSummary"></p><p id="fitMessage"></p>
- <div class="modeToolbar"><button id="modePosition"></button><button id="modeCrop"></button><button id="modeTiles"></button></div>
- <button id="quickZoomOut"></button><button id="quickZoomIn"></button>
- <div id="cropActions" hidden><button id="newCrop"></button><button id="applyCrop"></button><button id="cancelCrop"></button><button id="fullCrop"></button></div>
- <div id="tileChoices"></div>
-</div>
-</main>
-<div id="printPreviewModal" class="printPreviewModal" hidden role="dialog" aria-modal="true" aria-label="Print preview">
- <div class="previewDialog">
-  <div class="previewDialogHead"><strong>Print preview</strong><button id="previewClose" type="button" aria-label="Close print preview">Close ×</button></div>
-  <p class="previewDescription" id="previewDescription">Loading printable sheet…</p>
-  <div class="previewPaper" id="previewPaper" tabindex="0"><img id="previewImage" alt="Selected printable page at actual sheet proportions"></div>
-  <div class="previewPager"><button id="previewPrev" type="button">← Previous</button><strong id="previewPosition">Page 1</strong><button id="previewNext" type="button">Next →</button></div>
-  <p class="previewInfo">Swipe sideways to inspect other pages. These images show the actual sheet borders, print margins, trim lines, and selected artwork. To preserve physical size, print the saved PDF at 100% / Actual Size.</p>
-  <button id="previewExport" type="button" class="primary">Save these pages as PDF</button>
+</details>
+   <label class="check assemblyInclude"><input type="checkbox" id="assemblyPage">Add a one-page assembly guide to the saved PDF</label>
+  </div>
+  <p class="previewInfo">The left overview represents the assembled artwork. The right view represents one physical printer sheet, including its margins. When printing the PDF, select Actual Size / 100% and verify the 1-inch ruler.</p>
+  <button id="previewExport" type="button" class="primary">Save selected print pages as PDF</button>
  </div>
 </div>
-<footer class="foot">Art Reference Enlarger v11 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
+<footer class="foot">Art Reference Enlarger v13 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
 <script>
 'use strict';
 const $=s=>document.getElementById(s);
@@ -963,44 +1011,119 @@ layoutCanvas.addEventListener('click',e=>{
  const row=Math.min(conf.rows-1,Math.max(0,Math.floor(yy/conf.stepH)));
  const key=tileKey(col,row);toggleTile(key,!selectedTiles.has(key));
 });
+// The print-time overview represents the assembled picture, not a second crop editor.
+// Seams are drawn at the cut edge AFTER removing the overlapping strip
+// from the later printed sheet. This differs from the start of each raw paper tile.
+function overviewTileRect(conf,c,r){
+ const x0=c===0?0:c*conf.stepW+conf.overlap;
+ const y0=r===0?0:r*conf.stepH+conf.overlap;
+ const x1=Math.min(conf.pw,(c+1)*conf.stepW+conf.overlap);
+ const y1=Math.min(conf.ph,(r+1)*conf.stepH+conf.overlap);
+ return {x0,y0,x1,y1};
+}
+function drawPrintOverview(){
+ if(!img)return;
+ const conf=config(),place=getPlacement(conf),canvas=$('overviewCanvas');
+ let W=640,H=Math.round(W*conf.ph/conf.pw);
+ if(H>790){W=Math.round(W*790/H);H=790;}
+ canvas.width=W;canvas.height=H;
+ const g=canvas.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,W,H);
+ g.save();clipArtwork(g,conf,0,0,W,H);
+ g.filter=conf.gray?'grayscale(1)':'none';paintPlaced(g,conf,place,0,0,W,H);g.filter='none';g.restore();
+ for(let r=0;r<conf.rows;r++)for(let c=0;c<conf.cols;c++){
+  const tile=overviewTileRect(conf,c,r),x0=tile.x0/conf.pw*W,y0=tile.y0/conf.ph*H,
+   x1=tile.x1/conf.pw*W,y1=tile.y1/conf.ph*H,key=tileKey(c,r),on=selectedTiles.has(key);
+  g.save();g.beginPath();g.rect(x0,y0,Math.max(0,x1-x0),Math.max(0,y1-y0));g.clip();
+  if(!on){g.fillStyle='rgba(240,242,240,.83)';g.fillRect(x0,y0,x1-x0,y1-y0);}
+  const font=Math.max(13,Math.min(23,W/25));g.font=`700 ${font}px system-ui`;
+  const tw=g.measureText(key).width;
+  g.fillStyle=on?'rgba(12,54,43,.88)':'rgba(96,102,96,.89)';
+  g.fillRect(x0+4,y0+4,tw+16,font+12);
+  g.fillStyle='#fff';g.fillText(key,x0+12,y0+font+6);
+  if(!on){g.font=`500 ${Math.max(10,font*.58)}px system-ui`;g.fillStyle='#4e5c55';g.fillText('not printing',x0+7,y0+font+28);}
+  g.restore();
+ }
+ g.strokeStyle='#234f43';g.lineWidth=2;g.strokeRect(1,1,W-2,H-2);
+ g.strokeStyle='rgba(20,79,61,.95)';g.lineWidth=Math.max(1.4,W/400);
+ for(let c=1;c<conf.cols;c++){const x=(c*conf.stepW+conf.overlap)/conf.pw*W;
+   g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke();}
+ for(let r=1;r<conf.rows;r++){const y=(r*conf.stepH+conf.overlap)/conf.ph*H;
+   g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke();}
+ // One selected sheet is outlined in contrasting color for cross-reference.
+ const active=previewPages[previewIndex];if(active&&active.kind==='tile'){
+  const box=overviewTileRect(conf,active.c,active.r),x=box.x0/conf.pw*W,y=box.y0/conf.ph*H;
+  const w=(box.x1-box.x0)/conf.pw*W,h=(box.y1-box.y0)/conf.ph*H;
+  g.strokeStyle='#c25c24';g.lineWidth=Math.max(3,W/150);g.strokeRect(x+2,y+2,Math.max(0,w-4),Math.max(0,h-4));
+ }
+ $('overviewSummary').textContent=`Finished ${formattedDim(conf.pw)} x ${formattedDim(conf.ph)} ${$('unit').value}  |  ${conf.cols} columns x ${conf.rows} rows  |  ${selectedTiles.size} selected`;
+}
+function selectSheetInPrintOverview(event){
+ if($('printPreviewModal').hidden)return;
+ const canvas=$('overviewCanvas'),b=canvas.getBoundingClientRect();
+ // Canvas is object-fit: contain; ignore any letterboxed margins.
+ const scale=Math.min(b.width/canvas.width,b.height/canvas.height);
+ const drawW=canvas.width*scale,drawH=canvas.height*scale;
+ const offsetX=(b.width-drawW)/2,offsetY=(b.height-drawH)/2;
+ const fx=(event.clientX-b.left-offsetX)/drawW;
+ const fy=(event.clientY-b.top-offsetY)/drawH;
+ if(fx<0||fx>1||fy<0||fy>1)return;
+ const conf=config();
+ const x=fx*conf.pw,y=fy*conf.ph;
+ for(let r=0;r<conf.rows;r++)for(let c=0;c<conf.cols;c++){
+   const box=overviewTileRect(conf,c,r);
+   if(x>=box.x0&&x<box.x1+1e-9&&y>=box.y0&&y<box.y1+1e-9){
+     const i=previewPages.findIndex(p=>p.kind==='tile'&&p.c===c&&p.r===r);
+     if(i>=0)showPrintPage(i);
+     else $('overviewHint').textContent=`${tileKey(c,r)} was not selected for printing. Close preview and tap it in the layout to include it.`;
+     return;
+   }
+ }
+}
+$('overviewCanvas').addEventListener('click',selectSheetInPrintOverview);
 // Print-preview mode uses the SAME artwork layout and tile renderer as PDF export.
 // Rendering at a lower resolution on screen is intentional; printed PDF uses 180px/in.
-let previewPages=[],previewIndex=0,previewURL=null,previewBusy=false;
+let previewPages=[],previewIndex=0,previewURL=null,previewBusy=false,previewRequested=null;
 function closePrintPreview(){
  $('printPreviewModal').hidden=true;document.body.classList.remove('previewOpen');
  if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}
 }
 function buildPreviewIndex(){
  const conf=config(), place=getPlacement(conf),p=[];
- if($('assemblyPage').checked)p.push({kind:'guide',label:'Assembly instructions'});
  for(let r=0;r<conf.rows;r++)for(let c=0;c<conf.cols;c++)if(selectedTiles.has(tileKey(c,r)))p.push({kind:'tile',c,r,label:'Sheet '+tileKey(c,r)});
  return {p,conf,place};
 }
 async function showPrintPage(index){
- if(previewBusy||!previewPages.length)return;
+ if(!previewPages.length)return;
+ if(previewBusy){previewRequested=index;return;}
  previewBusy=true;
  try{
   index=(index+previewPages.length)%previewPages.length;
   const item=previewPages[index];
-  $('previewDescription').textContent=item.label+' · physical '+num('w')+' × '+(num('h')||num('w'))+' '+$('unit').value+' artwork · '+$('paper').selectedOptions[0].text;
-  $('previewPosition').textContent=`${index+1} / ${previewPages.length}`;
+  $('previewDescription').textContent=item.label+' · finished artwork '+num('w')+' × '+(num('h')||num('w'))+' '+$('unit').value+' · printing on '+$('paper').selectedOptions[0].text;
+  $('previewPosition').textContent=`${index+1} of ${previewPages.length} · ${item.label}`;
+  $('currentPageLabel').textContent=`${item.label} · ${$('paper').selectedOptions[0].text} · print at 100%`;
+  $('overviewHint').textContent='Tap a labeled sheet to inspect it. Gray areas were not selected.';
   $('previewPrev').disabled=previewPages.length<2;
   $('previewNext').disabled=previewPages.length<2;
   const conf=config(),place=getPlacement(conf);
-  const bytes=item.kind==='guide'?await makeAssemblyGuide(conf,place,110):await makePageImage(conf,place,item.c,item.r,110);
+  const bytes=await makePageImage(conf,place,item.c,item.r,110);
   const url=URL.createObjectURL(new Blob([bytes],{type:'image/jpeg'}));
   const image=$('previewImage');
   await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject;image.src=url;});
   if(previewURL)URL.revokeObjectURL(previewURL);
-  previewURL=url;previewIndex=index;
+  previewURL=url;previewIndex=index;drawPrintOverview();
  }catch(err){$('previewDescription').textContent='Could not preview page: '+err.message;}
- finally{previewBusy=false;}
+ finally{
+  previewBusy=false;
+  if(previewRequested!==null){const requested=previewRequested;previewRequested=null;showPrintPage(requested);}
+ }
 }
 $('showPreview').addEventListener('click',async()=>{
  if(!img||!selectedTiles.size)return;
  const {p}=buildPreviewIndex();if(!p.length)return;
  previewPages=p;previewIndex=0;
  $('printPreviewModal').hidden=false;document.body.classList.add('previewOpen');
+ drawPrintOverview();
  $('previewDescription').textContent='Preparing selected printable sheets…';
  $('previewImage').removeAttribute('src');
  await showPrintPage(0);
