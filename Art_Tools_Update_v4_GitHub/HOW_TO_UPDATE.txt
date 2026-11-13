@@ -1,0 +1,14 @@
+ART TOOLS — UPDATE v4
+
+Copy each of these app subfolders over the matching folder in your EXISTING art-tools repository:
+value-study, progressive-blur, poster-print.
+When prompted, choose Replace existing files.
+GitHub Desktop: Commit to main, then Push origin.
+The existing art-tools homepage is unchanged.
+
+After GitHub Pages publishes:
+Open each app in regular Chrome while online, refresh, and look for the bottom-right 'Offline ready' indicator. Do not test Airplane Mode until it says Offline ready. If stuck on an older version, open the app link with ?refresh=v4 and reload while online. The app must be opened online once for the new service worker to cache it.
+
+Value Studies v4: image taps open the viewer, + Select chooses images for saving, the enlarged viewer supports left/right arrows, keyboard arrows and swipe across the whole viewer area.
+
+If Android only installs a browser shortcut, the page should still have offline cache after a successful service-worker setup in Chrome, but this has not been verified on your device.

@@ -38,11 +38,11 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 #modal{position:fixed;inset:0;background:#081a1de8;z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;gap:12px}
 #modal.open{display:flex}
-#modal canvas{display:block;max-width:calc(100vw - 116px);max-height:calc(100dvh - 178px);width:auto;height:auto;background:white;object-fit:contain;touch-action:pan-y}
+#modal canvas{display:block;max-width:calc(100vw - 116px);max-height:calc(100dvh - 178px);width:auto;height:auto;background:white;object-fit:contain;touch-action:pan-y;user-select:none}
 #modal .modalTop{display:flex;align-items:center;justify-content:space-between;color:white;width:min(94vw,1000px);gap:12px}
 #modal button{background:white;color:#223b3f}
-#modal .modalFrame{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;flex:1;min-height:0}
-#modal .modalNav{font-size:30px;line-height:1;min-width:39px;padding:5px;border-radius:50%;min-height:47px}
+#modal .modalFrame{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;flex:1;min-height:0;touch-action:pan-y;user-select:none}
+#modal .modalNav{font-size:30px;line-height:1;min-width:44px;padding:7px;border-radius:50%;min-height:52px;flex-shrink:0;position:relative;z-index:2;touch-action:manipulation}
 #modal .modalBottom{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;color:#fff}
 #modalPosition{font-size:13px;color:#d3e3e1;min-width:65px;text-align:center}
 #saveFeedback{font-size:12px;color:#415f61;flex-basis:100%;text-align:right}
@@ -51,11 +51,11 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 @media(max-width:850px){.workspace{grid-template-columns:1fr}.optionsPanel{display:flex;gap:22px;flex-wrap:wrap}.optionsPanel>div.optionblock{margin-top:0;padding-top:0;border:0;flex:1 1 220px}.optionsPanel .tip{flex:1 1 100%;margin-top:0}.preview-grid{gap:9px}}
 @media(max-width:560px){main{padding:15px 10px 35px}.cropPanel,.optionsPanel{padding:13px}.controls{gap:7px}.controls button,.controls label{font-size:12px;padding:7px 9px}.photoCard{padding:7px}.photoCard.top{grid-column:span 3}.photoCard.group{grid-column:span 3}.thumb canvas{max-height:275px}.thumb{min-height:105px}.cardHead{flex-wrap:wrap;align-items:start}.cardHead strong{font-size:13px}.resultsHeader{align-items:start}.resultsHeader h2{font-size:22px}.cardFoot{flex-wrap:wrap}.swatches span{width:24px;height:18px}}
 
-/* Selection modes: preview tap selects, separate View action opens image */
+/* Tap the picture to view; use + Select explicitly to save. */
 .photoCard.selected{border:2px solid #177a7b;padding:10px;background:#f0faf9;box-shadow:0 0 0 2px #b1dfdc}
 .cardHead .selectChip{border:1px solid #b4c7c6;border-radius:6px;background:#fff;padding:3px 7px;font-size:11px;min-height:27px;white-space:nowrap}
 .photoCard.selected .selectChip{background:#1d686c;border-color:#1d686c;color:white}
-.thumb{cursor:pointer}
+.thumb{cursor:zoom-in}
 .saveOptions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .saveOptions button{font-size:12px}
 #selectionCount{font-weight:650;color:#1d686c;font-size:13px}
@@ -65,7 +65,7 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 <link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#153d42"><meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span></div>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v4</span></div>
 <header><h1>Value Studies</h1><p>Crop a photo. Compare the original, grayscale, and exactly 2, 3 or 4 flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
 <main>
   <div class="controls" id="toolbar">
@@ -98,7 +98,7 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
       <div class="tip"><b>What the values mean</b><br>Every pixel, including the background and cast shadows, belongs to a value group. Each grouped picture has exactly 2, 3, or 4 possible grays. The crop recalculates the value boundaries for that composition.</div>
     </div>
   </section>
-  <div class="resultsHeader"><div><h2>3 · Compare and select</h2><div class="subtle">Tap pictures to select them. Tap View for a full-screen gallery; swipe or use arrows to browse.</div></div><div class="saveOptions"><span id="selectionCount">0 selected</span><button id="selectAll">Select all</button><button id="clearSelection">Clear</button><button class="primary" id="saveIndividuals">Save individual PNGs</button><button id="savePdf">Save one-page PDF</button><button id="saveComparison">Save comparison PNG</button><span id="saveFeedback" aria-live="polite"></span></div></div>
+  <div class="resultsHeader"><div><h2>3 · Compare and select</h2><div class="subtle">Tap a picture to view it full size. Use its + Select button to choose it for saving.</div></div><div class="saveOptions"><span id="selectionCount">0 selected</span><button id="selectAll">Select all</button><button id="clearSelection">Clear</button><button class="primary" id="saveIndividuals">Save individual PNGs</button><button id="savePdf">Save one-page PDF</button><button id="saveComparison">Save comparison PNG</button><span id="saveFeedback" aria-live="polite"></span></div></div>
   <section class="preview-grid" id="previewGrid">
    <div class="photoCard top"><div class="cardHead"><strong>Original color</strong><button type="button" class="selectChip" data-select="original" aria-pressed="false">+ Select</button><span class="type">Reference</span></div><div class="thumb" data-key="original" role="button" tabindex="0"><canvas id="out-original"></canvas></div><div class="cardFoot"><span class="desc">Color and materials</span><button type="button" class="view" data-view="original">View</button><button data-download="original">Save PNG</button></div></div>
    <div class="photoCard top"><div class="cardHead"><strong>Grayscale</strong><button type="button" class="selectChip" data-select="gray" aria-pressed="false">+ Select</button><span class="type">All tones</span></div><div class="thumb" data-key="gray" role="button" tabindex="0"><canvas id="out-gray"></canvas></div><div class="cardFoot"><span class="desc">Compare actual lightness</span><button type="button" class="view" data-view="gray">View</button><button data-download="gray">Save PNG</button></div></div>
@@ -307,9 +307,10 @@ function syncSelection(){
 }
 function toggleSelected(key){if(selectedKeys.has(key))selectedKeys.delete(key);else selectedKeys.add(key);syncSelection()}
 document.querySelectorAll('.thumb').forEach(t=>{
- t.setAttribute('aria-label','Select '+SELECT_LABELS[t.dataset.key]);
- t.addEventListener('click',()=>toggleSelected(t.dataset.key));
- t.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleSelected(t.dataset.key)}});
+ t.setAttribute('aria-label','View '+SELECT_LABELS[t.dataset.key]+' full screen');
+ t.setAttribute('aria-haspopup','dialog');
+ t.addEventListener('click',()=>showModal(t.dataset.key));
+ t.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showModal(t.dataset.key)}});
 });
 document.querySelectorAll('[data-select]').forEach(b=>b.addEventListener('click',()=>toggleSelected(b.dataset.select)));
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showModal(b.dataset.view)));
@@ -322,11 +323,41 @@ $('#prevModal').onclick=()=>moveModal(-1);
 $('#nextModal').onclick=()=>moveModal(1);
 $('#modalSelect').onclick=()=>{if(state.modalKey){toggleSelected(state.modalKey);$('#modalSelect').textContent=selectedKeys.has(state.modalKey)?'✓ Selected':'+ Select'}};
 $('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeModal()});
-window.addEventListener('keydown',e=>{if(!state.modalKey)return;if(e.key==='Escape')closeModal();else if(e.key==='ArrowLeft'){e.preventDefault();moveModal(-1)}else if(e.key==='ArrowRight'){e.preventDefault();moveModal(1)}});
-let swipeStart=null;
-$('#modalCanvas').addEventListener('pointerdown',e=>{swipeStart={x:e.clientX,y:e.clientY,pointer:e.pointerId}});
-$('#modalCanvas').addEventListener('pointerup',e=>{if(!swipeStart||swipeStart.pointer!==e.pointerId)return;const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y;swipeStart=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.25)moveModal(dx<0?1:-1)});
-$('#modalCanvas').addEventListener('pointercancel',()=>{swipeStart=null});
+// Capture arrow keys regardless of which modal control currently has focus.
+document.addEventListener('keydown',e=>{
+ if(!state.modalKey)return;
+ if(e.key==='Escape'){e.preventDefault();closeModal();}
+ else if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+  e.preventDefault();e.stopPropagation();moveModal(e.key==='ArrowLeft'?-1:1);
+ }
+},true);
+// Listen on the entire viewer frame, not only on the image canvas.
+const viewerFrame=$('#modal .modalFrame');
+let gestureStart=null;
+function gestureFinish(x,y){
+ if(!gestureStart)return;
+ const dx=x-gestureStart.x,dy=y-gestureStart.y;
+ gestureStart=null;
+ if(Math.abs(dx)>32 && Math.abs(dx)>Math.abs(dy)*1.15)moveModal(dx<0?1:-1);
+}
+viewerFrame.addEventListener('touchstart',e=>{
+ if(e.target.closest('button')||e.touches.length!==1){gestureStart=null;return;}
+ const t=e.touches[0];gestureStart={x:t.clientX,y:t.clientY};
+},{passive:true});
+viewerFrame.addEventListener('touchend',e=>{
+ if(!gestureStart||!e.changedTouches.length)return;
+ const t=e.changedTouches[0];gestureFinish(t.clientX,t.clientY);
+},{passive:true});
+viewerFrame.addEventListener('touchcancel',()=>{gestureStart=null},{passive:true});
+viewerFrame.addEventListener('pointerdown',e=>{
+ if(e.pointerType==='touch'||e.target.closest('button'))return;
+ gestureStart={x:e.clientX,y:e.clientY};
+});
+viewerFrame.addEventListener('pointerup',e=>{
+ if(e.pointerType==='touch')return;
+ gestureFinish(e.clientX,e.clientY);
+});
+viewerFrame.addEventListener('pointercancel',()=>{gestureStart=null});
 $('#modalSave').onclick=()=>{if(state.modalKey)downloadCanvas(state.out[state.modalKey],filenameFor(state.modalKey))};
 function orderedSelection(){return SELECT_KEYS.filter(k=>selectedKeys.has(k))}
 function makeComparisonCanvas(keys){
@@ -411,6 +442,35 @@ window.addEventListener('drop',e=>{e.preventDefault();enterCount=0;$('#dropOverl
 window.addEventListener('paste',e=>{const item=Array.from(e.clipboardData?.items||[]).find(i=>i.type.startsWith('image/'));if(item)openFile(item.getAsFile())});
 setDemo('still');
 </script>
-<script>if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));</script>
+<script>
+// Offline-install status: cache is considered ready only after a verified cached document is present.
+window.addEventListener('load',async()=>{
+ const status=document.createElement('div');
+ status.id='artOfflineStatus';
+ status.setAttribute('role','status');
+ status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
+ status.textContent='Checking offline access…';document.body.appendChild(status);
+ const key='art-tools-value-study-v4';
+ async function check(){
+  try{
+   const cache=await caches.open(key);
+   const hit=await cache.match(new URL('./index.html',location.href).href);
+   if(hit){status.textContent=navigator.onLine?'Offline ready':'Offline ready · no connection';status.style.background='#176458'}
+   else{status.textContent='Offline not ready · open while online';status.style.background='#91561d'}
+  }catch(e){status.textContent='Offline not available';status.style.background='#91561d'}
+ }
+ if(!('serviceWorker' in navigator)||!('caches' in window)||!location.protocol.startsWith('http')){
+  status.textContent='Offline unavailable in this browser';return;
+ }
+ try{
+  const reg=await navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'});
+  await reg.update();
+  await navigator.serviceWorker.ready;
+  await check();
+  navigator.serviceWorker.addEventListener('controllerchange',check);
+  window.addEventListener('online',check);window.addEventListener('offline',check);
+ }catch(e){status.textContent='Offline not ready · reconnect and reload';status.style.background='#91561d';console.warn('Offline setup:',e)}
+});
+</script>
 </body>
 </html>

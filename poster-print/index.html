@@ -284,6 +284,36 @@ $('sharePdf').addEventListener('click',async()=>{
 $('openPdf').addEventListener('click',()=>{if(!generatedPDFURL)return;const w=window.open(generatedPDFURL,'_blank');if(!w)$('message').textContent='Open the downloaded PDF from your phone’s Downloads folder.'});
 refresh();
 </script>
-<script>if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.warn));</script>
+<script>
+// Offline-install status: cache is considered ready only after a verified cached document is present.
+window.addEventListener('load',async()=>{
+ const status=document.createElement('div');
+ status.id='artOfflineStatus';
+ status.setAttribute('role','status');
+ status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
+ status.textContent='Checking offline access…';document.body.appendChild(status);
+ const key='art-tools-poster-print-v4';
+ async function check(){
+  try{
+   const cache=await caches.open(key);
+   const hit=await cache.match(new URL('./index.html',location.href).href);
+   if(hit){status.textContent=navigator.onLine?'Offline ready':'Offline ready · no connection';status.style.background='#176458'}
+   else{status.textContent='Offline not ready · open while online';status.style.background='#91561d'}
+  }catch(e){status.textContent='Offline not available';status.style.background='#91561d'}
+ }
+ if(!('serviceWorker' in navigator)||!('caches' in window)||!location.protocol.startsWith('http')){
+  status.textContent='Offline unavailable in this browser';return;
+ }
+ try{
+  const reg=await navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'});
+  await reg.update();
+  await navigator.serviceWorker.ready;
+  await check();
+  navigator.serviceWorker.addEventListener('controllerchange',check);
+  window.addEventListener('online',check);window.addEventListener('offline',check);
+ }catch(e){status.textContent='Offline not ready · reconnect and reload';status.style.background='#91561d';console.warn('Offline setup:',e)}
+});
+</script>
+<div style="position:fixed;bottom:8px;left:8px;font:11px system-ui;color:#536c6b;pointer-events:none;background:#ffffffaa;padding:4px;border-radius:4px">v4</div>
 </body>
 </html>
