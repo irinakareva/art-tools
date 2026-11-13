@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Art Reference Enlarger v13 — Clear guides and print preview</title>
+<title>Art Reference Enlarger v15 — Guided print assembly</title>
 <style>
 :root{--bg:#f6f5f1;--paper:#fff;--ink:#253330;--sub:#596763;--accent:#17655a;--line:#d9ddd7;--pale:#eaf1ee}*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -192,15 +192,85 @@ body.previewOpen{overflow:hidden}
  .assemblyAtPrint{margin-top:9px;padding:11px}
  #previewExport{bottom:-10px}
 }
+
+/* v15: Entire sheet grid visible at once without dominating the workspace.
+   The internal canvas dimensions and PDF printing dimensions stay unchanged. */
+@media (min-width: 801px) {
+  main.app-layout { max-width: 1320px; grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); }
+  #output.preview-col { min-width: 0; }
+  #output .previewSection { padding: 15px; }
+  #output .previewSection h2 { margin-bottom: 5px; }
+  #output .artworkBadge { margin-bottom: 7px; padding: 7px 10px; }
+}
+.canvasWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 6px;
+  background: #f1f4f0;
+  min-height: 0;
+}
+/* Width:auto with max-height preserves the actual canvas aspect ratio.
+   It does NOT crop the grid or affect pointer-based selection. */
+#layoutCanvas {
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: min(48dvh, 460px, calc(100dvh - 410px)) !important;
+  flex: 0 1 auto;
+  object-fit: contain;
+}
+#output .fitTools { margin-bottom: 4px; }
+#output .cropPresets { margin-bottom: 6px; }
+#output .guidesHelp { margin: 6px 0; }
+#output .previewHint { margin: 5px 0; padding: 6px 9px; }
+#output .previewBottom { margin: 4px 0 8px; }
+#output .selectBar { padding: 8px 10px; }
+#output #stats { margin: 6px 0; }
+.previewWorkspace { display:block; min-width:0; }
+.afterPreviewControls { min-width:0; }
+@media (min-width: 1080px) {
+  .previewWorkspace {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(310px,0.85fr);
+    align-items:start;
+    gap:14px;
+  }
+  .previewWorkspace .canvasWrap { min-width:0; }
+  .afterPreviewControls .previewHint { margin-top:0; }
+  .afterPreviewControls #stats { gap:5px; }
+  .afterPreviewControls .stat { min-width:70px; }
+  .afterPreviewControls .printActions { margin-top:6px; }
+  .afterPreviewControls .printActions button { min-width:0; }
+}
+@media (max-width: 800px) {
+  #layoutCanvas { max-height: min(42dvh, 400px) !important; }
+  .canvasWrap { padding: 5px; }
+}
+@media (max-height: 630px) and (min-width: 801px) {
+  #layoutCanvas { max-height: min(44dvh, calc(100dvh - 410px)) !important; }
+}
+
+/* v15: visible assembly order and unmistakable overlap trimming */
+.assemblySequence{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0 11px}
+.assemblyStep{border:1px solid #cbdbd0;border-radius:99px;padding:5px 9px;background:#edf5f0;color:#244a3b;font-size:12px;font-weight:700}
+.assemblyStep.current{background:#245f50;border-color:#245f50;color:#fff}
+.assemblyStep.start{border-color:#bd7b32}
+.sheetDirections{font-size:12px;line-height:1.45;background:#edf4f0;color:#244b40;border:1px solid #c9dcd1;padding:8px 10px;border-radius:7px;margin:6px 0 8px}
+.trimLegend{font-size:12px;line-height:1.35;color:#65493c;margin:7px 0 2px;display:flex;align-items:center;gap:7px}
+.trimSwatch{width:34px;height:16px;border:1px solid #ad6248;border-radius:2px;flex:none;background:repeating-linear-gradient(135deg,#f2d6c8 0,#f2d6c8 4px,#c88871 5px,#f2d6c8 6px)}
+@media(max-width:530px){.sheetDirections{padding:7px 9px}.assemblyStep{font-size:11px;padding:4px 7px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#17655a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v13</span></div>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Poster Printing v15</span></div>
 <div id="dropOverlay" aria-hidden="true"><div class="dropCard"><strong>Drop image to load it</strong><span>Release your photo anywhere on this page</span></div></div>
-<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v13</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
+<header><h1>Art Reference Enlarger <span style="font-size:13px;letter-spacing:0;opacity:.7">v15</span></h1><p>Choose the finished size, position the picture, tap the pages you need, then print.</p></header>
 <main class="app-layout">
 <div class="settings-col">
  <section class="compact">
@@ -254,8 +324,8 @@ body.previewOpen{overflow:hidden}
     <p class="trimExplanation"><strong>Red dashed cut lines:</strong> Only appear in Print preview / PDF where sheets overlap. Cut away the duplicated strip before assembling the pages. They are not a drawing grid.</p>
    </div>
   </details>
-  <div class="canvasWrap"><canvas id="layoutCanvas" width="800" height="800" tabindex="0" aria-label="Image with printable page tiles. Tap to select pages, drag to reposition, pinch to zoom"></canvas></div>
-  <p id="previewHint" class="previewHint">Drag the photo to reposition · pinch to zoom · tap a page to select/deselect it</p>
+  <div class="previewWorkspace"><div class="canvasWrap"><canvas id="layoutCanvas" width="800" height="800" tabindex="0" aria-label="Image with printable page tiles. Tap to select pages, drag to reposition, pinch to zoom"></canvas></div>
+  <div class="afterPreviewControls"><p id="previewHint" class="previewHint">Drag the photo to reposition · pinch to zoom · tap a page to select/deselect it</p>
   <div class="previewBottom"><span id="zoomReadout" class="smallHelp">Pinch or scroll to zoom</span><button id="quickZoomReset" type="button">Reset view</button><button id="resetCrop" type="button">Restore photo</button></div>
   <div id="printSelectionBar" class="selectBar"><div><strong id="selectionSummary">Select sheets to print</strong><p class="smallHelp">Tap the A1, A2, B1… regions directly in the image.</p></div><div class="selectActions"><button id="selectAll" type="button">All</button><button id="onlyPhoto" type="button">Photo pages</button><button id="selectNone" type="button">None</button></div></div>
   <div id="stats" class="statline"><div class="stat"><strong id="nPages">—</strong><span>selected / total</span></div><div class="stat"><strong id="nLayout">—</strong><span>columns × rows</span></div><div class="stat"><strong id="dpi">—</strong><span>source px / inch</span></div></div>
@@ -264,7 +334,7 @@ body.previewOpen{overflow:hidden}
   <div class="formrow" style="margin-top:8px"><button id="sharePdf" type="button" disabled>Share PDF / print</button><button id="openPdf" type="button" disabled>Open saved PDF</button></div>
   <div id="message" role="status"></div>
   <p class="smallHelp">Print at <strong>Actual size / 100%</strong>. Check the printed 1-inch ruler before assembling.</p>
-  <div id="detail" class="sr-only" aria-live="polite"></div>
+  </div></div><div id="detail" class="sr-only" aria-live="polite"></div>
  </section>
 
 </div>
@@ -291,15 +361,18 @@ body.previewOpen{overflow:hidden}
    <section class="previewSingleSheet">
     <h3>One printed sheet</h3>
     <p class="overviewCaption" id="currentPageLabel">Sheet A1: print at Actual Size / 100%</p>
+    <p class="sheetDirections" id="sheetDirections">1. Start here with sheet A1.</p>
     <div class="previewPaper" id="previewPaper" tabindex="0"><img id="previewImage" alt="Printable sheet with margins and cutting guides"></div>
     <div class="previewPager"><button id="previewPrev" type="button">Previous</button><strong id="previewPosition">Page 1</strong><button id="previewNext" type="button">Next</button></div>
    </section>
   </div>
   <div class="assemblyAtPrint">
    <strong>After printing: how to join the pages</strong>
-   <p>Lay out A1 at top left; B1 goes to its right, A2 below. On later sheets, cut at the <strong>red dashed line</strong> to remove the repeated strip. Trim the earlier sheet at its image edge, match the picture across the seam, and tape from behind.</p>
+   <div id="assemblySequence" class="assemblySequence" aria-label="Order to assemble the selected sheets"></div>
+   <p id="assemblyIntro">Begin with the first numbered sheet. Remove only the shaded overlap bands from later sheets, align matching image details, and tape on the back.</p>
+   <p class="trimLegend"><span class="trimSwatch" aria-hidden="true"></span><span>Shaded/hatched strip = duplicated picture to <strong>cut away</strong>. Red dashed line = exact cut edge.</span></p>
    <details class="assemblyFold"><summary>How to assemble printed sheets</summary>
-<p><strong>Red dashed = TRIM REPEATED STRIP.</strong> On A2, remove the top strip; on B1, remove the left strip. The dashed line is the new edge of the later sheet, not an image or artwork-center line.</p>
+<p><strong>Hatched shading = the duplicated strip to discard.</strong> The red dashed line is your exact cut line. On A2, discard the top strip only when A1 is printed; on B1, discard the left strip only when A1 is printed. An isolated sheet has no neighbor seam to trim.</p>
 <div class="assemblyTip"><strong>Gray artwork outline and short midpoint ticks (optional):</strong> These show the finished canvas edges and its true horizontal/vertical centers, based on your 12 × 18-inch dimensions. They are independent of the photograph's crop. <strong>Keep the artwork outline</strong> when positioning the template; only trim the dashed red overlap strips to join sheets.</div>
 <svg class="assemblyDiagram" viewBox="0 0 540 226" role="img" aria-label="How to join A1 above A2: A2 has a repeated top strip ending at a dashed trim line; cut it off then join it to the image bottom of A1">
 <rect width="540" height="226" fill="#fbfcfb"/>
@@ -327,8 +400,8 @@ body.previewOpen{overflow:hidden}
 <ol>
 <li><strong>Print at Actual Size / 100%</strong> (not Fit). First measure the 1-inch calibration ruler. Print one-sided.</li>
 <li><strong>Lay out sheets</strong> using their codes: A1 is top left, A2 directly below it, B1 immediately to the right of A1. The page count may omit intentionally deselected sheets.</li>
-<li><strong>For A1 over A2:</strong> Cut off A1's bottom white margin along the <em>edge of its printed image</em>. On A2, cut along its dashed <em>horizontal</em> line, removing the top white margin and the repeated 0.25-inch photo strip. Put the two new edges together. The picture should be continuous.</li>
-<li><strong>For A1 beside B1:</strong> Cut A1 at its right image edge. Cut B1 along its dashed <em>vertical</em> line, removing its left margin and repeated strip. Join the two edges.</li>
+<li><strong>For A1 over A2 (when both are selected):</strong> Cut off A1's bottom white margin along the <em>edge of its printed image</em>. On A2, cut along its dashed <em>horizontal</em> line, removing the top white margin and the repeated 0.25-inch photo strip. Put the two new edges together. The picture should be continuous.</li>
+<li><strong>For A1 beside B1 (when both are selected):</strong> Cut A1 at its right image edge. Cut B1 along its dashed <em>vertical</em> line, removing its left margin and repeated strip. Join the two edges.</li>
 <li><strong>Secure</strong> the pieces from the back with low-tack tape, checking obvious landmarks across each seam. The dashed cutting guides are not part of the final picture.</li>
 <li><strong>Position on the canvas:</strong> Match the assembled template's <strong>gray artwork-edge guides</strong> to the canvas edges. Use midpoint ticks to verify that the printed template is centered on the surface. If you printed only A1+A2, you can still align its <strong>top and left artwork-edge guides</strong> to the top/left of the canvas; the unprinted B region is deliberately absent.</li>
 <li><strong>For tracing:</strong> Tape the aligned pattern along the top as a hinge, lift it, insert appropriate graphite/chalk transfer paper, and trace the contours. For pouncing, perforate the assembled pattern along the lines first.</li>
@@ -337,11 +410,11 @@ body.previewOpen{overflow:hidden}
 </details>
    <label class="check assemblyInclude"><input type="checkbox" id="assemblyPage">Add a one-page assembly guide to the saved PDF</label>
   </div>
-  <p class="previewInfo">The left overview represents the assembled artwork. The right view represents one physical printer sheet, including its margins. When printing the PDF, select Actual Size / 100% and verify the 1-inch ruler.</p>
+  <p class="previewInfo">The assembled overview numbers the selected sheets in order. The right preview shows one physical printer sheet, with a hatched trim area only where another selected sheet joins. When printing the PDF, select Actual Size / 100% and verify the 1-inch ruler.</p>
   <button id="previewExport" type="button" class="primary">Save selected print pages as PDF</button>
  </div>
 </div>
-<footer class="foot">Art Reference Enlarger v13 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
+<footer class="foot">Art Reference Enlarger v15 · Based on v09 · Source presets, direct crop, touch gestures, selected-sheet PDF · Earlier versions preserved</footer>
 <script>
 'use strict';
 const $=s=>document.getElementById(s);
@@ -527,12 +600,20 @@ function drawLayout(conf){layoutCanvas.style.maxWidth='100%';let can=layoutCanva
    lctx.fillStyle='rgba(240,242,240,.67)';lctx.fillRect(sx,sy,x1-sx,y1-sy);
    lctx.strokeStyle='rgba(115,120,115,.45)';lctx.strokeRect(sx,sy,x1-sx,y1-sy);
   }
-  lctx.fillStyle=selectedTiles.has(key)?'#064535':'#777f7a';
-  lctx.font='bold 18px system-ui';
-  const xx=sx+7,yy=sy+22;if(xx<W-5&&yy<H-5){
-   lctx.fillText(colName(col)+(row+1)+(selectedTiles.has(key)?' ✓':' – skip'),xx,yy);
+  const screenScale=Math.max(.1,layoutCanvas.getBoundingClientRect().height/H);
+  const labelFont=Math.max(18,Math.min(55,Math.round(14/screenScale)));
+  const miniFont=Math.max(11,Math.min(33,Math.round(10/screenScale)));
+  const xx=sx+Math.max(7,7/screenScale),yy=sy+labelFont+Math.max(6,5/screenScale);
+  if(xx<W-5&&yy<H-5){
+   const name=colName(col)+(row+1)+(selectedTiles.has(key)?' ✓':' – skip');
+   lctx.font='bold '+labelFont+'px system-ui';
+   const tw=lctx.measureText(name).width, margin=Math.max(5,4/screenScale);
+   lctx.fillStyle=selectedTiles.has(key)?'rgba(255,255,255,.86)':'rgba(255,255,255,.78)';
+   lctx.fillRect(xx-margin,yy-labelFont-margin,Math.min(W-xx+margin,tw+2*margin),labelFont+2*margin);
+   lctx.fillStyle=selectedTiles.has(key)?'#064535':'#777f7a';
+   lctx.fillText(name,xx,yy);
    const partial=conf.pw-col*conf.stepW<conf.usableW-.01||conf.ph-row*conf.stepH<conf.usableH-.01;
-   if(partial){lctx.font='bold 11px system-ui';lctx.fillText('partial sheet',xx,yy+16);}
+   if(partial){lctx.font='bold '+miniFont+'px system-ui';lctx.fillText('partial sheet',xx,yy+miniFont+Math.max(4,3/screenScale));}
   }
  }
  }
@@ -1014,6 +1095,46 @@ layoutCanvas.addEventListener('click',e=>{
 // The print-time overview represents the assembled picture, not a second crop editor.
 // Seams are drawn at the cut edge AFTER removing the overlapping strip
 // from the later printed sheet. This differs from the start of each raw paper tile.
+function getAssemblyOrder(conf){
+ const order=[];
+ for(let r=0;r<conf.rows;r++)for(let c=0;c<conf.cols;c++){
+  const key=tileKey(c,r);
+  if(selectedTiles.has(key))order.push({c,r,key});
+ }
+ return order;
+}
+function assemblyStepFor(conf,c,r){
+ const order=getAssemblyOrder(conf);
+ const index=order.findIndex(p=>p.c===c&&p.r===r);
+ return {step:index+1,total:order.length,order};
+}
+function printedNeighborJoins(conf,c,r){
+ return {
+  left:conf.overlap>0&&c>0&&selectedTiles.has(tileKey(c-1,r)),
+  top:conf.overlap>0&&r>0&&selectedTiles.has(tileKey(c,r-1))
+ };
+}
+function sheetAssemblyInstruction(conf,c,r){
+ const {step,total}=assemblyStepFor(conf,c,r),joins=printedNeighborJoins(conf,c,r);
+ const target=tileKey(c,r);
+ if(step===1)return `Step 1 of ${total}: START with ${target}. Lay it down first. No edge needs trimming yet.`;
+ const moves=[];
+ if(joins.left)moves.push(`to the RIGHT of ${tileKey(c-1,r)}`);
+ if(joins.top)moves.push(`BELOW ${tileKey(c,r-1)}`);
+ if(!moves.length)return `Step ${step} of ${total}: Position ${target} using its artwork-edge guides. No adjoining selected sheet, so no shaded strip needs trimming.`;
+ const strips=[joins.left?'LEFT':null,joins.top?'TOP':null].filter(Boolean).join(' and ');
+ return `Step ${step} of ${total}: Cut away the shaded ${strips} strip${joins.left&&joins.top?'s':''} on ${target}. Place ${target} ${moves.join(' and ')}, align image details and tape from behind.`;
+}
+function updateAssemblySequence(conf){
+ const order=getAssemblyOrder(conf),container=$('assemblySequence');
+ container.replaceChildren();
+ order.forEach((item,i)=>{
+  const chip=document.createElement('span');chip.className='assemblyStep'+(i===0?' start':'')+(i===previewIndex?' current':'');
+  chip.textContent=`${i+1}. ${item.key}`;
+  container.append(chip);
+ });
+ $('assemblyIntro').textContent=order.length?`Start with ${order[0].key}, then follow the numbered sheets. On every later sheet, the tinted/hatched overlap is a duplicated part of the photograph: remove it only where its neighboring sheet is included. Match the image at the cut edge, then tape from the back.`:'No sheets selected.';
+}
 function overviewTileRect(conf,c,r){
  const x0=c===0?0:c*conf.stepW+conf.overlap;
  const y0=r===0?0:r*conf.stepH+conf.overlap;
@@ -1036,10 +1157,12 @@ function drawPrintOverview(){
   g.save();g.beginPath();g.rect(x0,y0,Math.max(0,x1-x0),Math.max(0,y1-y0));g.clip();
   if(!on){g.fillStyle='rgba(240,242,240,.83)';g.fillRect(x0,y0,x1-x0,y1-y0);}
   const font=Math.max(13,Math.min(23,W/25));g.font=`700 ${font}px system-ui`;
-  const tw=g.measureText(key).width;
+  const step=on?assemblyStepFor(conf,c,r).step:0;
+  const badge=on?`${step}. ${key}`:key;
+  const tw=g.measureText(badge).width;
   g.fillStyle=on?'rgba(12,54,43,.88)':'rgba(96,102,96,.89)';
   g.fillRect(x0+4,y0+4,tw+16,font+12);
-  g.fillStyle='#fff';g.fillText(key,x0+12,y0+font+6);
+  g.fillStyle='#fff';g.fillText(badge,x0+12,y0+font+6);
   if(!on){g.font=`500 ${Math.max(10,font*.58)}px system-ui`;g.fillStyle='#4e5c55';g.fillText('not printing',x0+7,y0+font+28);}
   g.restore();
  }
@@ -1102,6 +1225,8 @@ async function showPrintPage(index){
   $('previewDescription').textContent=item.label+' · finished artwork '+num('w')+' × '+(num('h')||num('w'))+' '+$('unit').value+' · printing on '+$('paper').selectedOptions[0].text;
   $('previewPosition').textContent=`${index+1} of ${previewPages.length} · ${item.label}`;
   $('currentPageLabel').textContent=`${item.label} · ${$('paper').selectedOptions[0].text} · print at 100%`;
+  $('sheetDirections').textContent=sheetAssemblyInstruction(config(),item.c,item.r);
+  updateAssemblySequence(config());
   $('overviewHint').textContent='Tap a labeled sheet to inspect it. Gray areas were not selected.';
   $('previewPrev').disabled=previewPages.length<2;
   $('previewNext').disabled=previewPages.length<2;
@@ -1199,9 +1324,32 @@ function makePageImage(conf,place,col,row,scale=180){const cvs=document.createEl
   // photograph itself has blank margins.
   g.restore();
  }
- // On subsequent pages, the first strip is duplicated image from the prior page.
- // It must be removed, not treated as part of the reference drawing.
- if(col>0&&conf.overlap>0){
+ // A lightly shaded, hatched band identifies the duplicated part of a
+ // LATER sheet, which is discarded at assembly. The physical image scale
+ // is unchanged, and no retained artwork is covered by the shading.
+ // Only mark a band if the neighboring sheet is also selected.
+ const joins=printedNeighborJoins(conf,col,row);
+ const cutLeft=joins.left,cutTop=joins.top;
+ function shadeThrowaway(x,y,w,h,side){
+  if(w<=0||h<=0)return;
+  g.save();g.beginPath();g.rect(x,y,w,h);g.clip();
+  g.fillStyle=conf.gray?'rgba(90,90,90,.15)':'rgba(185,76,43,.17)';
+  g.fillRect(x,y,w,h);
+  g.strokeStyle=conf.gray?'rgba(65,65,65,.32)':'rgba(155,62,36,.36)';
+  g.lineWidth=Math.max(.7,scale*.004);
+  const pitch=Math.max(10,scale*.13);
+  g.beginPath();
+  if(side==='left'){
+   for(let yy=y-w;yy<y+h+w;yy+=pitch){g.moveTo(x,yy+w);g.lineTo(x+w,yy);}
+  }else{
+   for(let xx=x-h;xx<x+w+h;xx+=pitch){g.moveTo(xx,y+h);g.lineTo(xx+h,y);}
+  }
+  g.stroke();g.restore();
+ }
+ if(cutLeft)shadeThrowaway(mx,my,conf.overlap*scale,tileH*scale,'left');
+ if(cutTop)shadeThrowaway(mx,my,tileW*scale,conf.overlap*scale,'top');
+ // The dashed line marks the exact boundary between discarded and kept image.
+ if(cutLeft){
   const x=mx+conf.overlap*scale;
   g.strokeStyle='#a43426';g.setLineDash([scale*.052,scale*.035]);g.lineWidth=scale*.01;
   g.beginPath();g.moveTo(x,my);g.lineTo(x,my+tileH*scale);g.stroke();g.setLineDash([]);
@@ -1210,7 +1358,7 @@ function makePageImage(conf,place,col,row,scale=180){const cvs=document.createEl
   g.fillStyle='#8c291f';g.font=`bold ${Math.round(scale*.095)}px Arial`;
   g.textAlign='center';g.textBaseline='middle';g.fillText('CUT HERE — discard LEFT strip',0,-scale*.036);g.restore();
  }
- if(row>0&&conf.overlap>0){
+ if(cutTop){
   const y=my+conf.overlap*scale;
   g.strokeStyle='#a43426';g.setLineDash([scale*.052,scale*.035]);g.lineWidth=scale*.01;
   g.beginPath();g.moveTo(mx,y);g.lineTo(mx+tileW*scale,y);g.stroke();g.setLineDash([]);
@@ -1219,10 +1367,11 @@ function makePageImage(conf,place,col,row,scale=180){const cvs=document.createEl
   g.fillText('CUT HERE ↓ — discard strip ABOVE',mx+scale*.1,my+scale*.04);g.restore();
  }
  g.fillStyle='#1f342e';g.font=`600 ${Math.round(scale*.10)}px Arial, sans-serif`;g.textBaseline='middle';
-  const code=colName(col)+(row+1);g.fillText(`${code}  (tile ${row*conf.cols+col+1} of ${conf.cols*conf.rows})`,mx,Math.max(scale*.13,my/2));
+  const code=colName(col)+(row+1),assembly=assemblyStepFor(conf,col,row);
+  g.fillText(`${code}  ·  STEP ${assembly.step} OF ${assembly.total}${assembly.step===1?'  ·  START HERE':''}`,mx,Math.max(scale*.13,my/2));
  g.font=`${Math.round(scale*.075)}px Arial, sans-serif`;
  g.fillText(`${conf.shape==='circle'?conf.pw.toFixed(2)+' in diameter':conf.pw.toFixed(2)+' × '+conf.ph.toFixed(2)+' in'} · PRINT AT 100%`,mx,Math.min(cvs.height-scale*.12,my+tileH*scale+scale*.12));
- if(row>0||col>0){const note=`ASSEMBLY: cut dashed ${row>0?'TOP ':''}${row>0&&col>0?'+ ':''}${col>0?'LEFT ':''}line; remove repeated strip.`;g.fillStyle='#8c291f';g.font=`${Math.round(scale*.065)}px Arial`;g.fillText(note,mx,Math.min(cvs.height-scale*.04,my+tileH*scale+scale*.28));}
+ if(cutTop||cutLeft){const note=`REMOVE HATCHED ${cutTop?'TOP ':''}${cutTop&&cutLeft?'+ ':''}${cutLeft?'LEFT ':''}STRIP AT DASHED LINE`;g.fillStyle='#8c291f';g.font=`${Math.round(scale*.065)}px Arial`;g.fillText(note,mx,Math.min(cvs.height-scale*.04,my+tileH*scale+scale*.28));}
  // A real 1-inch ruler, placed in the top margin if room allows.
  const x0=cvs.width-scale*(1.35),y0=Math.max(scale*.13,my/2);if(x0>mx+scale*.8){g.strokeStyle='#1f342e';g.lineWidth=scale*.005;g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+scale,y0);g.moveTo(x0,y0-scale*.05);g.lineTo(x0,y0+scale*.05);g.moveTo(x0+scale,y0-scale*.05);g.lineTo(x0+scale,y0+scale*.05);g.stroke();g.textAlign='center';g.fillText('1 in',x0+scale*.5,y0-scale*.07);g.textAlign='left'}
  return new Promise((resolve,reject)=>cvs.toBlob(b=>{if(!b)reject(Error('Could not rasterize page'));else b.arrayBuffer().then(a=>resolve(new Uint8Array(a))).catch(reject)},'image/jpeg',.92));
@@ -1246,17 +1395,19 @@ function makeAssemblyGuide(conf,place,scale=180){
   if(!on){g.beginPath();g.moveTo(x+cell*.2,yy+cell*.2);g.lineTo(x+cell*.8,yy+cell*.8);g.stroke()}
  }
  y=oy+cell*conf.rows+scale*.24;
+ const order=getAssemblyOrder(conf).map(s=>s.key);
+ const orderDisplay=order.slice(0,9).join(' > ')+(order.length>9?' > ...':'');
  const lines=[
  '1. Print at Actual Size / 100%. Measure the 1-inch ruler on a photo page.',
- '2. Arrange selected sheets by code: A1 upper left, A2 below A1, B1 right of A1.',
- `3. Each joining sheet repeats ${conf.overlap.toFixed(2)} inch of its preceding neighbor.`,
- '4. Red dashed line: cut off the preceding overlap strip on LATER sheets.',
- '    A2: remove TOP strip; B1: remove LEFT strip; B2: remove BOTH strips.',
- '5. Trim the EARLIER sheet at the outer edge of its printed tile; join edges.',
- '6. Align image features across seams. Tape joined sheets together from behind.',
- '7. Align the GRAY ARTWORK FRAME to your canvas corners/edges.',
- '    Short marks at artwork edges indicate the exact midpoint of each side.',
- '8. Tape assembled pattern at top as a hinge; use transfer paper or pouncing.'
+ `2. Assemble in order: ${orderDisplay}`,
+ '3. Each joining sheet repeats a narrow part of an adjacent sheet.',
+ '4. HATCHED area = REMOVE. Red dashed line = exact cut boundary.',
+ '    Only trim a shaded edge if its neighbor is also being printed.',
+ '5. Trim the EARLIER sheet at its printed image edge; join new edges.',
+ '6. Match image features across seams. Tape sheets from behind.',
+ '7. Align the GRAY ARTWORK FRAME to the canvas edges and corners.',
+ '    Short marks at artwork edges indicate each side midpoint.',
+ '8. Tape assembled pattern at top as a hinge for transfer.'
  ];
  for(const t of lines)line(t,9,false,t.startsWith('4.')?'#922d27':'#263b32',1.37);
  y+=scale*.08;

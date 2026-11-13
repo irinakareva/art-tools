@@ -1,5 +1,5 @@
-/* Offline app shell; build v13 for poster-print. */
-const CACHE_NAME = 'art-tools-poster-print-v13';
+/* Offline app shell; build v15 for poster-print. */
+const CACHE_NAME = 'art-tools-poster-print-v15';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
  event.waitUntil((async () => {
