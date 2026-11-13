@@ -37,7 +37,16 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .cardFoot{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:9px}.cardFoot button{font-size:12px;padding:5px 8px;min-height:31px}.cardFoot .desc{font-size:11px;color:#64727a;line-height:1.25}
 footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 #modal{position:fixed;inset:0;background:#081a1de8;z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;gap:12px}
-#modal.open{display:flex}#modal canvas{max-width:96vw;max-height:79vh;width:auto;height:auto;background:white;object-fit:contain}#modal .modalTop{display:flex;align-items:center;justify-content:space-between;color:white;width:min(92vw,900px);gap:20px}#modal button{background:white;color:#223b3f}
+#modal.open{display:flex}
+#modal canvas{display:block;max-width:calc(100vw - 116px);max-height:calc(100dvh - 178px);width:auto;height:auto;background:white;object-fit:contain;touch-action:pan-y}
+#modal .modalTop{display:flex;align-items:center;justify-content:space-between;color:white;width:min(94vw,1000px);gap:12px}
+#modal button{background:white;color:#223b3f}
+#modal .modalFrame{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;flex:1;min-height:0}
+#modal .modalNav{font-size:30px;line-height:1;min-width:39px;padding:5px;border-radius:50%;min-height:47px}
+#modal .modalBottom{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;color:#fff}
+#modalPosition{font-size:13px;color:#d3e3e1;min-width:65px;text-align:center}
+#saveFeedback{font-size:12px;color:#415f61;flex-basis:100%;text-align:right}
+@media(max-width:560px){#modal{padding:11px;gap:9px}#modal .modalFrame{gap:4px}#modal canvas{max-width:calc(100vw - 92px);max-height:calc(100dvh - 165px)}#modal .modalNav{min-width:38px;padding:4px}#saveFeedback{text-align:left}}
 #dropOverlay{position:fixed;inset:0;z-index:100;display:none;background:#0a3535cf;color:white;align-items:center;justify-content:center;font-size:22px;font-weight:700}
 @media(max-width:850px){.workspace{grid-template-columns:1fr}.optionsPanel{display:flex;gap:22px;flex-wrap:wrap}.optionsPanel>div.optionblock{margin-top:0;padding-top:0;border:0;flex:1 1 220px}.optionsPanel .tip{flex:1 1 100%;margin-top:0}.preview-grid{gap:9px}}
 @media(max-width:560px){main{padding:15px 10px 35px}.cropPanel,.optionsPanel{padding:13px}.controls{gap:7px}.controls button,.controls label{font-size:12px;padding:7px 9px}.photoCard{padding:7px}.photoCard.top{grid-column:span 3}.photoCard.group{grid-column:span 3}.thumb canvas{max-height:275px}.thumb{min-height:105px}.cardHead{flex-wrap:wrap;align-items:start}.cardHead strong{font-size:13px}.resultsHeader{align-items:start}.resultsHeader h2{font-size:22px}.cardFoot{flex-wrap:wrap}.swatches span{width:24px;height:18px}}
@@ -89,7 +98,7 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
       <div class="tip"><b>What the values mean</b><br>Every pixel, including the background and cast shadows, belongs to a value group. Each grouped picture has exactly 2, 3, or 4 possible grays. The crop recalculates the value boundaries for that composition.</div>
     </div>
   </section>
-  <div class="resultsHeader"><div><h2>3 · Compare and select</h2><div class="subtle">Tap pictures to select them, then save just your selections. Use View to enlarge a picture.</div></div><div class="saveOptions"><span id="selectionCount">0 selected</span><button id="selectAll">Select all</button><button id="clearSelection">Clear</button><button class="primary" id="saveSelected">Save selected ZIP</button><button id="saveComparison">Save comparison PNG</button></div></div>
+  <div class="resultsHeader"><div><h2>3 · Compare and select</h2><div class="subtle">Tap pictures to select them. Tap View for a full-screen gallery; swipe or use arrows to browse.</div></div><div class="saveOptions"><span id="selectionCount">0 selected</span><button id="selectAll">Select all</button><button id="clearSelection">Clear</button><button class="primary" id="saveIndividuals">Save individual PNGs</button><button id="savePdf">Save one-page PDF</button><button id="saveComparison">Save comparison PNG</button><span id="saveFeedback" aria-live="polite"></span></div></div>
   <section class="preview-grid" id="previewGrid">
    <div class="photoCard top"><div class="cardHead"><strong>Original color</strong><button type="button" class="selectChip" data-select="original" aria-pressed="false">+ Select</button><span class="type">Reference</span></div><div class="thumb" data-key="original" role="button" tabindex="0"><canvas id="out-original"></canvas></div><div class="cardFoot"><span class="desc">Color and materials</span><button type="button" class="view" data-view="original">View</button><button data-download="original">Save PNG</button></div></div>
    <div class="photoCard top"><div class="cardHead"><strong>Grayscale</strong><button type="button" class="selectChip" data-select="gray" aria-pressed="false">+ Select</button><span class="type">All tones</span></div><div class="thumb" data-key="gray" role="button" tabindex="0"><canvas id="out-gray"></canvas></div><div class="cardFoot"><span class="desc">Compare actual lightness</span><button type="button" class="view" data-view="gray">View</button><button data-download="gray">Save PNG</button></div></div>
@@ -99,7 +108,7 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
   </section>
   <footer><b>Drawing guidance:</b> Treat these as initial maps, not perfect artistic answer keys. Automatic cutoffs group photographed brightness, not the physical cause of that brightness. Local color (dark wood or hair) and cast/form shadow can end up in the same value group. If a boundary looks wrong, change the crop or click a different light/dark balance. Keep the manually drawn thumbnail small, flat, and simple; add gradients only in the later shaded drawing. All photo processing happens on your device; this standalone file works offline.</footer>
 </main>
-<div id="modal" role="dialog" aria-modal="true"><div class="modalTop"><strong id="modalLabel">Value study</strong><button id="closeModal">Close ×</button></div><canvas id="modalCanvas"></canvas><button id="modalSave">Save PNG</button></div>
+<div id="modal" role="dialog" aria-modal="true" aria-label="Full-screen image viewer"><div class="modalTop"><strong id="modalLabel">Value study</strong><button id="closeModal">Close ×</button></div><div class="modalFrame"><button id="prevModal" class="modalNav" aria-label="Previous image">‹</button><canvas id="modalCanvas" aria-label="Enlarged value study"></canvas><button id="nextModal" class="modalNav" aria-label="Next image">›</button></div><div class="modalBottom"><span id="modalPosition"></span><button id="modalSelect">+ Select</button><button id="modalSave">Save this PNG</button></div></div>
 <div id="dropOverlay">Drop image to open</div>
 <script>
 'use strict';
@@ -278,6 +287,8 @@ document.querySelectorAll('[data-download]').forEach(b=>b.onclick=()=>{const key
 function showModal(key){const src=state.out[key];if(!src)return;state.modalKey=key;
  $('#modalLabel').textContent=({original:'Original color',gray:'Grayscale',2:'2 values',3:'3 values',4:'4 values'})[key];const dst=$('#modalCanvas');dst.width=src.width;dst.height=src.height;dst.getContext('2d').drawImage(src,0,0);
  $('#modal').classList.add('open');
+ $('#modalPosition').textContent=`${SELECT_KEYS.indexOf(key)+1} of ${SELECT_KEYS.length}`;
+ $('#modalSelect').textContent=selectedKeys.has(key)?'✓ Selected':'+ Select';
 }
 const SELECT_KEYS=['original','gray','2','3','4'];
 const SELECT_LABELS={original:'Original color',gray:'Grayscale',2:'2 values',3:'3 values',4:'4 values'};
@@ -290,7 +301,8 @@ function syncSelection(){
   thumb.setAttribute('aria-pressed',String(sel));
  }
  $('#selectionCount').textContent=`${selectedKeys.size} selected`;
- $('#saveSelected').disabled=selectedKeys.size===0;
+ $('#saveIndividuals').disabled=selectedKeys.size===0;
+ $('#savePdf').disabled=selectedKeys.size===0;
  $('#saveComparison').disabled=selectedKeys.size===0;
 }
 function toggleSelected(key){if(selectedKeys.has(key))selectedKeys.delete(key);else selectedKeys.add(key);syncSelection()}
@@ -304,12 +316,21 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 $('#selectAll').onclick=()=>{SELECT_KEYS.forEach(k=>selectedKeys.add(k));syncSelection()};
 $('#clearSelection').onclick=()=>{selectedKeys.clear();syncSelection()};
 function closeModal(){state.modalKey=null;$('#modal').classList.remove('open')}
-$('#closeModal').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeModal()});
-window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function moveModal(direction){if(!state.modalKey)return;const pos=SELECT_KEYS.indexOf(state.modalKey);showModal(SELECT_KEYS[(pos+direction+SELECT_KEYS.length)%SELECT_KEYS.length])}
+$('#closeModal').onclick=closeModal;
+$('#prevModal').onclick=()=>moveModal(-1);
+$('#nextModal').onclick=()=>moveModal(1);
+$('#modalSelect').onclick=()=>{if(state.modalKey){toggleSelected(state.modalKey);$('#modalSelect').textContent=selectedKeys.has(state.modalKey)?'✓ Selected':'+ Select'}};
+$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closeModal()});
+window.addEventListener('keydown',e=>{if(!state.modalKey)return;if(e.key==='Escape')closeModal();else if(e.key==='ArrowLeft'){e.preventDefault();moveModal(-1)}else if(e.key==='ArrowRight'){e.preventDefault();moveModal(1)}});
+let swipeStart=null;
+$('#modalCanvas').addEventListener('pointerdown',e=>{swipeStart={x:e.clientX,y:e.clientY,pointer:e.pointerId}});
+$('#modalCanvas').addEventListener('pointerup',e=>{if(!swipeStart||swipeStart.pointer!==e.pointerId)return;const dx=e.clientX-swipeStart.x,dy=e.clientY-swipeStart.y;swipeStart=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.25)moveModal(dx<0?1:-1)});
+$('#modalCanvas').addEventListener('pointercancel',()=>{swipeStart=null});
 $('#modalSave').onclick=()=>{if(state.modalKey)downloadCanvas(state.out[state.modalKey],filenameFor(state.modalKey))};
 function orderedSelection(){return SELECT_KEYS.filter(k=>selectedKeys.has(k))}
-$('#saveComparison').onclick=()=>{
- const keys=orderedSelection();if(!keys.length||!state.out.original)return;
+function makeComparisonCanvas(keys){
+ if(!keys.length||!state.out.original)return null;
  const first=state.out.original,margin=20,labelH=48,cellW=520,cellH=Math.round(cellW*first.height/first.width);
  const cols=keys.length===1?1:keys.length===2?2:keys.length===4?2:3,rows=Math.ceil(keys.length/cols);
  const W=cols*(cellW+margin)+margin,H=rows*(cellH+labelH+margin)+margin;
@@ -320,37 +341,66 @@ $('#saveComparison').onclick=()=>{
   ctx.fillStyle='#22373a';ctx.font='bold 22px system-ui';ctx.fillText(SELECT_LABELS[key],x,y+27);
   ctx.imageSmoothingEnabled=key==='original'||key==='gray';ctx.drawImage(state.out[key],x,y+labelH,cellW,cellH);
  });
- downloadCanvas(c,`${state.filename}-selected-comparison.png`);
-};
-// Zero-dependency ZIP writer: stored PNGs (PNG files already compress internally).
-const crcTable=(()=>{const a=new Uint32Array(256);for(let n=0;n<256;n++){let v=n;for(let j=0;j<8;j++)v=v&1?0xedb88320^(v>>>1):v>>>1;a[n]=v>>>0}return a})();
-function crc32(data){let c=0xffffffff;for(let i=0;i<data.length;i++)c=crcTable[(c^data[i])&255]^(c>>>8);return(c^0xffffffff)>>>0}
-function put16(d,k,v){d[k]=v&255;d[k+1]=(v>>>8)&255}
-function put32(d,k,v){d[k]=v&255;d[k+1]=(v>>>8)&255;d[k+2]=(v>>>16)&255;d[k+3]=(v>>>24)&255}
-function createZip(files){
- let offset=0,parts=[],directory=[];const utf8=new TextEncoder();
- for(const file of files){
-  const n=utf8.encode(file.name),b=file.bytes,c=crc32(b),l=new Uint8Array(30+n.length);
-  put32(l,0,0x04034b50);put16(l,4,20);put16(l,6,0x800);put16(l,8,0);put32(l,14,c);put32(l,18,b.length);put32(l,22,b.length);put16(l,26,n.length);l.set(n,30);
-  const d=new Uint8Array(46+n.length);put32(d,0,0x02014b50);put16(d,4,20);put16(d,6,20);put16(d,8,0x800);put32(d,16,c);put32(d,20,b.length);put32(d,24,b.length);put16(d,28,n.length);put32(d,42,offset);d.set(n,46);
-  parts.push(l,b);directory.push(d);offset+=l.length+b.length;
- }
- const dirBytes=directory.reduce((n,d)=>n+d.length,0),tail=new Uint8Array(22);
- put32(tail,0,0x06054b50);put16(tail,8,files.length);put16(tail,10,files.length);put32(tail,12,dirBytes);put32(tail,16,offset);
- return new Blob([...parts,...directory,tail],{type:'application/zip'});
+ return c;
 }
+$('#saveComparison').onclick=()=>{const c=makeComparisonCanvas(orderedSelection());if(c)downloadCanvas(c,`${state.filename}-selected-comparison.png`)};
 function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
-$('#saveSelected').onclick=async()=>{
- const keys=orderedSelection();if(!keys.length)return;const btn=$('#saveSelected');btn.disabled=true;btn.textContent='Preparing…';
+// Offline, dependency-free one-page PDF: one JPEG of the selected comparison sheet.
+// Preserves the selected order and puts all chosen images on one PDF page.
+function makeOnePagePdf(canvas,imageBytes,codec){
+ const enc=new TextEncoder(),chunks=[],offsets=[0];let size=0;
+ const add=x=>{chunks.push(x);size+=x.length},write=t=>add(enc.encode(t));
+ const obj=(n,fn)=>{offsets[n]=size;write(`${n} 0 obj\n`);fn();write('\nendobj\n')};
+ const landscape=canvas.width>=canvas.height, pw=landscape?842:595, ph=landscape?595:842;
+ const margin=24,scale=Math.min((pw-2*margin)/canvas.width,(ph-2*margin)/canvas.height);
+ const dw=(canvas.width*scale).toFixed(3),dh=(canvas.height*scale).toFixed(3);
+ const x=((pw-Number(dw))/2).toFixed(3),y=((ph-Number(dh))/2).toFixed(3);
+ write('%PDF-1.4\n');add(new Uint8Array([37,255,255,255,255,10]));
+ obj(1,()=>write('<< /Type /Catalog /Pages 2 0 R >>'));
+ obj(2,()=>write('<< /Type /Pages /Kids [3 0 R] /Count 1 >>'));
+ obj(3,()=>write(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /Resources << /XObject << /Pic 5 0 R >> >> /Contents 4 0 R >>`));
+ const command=enc.encode(`q\n${dw} 0 0 ${dh} ${x} ${y} cm\n/Pic Do\nQ\n`);
+ obj(4,()=>{write(`<< /Length ${command.length} >>\nstream\n`);add(command);write('\nendstream')});
+ obj(5,()=>{write(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /${codec} /Length ${imageBytes.length} >>\nstream\n`);add(imageBytes);write('\nendstream')});
+ const xref=size;write('xref\n0 6\n0000000000 65535 f \n');for(let i=1;i<=5;i++)write(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+ write(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+ return new Blob(chunks,{type:'application/pdf'});
+}
+$('#savePdf').onclick=async()=>{
+ const comparison=makeComparisonCanvas(orderedSelection());if(!comparison)return;
+ const btn=$('#savePdf');btn.disabled=true;btn.textContent='Creating PDF…';
  try{
-  const files=[];
+  // Prefer lossless RGB compression, so the PDF preserves the actual flat values.
+  let bytes,codec;
+  if(typeof CompressionStream==='function'){
+   const rgba=comparison.getContext('2d').getImageData(0,0,comparison.width,comparison.height).data;
+   const rgb=new Uint8Array(comparison.width*comparison.height*3);
+   for(let i=0,j=0;i<rgba.length;i+=4){rgb[j++]=rgba[i];rgb[j++]=rgba[i+1];rgb[j++]=rgba[i+2]}
+   bytes=new Uint8Array(await new Response(new Blob([rgb]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer());
+   codec='FlateDecode';
+  }else{
+   const jpeg=await new Promise(resolve=>comparison.toBlob(resolve,'image/jpeg',.98));
+   if(!jpeg)throw Error('Could not create PDF image');
+   bytes=new Uint8Array(await jpeg.arrayBuffer());codec='DCTDecode';
+  }
+  const pdf=makeOnePagePdf(comparison,bytes,codec);
+  downloadBlob(pdf,`${state.filename}-selected-studies.pdf`);
+  $('#saveFeedback').textContent='One-page PDF generated with all selected views.';
+ }catch(err){$('#saveFeedback').textContent='PDF error: '+err.message}
+ finally{btn.textContent='Save one-page PDF';syncSelection()}
+};
+$('#saveIndividuals').onclick=async()=>{
+ const keys=orderedSelection();if(!keys.length)return;
+ const btn=$('#saveIndividuals');btn.disabled=true;btn.textContent='Saving…';
+ try{
   for(const key of keys){
    const blob=await new Promise(resolve=>state.out[key].toBlob(resolve,'image/png'));
-   if(!blob)throw new Error('Could not export PNG');
-   files.push({name:filenameFor(key),bytes:new Uint8Array(await blob.arrayBuffer())});
+   if(!blob)throw Error('Could not export '+key);
+   downloadBlob(blob,filenameFor(key));
   }
-  downloadBlob(createZip(files),`${state.filename}-selected-value-studies.zip`);
- }catch(err){alert('Export failed: '+err.message)}finally{btn.textContent='Save selected ZIP';syncSelection()}
+  $('#saveFeedback').textContent=keys.length===1?'One PNG saved.':`${keys.length} PNG downloads requested. If Chrome asks, allow multiple downloads. You can also save each image separately from its card.`;
+ }catch(err){$('#saveFeedback').textContent='PNG export error: '+err.message}
+ finally{btn.textContent='Save individual PNGs';syncSelection()}
 };
 syncSelection();
 let enterCount=0;
