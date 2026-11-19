@@ -270,6 +270,69 @@ footer{font-size:13px;color:#52666d;line-height:1.65;margin:20px 2px 0}
 .keyActions button{font-size:11px;min-height:30px;padding:5px 9px}
 .keyStatus{font-size:11px;color:#456468;line-height:1.45;min-height:15px}
 @media(max-width:650px){.paletteCompare{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.paletteCompare .tonalView{padding:5px}.paletteCompare canvas{max-height:195px}.paletteCompare .tonalView h3{font-size:11px}.keyCompare{grid-template-columns:1fr}.keySettingsGrid{grid-template-columns:1fr}.keyMatrix{min-width:530px}.keyCell canvas{height:130px}}
+
+/* v17: the matrix and its editable result are in one viewport-scale workspace. */
+.v17Tonal{padding:11px 12px;overflow:visible}
+.v17TopTitle{display:flex;align-items:start;justify-content:space-between;gap:12px}
+.v17TopTitle h2{font:500 22px Georgia,serif;margin:0 0 3px}
+.v17TopTitle p{font-size:12px;line-height:1.35;color:#5a7071;margin:0 0 6px}
+.v17Version{flex-shrink:0;color:#536e6c;font-size:11px}
+.v17Definitions{font-size:12px;line-height:1.45;color:#2d5d5f;background:#eaf4f3;border-left:3px solid #43898c;padding:7px 10px;border-radius:6px;margin:5px 0 8px}
+.v17Workspace{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(0,.94fr);gap:12px;align-items:start}
+.v17MatrixPanel,.v17EditPanel{border:1px solid #d7e4e3;border-radius:9px;background:#f9fbfa;min-width:0;padding:9px}
+.v17SectionHead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;font-size:12px;color:#284b4d}
+.v17SectionHead>strong{font-size:14px}.v17SectionHead>span{font-size:10px;color:#5c7779}
+.v17SectionHead button{min-height:27px;padding:4px 7px;font-size:10px}
+.v17MatrixPanel .keyAxisTitle{font-size:11px;margin:5px 0 3px}
+.v17MatrixPanel .keyMatrixWrap{padding:0;overflow-x:visible}
+.v17MatrixPanel .keyMatrix{display:grid;grid-template-columns:54px repeat(3,minmax(0,1fr));gap:4px;min-width:0}
+.v17MatrixPanel .keyCorner,.v17MatrixPanel .keyColHead,.v17MatrixPanel .keyRowHead{font-size:10px;line-height:1.15}
+.v17MatrixPanel .keyCorner{overflow-wrap:anywhere}
+.v17MatrixPanel .keyRowHead{text-align:center;padding:2px}
+.v17MatrixPanel .keyCorner small,.v17MatrixPanel .keyColHead small,.v17MatrixPanel .keyRowHead small{display:block;font-size:9px;font-weight:400;margin-top:2px}
+.v17MatrixPanel .keyCell{padding:3px;border-width:1px;border-radius:6px;min-width:0}
+.v17MatrixPanel .keyCell[aria-pressed=true]{outline:2px solid #1e8787;outline-offset:0;box-shadow:none;border-color:#1e7779}
+.v17MatrixPanel .keyCell canvas{height:clamp(68px,12dvh,113px);width:100%;object-fit:contain;display:block;background:#e6ebea}
+.v17MatrixPanel .keyCell strong{font-size:10px;margin:3px 0 1px;line-height:1.12}
+.v17MatrixPanel .keyUsedLabel{display:block;font-size:9px;color:#536c6d;line-height:1.1;margin:0 0 3px}
+.v17MiniSteps{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:1px;width:100%;height:15px}
+.v17MiniSteps span{display:flex;align-items:center;justify-content:center;border-radius:1px;font-size:8px;min-width:0}
+.v17MiniSteps .absent{opacity:.18;filter:grayscale(1)}
+.v17MiniSteps .present{outline:1px solid #b9c3c1}
+.v17Tiny{font-size:10px;line-height:1.35;color:#526f70;margin:4px 0}
+.v17SelectedTitle{font-size:12px;line-height:1.25;color:#2a5557;margin:2px 0 6px;font-weight:700}
+.v17Compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0}
+.v17Compare article{background:white;border:1px solid #dbe4e1;border-radius:7px;padding:5px;min-width:0}
+.v17Compare h4{font-size:10px;margin:0 0 4px;color:#375d5e}
+.v17Compare canvas{display:block;width:100%;height:clamp(130px,23dvh,218px);object-fit:contain;border-radius:4px;background:#e9eeed}
+.v17Sliders{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 6px}
+.v17Sliders label{min-width:0;font-size:11px;line-height:1.2;color:#2b5455}
+.v17Sliders label output{font-weight:700;color:#144b4d}
+.v17Sliders input{width:100%;accent-color:#186c6f;display:block;margin:6px 0 2px}
+.v17Sliders small{display:block;font-size:9px;color:#607476}
+.v17StepIntro{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px;margin-top:5px;color:#315758}
+.v17StepIntro strong{font-size:11px}.v17StepIntro span{font-size:10px;color:#5d7173}
+.v17EditPanel .paletteSteps{display:flex;gap:1px;margin-top:5px;padding:2px 0 4px;overflow-x:visible}
+.v17EditPanel .paletteSteps .toneStep{flex:1 1 0;min-width:0;width:0;height:41px;font-size:11px;padding:0}
+.v17EditPanel .paletteSteps .joinEdge{flex:0 1 14px;min-width:13px;width:14px;height:27px;min-height:0;font-size:11px;padding:0}
+.v17EditPanel .paletteSteps .toneStep small{font-size:8px}
+.v17UsedSteps{font-size:10px;color:#3e6867;line-height:1.4;background:#edf6f4;padding:5px 7px;border-radius:5px}
+.v17Actions{margin:7px 0 0;gap:5px}.v17Actions button{min-height:29px;padding:4px 7px;font-size:10px}
+.v17Optional{border:1px solid #d5e4e2;border-radius:8px;margin-top:10px;padding:7px 10px;background:#f9fbfa}
+.v17Optional summary{font-size:12px;font-weight:700;cursor:pointer;color:#285f61}
+.v17Optional p{font-size:11px;line-height:1.5}
+.v17Optional .tonalViews{margin-top:8px}
+@media(min-width:920px) and (max-height:940px){
+ .v17MatrixPanel .keyCell canvas{height:clamp(60px,11dvh,90px)}
+ .v17Compare canvas{height:clamp(112px,19dvh,170px)}
+ .v17TopTitle h2{font-size:19px}.v17TopTitle p{font-size:11px}
+ .v17Definitions{font-size:11px;padding:5px 8px;margin:4px 0 5px}
+ .v17MatrixPanel,.v17EditPanel{padding:7px}
+}
+@media(min-width:920px) and (max-height:800px){.v17MatrixPanel .keyCell canvas{height:60px}.v17Compare canvas{height:113px}.v17MatrixPanel .keyCell strong{font-size:9px}.v17EditPanel .v17Sliders{margin:4px 0}.v17Definitions{font-size:10px}}
+@media(max-width:1100px){.v17Workspace{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:8px}}
+@media(max-width:790px){.v17Workspace{grid-template-columns:1fr}.v17MatrixPanel .keyMatrix{grid-template-columns:48px repeat(3,minmax(0,1fr))}.v17MatrixPanel .keyCell canvas{height:clamp(67px,12dvh,120px)}.v17Compare canvas{height:clamp(150px,30dvh,260px)}}
+@media(max-width:480px){.v17MatrixPanel .keyMatrix{grid-template-columns:39px repeat(3,minmax(0,1fr));gap:3px}.v17MatrixPanel .keyCell{padding:2px}.v17MatrixPanel .keyCell canvas{height:clamp(63px,12dvh,96px)}.v17MatrixPanel .keyCell strong{font-size:9px}.v17MatrixPanel .keyUsedLabel{font-size:8px}.v17MiniSteps{height:12px}.v17MiniSteps span{font-size:7px}.v17Sliders{gap:6px}.v17EditPanel .paletteSteps .joinEdge{min-width:10px;flex-basis:10px;font-size:9px}.v17EditPanel .paletteSteps .toneStep{font-size:10px;height:38px}.v17Version{display:none}}
 </style>
 <script>
 /* Copyright-safe real photo: Goose friend (2015), CC0 1.0.
@@ -322,8 +385,8 @@ window.ArtRefs=(function(){
 </script>
 </head>
 <body>
-<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v16</span></div>
-<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v16</span></h1><p>Crop a photo. Compare the original, grayscale, and progressively subdivided flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
+<div class="art-tools-nav" style="padding:8px 16px;font:13px system-ui;background:#e5f0ed;border-bottom:1px solid #ccd9d6"><a style="color:#145d60;text-decoration:none;font-weight:700" href="../index.html">Art tools</a> <span style="color:#647570"> / Value Studies</span> <span style="float:right;color:#456c68" aria-label="App version">v17</span></div>
+<header><h1>Value Studies <span style="font:600 13px system-ui;vertical-align:middle;display:inline-block;background:#ffffff25;border:1px solid #ffffff4a;border-radius:15px;padding:2px 8px">v17</span></h1><p>Crop a photo. Compare the original, grayscale, and progressively subdivided flat value groups. Designed for drawing thumbnails, not photo effects.</p></header>
 <main>
   <div class="controls" id="toolbar">
     <label for="fileInput" class="fileLabel primary">+ Choose a photo</label><input type="file" id="fileInput" accept="image/*">
@@ -400,9 +463,44 @@ window.ArtRefs=(function(){
    <div class="photoCard group extraStudy" data-study-level="9" hidden><div class="cardHead"><strong>9 values</strong><button type="button" class="selectChip" data-select="9" aria-pressed="false">+ Select</button><span class="type">Further subdivision</span></div><div class="thumb" data-key="9" role="button" tabindex="0"><canvas id="out-9"></canvas></div><div class="swatches" id="sw-9"></div><div class="cardFoot"><span class="desc">Builds on 8 values</span><button data-download="9">Save PNG</button></div></div>
   </section>
   </section>
-  <section id="tonalPanel" class="tonalPanel" role="tabpanel" aria-labelledby="tonalTab" hidden>
-    <div class="tonalTitle"><h2>Tonal organization</h2><span>Advanced guided workspace · same photo and crop</span></div>
-    <p class="tonalIntro">The computer measures brightness. <b>You decide which shapes should belong together.</b> Start from a blurred reference, choose a light/dark family, then experiment with live value grouping, contrast, and a 3 × 3 tonal-key matrix. These are artistic studies, not automatically correct solutions.</p>
+  <section id="tonalPanel" class="tonalPanel v17Tonal" role="tabpanel" aria-labelledby="tonalTab" hidden>
+    <div class="v17TopTitle"><div><h2>Design with tonal keys</h2><p>Choose a mood from the nine studies, then edit it while comparing with your photograph. All changes appear in the working image immediately.</p></div><span class="v17Version">Advanced · v17</span></div>
+    <div class="v17Definitions"><strong>Major key</strong> = proportion of light vs. dark (across columns). <strong>Minor key</strong> = contrast range (down rows). Mood names are illustrative, not guaranteed effects.</div>
+    <div class="v17Workspace">
+     <section class="v17MatrixPanel" aria-label="Choose a major and minor tonal key">
+      <div class="v17SectionHead"><strong>1 · Choose a tonal key</strong><span>Click a tile to edit that mood</span></div>
+      <div class="keyAxisTitle">MAJOR KEY → proportion of light / dark</div>
+      <div class="keyMatrixWrap"><div id="keyMatrix" class="keyMatrix" role="group" aria-label="3 by 3: columns major key light-dark proportion; rows minor key contrast range">
+       <div class="keyCorner">MINOR KEY ↓<small>contrast range</small></div>
+       <div class="keyColHead">High<small>mostly light</small></div>
+       <div class="keyColHead">Medium<small>balanced</small></div>
+       <div class="keyColHead">Low<small>mostly dark</small></div>
+      </div></div>
+      <p class="v17Tiny" id="keyStatus" role="status">Generating tonal keys…</p>
+     </section>
+     <section class="v17EditPanel" aria-label="Selected tonal key and live edits">
+      <div class="v17SectionHead"><strong>2 · Modify selected design</strong><button id="keyResetSelected" type="button">Reset this key</button></div>
+      <h3 id="keyFocusTitle" class="v17SelectedTitle">High major (light/dark proportion) · High minor (contrast range)</h3>
+      <div class="keyCompare v17Compare">
+       <article><h4>My photograph</h4><canvas id="keyInputPreview" aria-label="My photograph in grayscale"></canvas></article>
+       <article><h4>My working design · live</h4><canvas id="keyFocusCanvas" aria-label="Editable result of selected tonal key"></canvas></article>
+      </div>
+      <p id="keyFocusNote" class="v17Tiny">Select a key on the left to start modifying it.</p>
+      <div class="v17Sliders">
+       <label for="keyMajorSlider"><b>Major key</b> · light area <output id="keyMajorSliderOut">75%</output><input type="range" id="keyMajorSlider" min="10" max="90" step="1" value="75"><small>More dark ← → more light</small></label>
+       <label for="keyMinorSlider"><b>Minor key</b> · contrast range <output id="keyMinorSliderOut">100%</output><input type="range" id="keyMinorSlider" min="15" max="100" step="1" value="100"><small>Low contrast ← → high contrast</small></label>
+      </div>
+      <div class="v17StepIntro"><strong>3 · Choose which values to retain</strong><span>1 = white · 9 = black. Tap to turn a value off/on; + joins neighboring active values.</span></div>
+      <div id="paletteSteps" class="paletteSteps" role="group" aria-label="Nine value switches with optional neighboring joins"></div>
+      <p class="v17Tiny" id="paletteSummary" role="status">Each change updates the working design.</p>
+      <div id="keyUsedSteps" class="v17UsedSteps" aria-live="polite"></div>
+      <div class="keyActions v17Actions"><button id="saveKeySelected" class="primary" type="button">Save working image PNG</button><button id="saveKeySheet" type="button">Save 3 × 3 sheet PNG</button><button id="resetPalette" type="button">All values on</button></div>
+     </section>
+    </div>
+    <details class="v17Optional" id="foundationDetails"><summary>Optional · edit the underlying light/dark shapes (painting and cutoff)</summary>
+     <p class="v17Tiny">This is a different operation from choosing a tonal key. It changes which parts of your photograph count as light/dark. Choose “Edited value foundation” below to apply those corrections to the matrix.</p>
+     <div class="keySourceChoice" role="group" aria-label="Choose starting image for all nine tonal key treatments"><b class="subtle">Matrix source:</b><button id="keyFromOriginal" type="button" aria-pressed="true">My original grayscale</button><button id="keyFromGrouped" type="button" aria-pressed="false">Edited value foundation</button></div>
+     <div id="foundationCutoffSlot"></div>
     <div class="tonalViews">
       <article class="tonalView"><h3>1 · Broad relationships (blur)</h3><canvas id="advancedBlur" aria-label="Blurred grayscale reference"></canvas><p>See the major transitions before forcing the photograph into two values.</p></article>
       <article class="tonalView"><h3>2 · Your edited light / dark design</h3><canvas id="advanced2" aria-label="Editable two-value study, paint to reassign light and dark" tabindex="0"></canvas><p>Click or drag to assign selected shapes to a different family. Corrections also carry into the 3–9-value studies.</p></article>
@@ -424,46 +522,19 @@ window.ArtRefs=(function(){
         <li><b>Compare:</b> look at the blurred grayscale image on the left and the two-value map on the right.</li>
         <li><b>Choose:</b> try <i>More light area</i>, then move the cutoff yourself. Ask whether the broad facial planes read more clearly.</li>
         <li><b>Correct:</b> paint a shape into the light or dark family if the automatic cutoff places it badly. The goal is a deliberate, readable design.</li>
-        <li><b>Develop:</b> return to Value studies to subdivide the families, then test palette groupings below. Compare what is gained and lost.</li>
+        <li><b>Develop:</b> return to the 3 × 3 key matrix above and compare how the edited foundation changes the selected treatment. Compare what is gained and lost.</li>
       </ol>
       <button type="button" id="loadGuidedHead">Load head and start this exercise</button>
       <p class="sourceNote">Original instructional steps; informed by the concepts of major key, minor key and tonal grouping in the New Masters Academy Week 6 handout. No handout artwork is reproduced here.</p>
     </details>
-    <div class="paletteSection">
-      <div class="paletteLead"><h3>3 · Design a restricted value palette</h3><p>Start with nine values (1 = white; 9 = black). <b>Click a value to include or exclude it immediately.</b> Click the <b>+</b> between two included neighbors to join them; click its linked indicator again to split them. Excluded values are assigned to the nearest included tonal family—no area disappears.</p></div>
-      <div id="paletteSteps" class="paletteSteps" role="group" aria-label="Included values and join controls from white to black"></div>
-      <div class="paletteActions"><button id="examplePalette" type="button">Example: join 2–3, 5–6, 8–9</button><button id="resetPalette" type="button">Reset all values and joins</button></div>
-      <div id="paletteSummary" class="paletteSummary" role="status"></div>
-      <div class="contrastControl"><b>Minor key = range of contrast</b><div id="contrastBtns" role="group" aria-label="Minor key, contrast range of grouped study"><button data-contrast="high" class="active">High · full range</button><button data-contrast="medium">Medium</button><button data-contrast="low">Low</button></div></div>
-      <div class="paletteCompare" aria-label="Live comparison of nine value image versus grouped image">
-       <article class="tonalView"><h3>Ungrouped nine-value reference</h3><canvas id="advancedNine" aria-label="Nine tonal values before joining or excluding"></canvas><p>Same crop, light/dark cutoff, and any painted corrections; nine separate grays at full contrast.</p></article>
-       <article class="tonalView"><h3>My grouped result · updates live</h3><canvas id="advancedPalette" aria-label="Your current included, joined and contrast-adjusted tonal groups"></canvas><p id="paletteResultNote">Changes as soon as you tap a value or join. Compare lost or clarified shapes against the nine-value reference.</p><button type="button" id="savePalettePNG">Save grouped study PNG</button></article>
-      </div>
-    </div>
-    <section class="keySection" aria-label="Major and minor tonal key explorations">
-      <h3>4 · Explore 3 × 3 major / minor tonal keys</h3>
-      <p class="paletteGuide"><b>Major key = proportion of light versus dark in the composition.</b> High major key is light-dominant; low major key is dark-dominant. <b>Minor key = range of contrast.</b> High minor key uses a wide dark-to-light range; low minor key uses a narrow range. The nine studies are alternative tonal designs, not quality scores.</p>
-      <div class="keySourceChoice" role="group" aria-label="Choose source for tonal-key matrix"><b class="subtle">Generate from:</b><button id="keyFromGrouped" type="button" aria-pressed="true">My grouped result</button><button id="keyFromOriginal" type="button" aria-pressed="false">Original grayscale</button></div>
-      <div class="keyCompare">
-       <article class="tonalView"><h3>Matrix input · current selection</h3><canvas id="keyInputPreview" aria-label="Current image used to generate tonal keys"></canvas><p id="keyInputNote">The source used for all nine studies.</p></article>
-       <article class="tonalView"><h3 id="keyFocusTitle">Selected tonal key</h3><canvas id="keyFocusCanvas" aria-label="Selected tonal key study"></canvas><p id="keyFocusNote">Select a cell below for comparison.</p></article>
-      </div>
-      <div class="keyActions"><button id="saveKeySelected" type="button">Save selected key PNG</button><button id="saveKeySheet" type="button">Save labeled 3 × 3 PNG</button></div>
-      <details class="keySettings"><summary>Adjust major-key proportions and minor-key contrast targets (advanced)</summary><div class="keySettingsGrid">
-        <label>High major key · target light-area proportion: <output id="keyMajorHighOut">75%</output><input id="keyMajorHigh" type="range" min="60" max="90" value="75"></label>
-        <label>Low major key · target light-area proportion: <output id="keyMajorLowOut">25%</output><input id="keyMajorLow" type="range" min="10" max="40" value="25"></label>
-        <label>Medium minor key · contrast range: <output id="keyMinorMediumOut">72%</output><input id="keyMinorMedium" type="range" min="45" max="90" value="72"></label>
-        <label>Low minor key · contrast range: <output id="keyMinorLowOut">32%</output><input id="keyMinorLow" type="range" min="12" max="45" value="32"></label>
-      </div></details>
-      <div class="keyAxisTitle">MAJOR KEY → proportion of light versus dark</div>
-      <div class="keyMatrixWrap"><div id="keyMatrix" class="keyMatrix" role="group" aria-label="Three by three tonal keys, columns major light-dark proportion, rows minor contrast range">
-       <div class="keyCorner">MINOR KEY ↓<div>range of contrast</div></div>
-       <div class="keyColHead">High major<br>mostly light</div><div class="keyColHead">Medium major<br>balanced</div><div class="keyColHead">Low major<br>mostly dark</div>
-      </div></div>
-      <p class="keyStatus" id="keyStatus" role="status">Matrix is generated when you open this section.</p>
-      <p class="paletteGuide">The grouped-image option uses your present tonal decisions as the starting point, including painted light/dark corrections. To explore other proportions, the matrix can reassign pixels and create intermediate grays inside joined families. Thus these are <b>new interpretations</b>, not guaranteed to preserve each original group boundary. Mood words describe NMA's examples, not predicted emotional responses.</p>
-    </section>
-    <details class="guidedExample"><summary><b>Why the two exercises differ</b></summary><p><b>Progressive subdivision</b> preserves a decision about the existing light/dark boundary, then adds detail inside each family. <b>Tonal organization</b> deliberately restricts or combines values to improve clarity, emphasize a subject, or change major/minor key. The nine-step palette remaps brightness globally, and painted corrections are carried into both the grouped result and the 3 × 3 tonal-key generator. Major key describes the proportion of light versus dark; minor key describes the contrast range. Neither process identifies actual physical shadows by itself.</p></details>
+
+    </details>
+    <canvas id="advancedNine" hidden aria-hidden="true"></canvas>
+    <details class="v17Optional"><summary>How the nine studies and value switches work</summary>
+      <p><b>Major key (light/dark proportion)</b> is adjusted using a threshold in the ranked pixel brightnesses; the measured proportion is approximate after mapping to nine steps. <b>Minor key (contrast range)</b> compresses or expands the range of grays. Each 3 × 3 preset is quantized to a nine-step scale (1 = white, 9 = black).</p>
+      <p>Each tile displays the value steps actually <b>present in that preset</b>; muted numbers are <b>unused</b>, not deliberately omitted. Loading a tile enables all nine values so that moving the contrast slider can reveal new steps. In the editor you can <b>turn off</b> a value, which reassigns its pixels to the nearest enabled value, or <b>join</b> neighboring enabled steps, which averages them. The 3 × 3 presets remain unchanged while you customize the selected design.</p>
+      <p>Changes to the 3 × 3 tonal keys are analytical approximations, not automatic judgments of successful composition. Any manually painted foundation edits are used only when “Edited value foundation” is selected.</p>
+    </details>
   </section>
   </div>
 <details class="practiceRefRights"><summary>Image sources, copyright, and reuse</summary>
@@ -995,7 +1066,9 @@ function showTab(name){
  $('#resultsArea').hidden=name!=='basic';$('#tonalPanel').hidden=name!=='tonal';
  $('#basicTab').setAttribute('aria-selected',String(name==='basic'));
  $('#tonalTab').setAttribute('aria-selected',String(name==='tonal'));
- if(name==='tonal')renderAdvancedViews();
+ const cutoff=$('.cutoffPanel'),tabs=$('.studyTabs'),slot=$('#foundationCutoffSlot');
+ if(name==='tonal'){slot.appendChild(cutoff);renderAdvancedViews();}
+ else tabs.insertAdjacentElement('afterend',cutoff);
 }
 $('#basicTab').onclick=()=>showTab('basic');$('#tonalTab').onclick=()=>showTab('tonal');
 function ensureMask(){
@@ -1042,174 +1115,251 @@ function renderAdvancedViews(){
  const edit=$('#advanced2');edit.width=c.w;edit.height=c.h;edit.getContext('2d').drawImage($('#out-2'),0,0);
  renderPalette();
 }
-/* v16: direct include/exclude and join/split. Every control updates the live comparison. */
+/* v17: choose one of nine source treatments, then modify that selected study directly.
+   Value steps are quantized in the matrix: the on/off legend is measured from the
+   actual output. No "grouped source -> new key -> grouped result" feedback loop. */
+const KEY_MAJOR=['High','Medium','Low'],KEY_MINOR=['High','Medium','Low'];
+const KEY_MOOD=[['Bright / uplifting','Bold / rich','Threatening'],['Overexposed','Melancholic','Foreboding'],['Dreamlike','Moody','Murky']];
+const MAJOR_PRESET=[75,50,25],MINOR_PRESET=[100,68,30];
+let keyFrame=0,editedKeyFrame=0, keyCache=null;
+state.keySource='original';state.keySelected=0;state.keyImages=[];state.keyLiveMajor=75;state.keyLiveMinor=100;
+
 for(let i=1;i<=9;i++){
- const b=document.createElement('button');b.type='button';b.className='toneStep';b.dataset.step=String(i);b.setAttribute('aria-pressed','true');
- $('#paletteSteps').append(b);
- if(i<9){const join=document.createElement('button');join.type='button';join.className='joinEdge';join.dataset.join=String(i);join.setAttribute('aria-pressed','false');$('#paletteSteps').append(join);}
+ const b=document.createElement('button');b.type='button';b.className='toneStep';b.dataset.step=String(i);b.setAttribute('aria-pressed','true');$('#paletteSteps').append(b);
+ if(i<9){const j=document.createElement('button');j.type='button';j.className='joinEdge';j.dataset.join=String(i);j.setAttribute('aria-pressed','false');$('#paletteSteps').append(j)}
 }
 function paletteFamilies(){
  const active=[...state.paletteActive].sort((a,b)=>a-b);
- const group=new Array(10);let key=0;
- for(let i=1;i<=9;i++){if(i===1||!state.paletteJoins.has(i-1))key++;group[i]=key;}
+ let groupNumber=0;const labels=new Array(10);
+ for(let i=1;i<=9;i++){if(i===1||!state.paletteJoins.has(i-1))groupNumber++;labels[i]=groupNumber}
  const families=[];
- for(let i=1;i<=9;i++)if(state.paletteActive.has(i)){
-  let family=families.find(f=>f.key===group[i]);if(!family){family={key:group[i],members:[]};families.push(family);}family.members.push(i);
- }
- return {active,group,families};
+ for(const i of active){let f=families.find(x=>x.id===labels[i]);if(!f){f={id:labels[i],members:[]};families.push(f)}f.members.push(i)}
+ return{active,labels,families};
 }
 function updatePaletteUI(){
- const {active,group,families}=paletteFamilies();
- for(const b of $('#paletteSteps').querySelectorAll('button[data-step]')){
-  const n=Number(b.dataset.step),on=state.paletteActive.has(n),gray=Math.round(255-(n-1)*255/8);
+ const {active,families}=paletteFamilies();
+ for(const b of $('#paletteSteps').querySelectorAll('[data-step]')){
+  const n=+b.dataset.step,on=state.paletteActive.has(n),gray=Math.round(255-(n-1)*255/8);
   b.style.background=`rgb(${gray},${gray},${gray})`;b.style.color=gray<120?'white':'#263034';
-  b.textContent=String(n);const sm=document.createElement('small');sm.textContent=on?'on':'off';b.append(sm);
+  b.replaceChildren(document.createTextNode(n));const small=document.createElement('small');small.textContent=on?'on':'off';b.append(small);
   b.classList.toggle('off',!on);b.setAttribute('aria-pressed',String(on));
-  b.title=`Value ${n} is ${on?'included':'excluded'}; click to ${on?'exclude':'include'}`;
-  b.setAttribute('aria-label',`Value ${n} ${on?'included':'excluded'}. Click to ${on?'exclude':'include'}.`);
+  b.setAttribute('aria-label',`Value ${n}, ${on?'included':'excluded'}: click to ${on?'exclude':'include'}.`);
  }
- for(const b of $('#paletteSteps').querySelectorAll('button[data-join]')){
-  const n=Number(b.dataset.join),joined=state.paletteJoins.has(n),enabled=state.paletteActive.has(n)&&state.paletteActive.has(n+1);
+ for(const b of $('#paletteSteps').querySelectorAll('[data-join]')){
+  const n=+b.dataset.join,joined=state.paletteJoins.has(n),enabled=state.paletteActive.has(n)&&state.paletteActive.has(n+1);
   b.textContent=joined?'↔':'+';b.disabled=!enabled;b.setAttribute('aria-pressed',String(joined));
-  b.title=joined?`Split ${n} and ${n+1}`:`Join ${n} and ${n+1}`;
-  b.setAttribute('aria-label',joined?`Split values ${n} and ${n+1}`:`Join values ${n} and ${n+1}`);
+  b.setAttribute('aria-label',`${joined?'Split':'Join'} values ${n} and ${n+1}`);
  }
- const merged=families.filter(f=>f.members.length>1).map(f=>f.members.join('–'));
- $('#paletteSummary').textContent=`${families.length} tonal ${families.length===1?'family':'families'} · ${active.length} included · ${9-active.length} excluded and reassigned to nearest included value.${merged.length?' Joined: '+merged.join(', ')+'.':''}`;
- document.querySelectorAll('#contrastBtns button').forEach(b=>b.classList.toggle('active',b.dataset.contrast===state.contrast));
+ const links=families.filter(f=>f.members.length>1).map(f=>f.members.join('–'));
+ $('#paletteSummary').textContent=`${families.length} retained value ${families.length===1?'family':'families'} · ${active.length} on / ${9-active.length} off${links.length?' · joined '+links.join(', '):''}. Off values move to their nearest retained gray.`;
 }
-$('#paletteSteps').onclick=e=>{
- const step=e.target.closest('button[data-step]'),edge=e.target.closest('button[data-join]');
- if(step){const n=Number(step.dataset.step);if(state.paletteActive.has(n)){if(state.paletteActive.size===1){$('#paletteSummary').textContent='At least one value must remain included.';return;}state.paletteActive.delete(n);state.paletteJoins.delete(n-1);state.paletteJoins.delete(n);}else state.paletteActive.add(n);renderPalette();}
- if(edge){const n=Number(edge.dataset.join);if(state.paletteJoins.has(n))state.paletteJoins.delete(n);else if(state.paletteActive.has(n)&&state.paletteActive.has(n+1))state.paletteJoins.add(n);renderPalette();}
-};
-$('#examplePalette').onclick=()=>{state.paletteActive=new Set([1,2,3,4,5,6,7,8,9]);state.paletteJoins=new Set([2,5,8]);renderPalette()};
-$('#resetPalette').onclick=()=>{state.paletteActive=new Set([1,2,3,4,5,6,7,8,9]);state.paletteJoins.clear();state.contrast='high';renderPalette()};
-$('#contrastBtns').onclick=e=>{const b=e.target.closest('button[data-contrast]');if(!b)return;state.contrast=b.dataset.contrast;renderPalette()};
+$('#paletteSteps').addEventListener('click',e=>{
+ const step=e.target.closest('[data-step]'),edge=e.target.closest('[data-join]');
+ if(step){const i=+step.dataset.step;if(state.paletteActive.has(i)){if(state.paletteActive.size<=1){$('#paletteSummary').textContent='Keep at least one value on.';return}state.paletteActive.delete(i);state.paletteJoins.delete(i-1);state.paletteJoins.delete(i)}else state.paletteActive.add(i)}
+ if(edge){const i=+edge.dataset.join;if(state.paletteJoins.has(i))state.paletteJoins.delete(i);else if(state.paletteActive.has(i)&&state.paletteActive.has(i+1))state.paletteJoins.add(i)}
+ updatePaletteUI();queueKeyEditor();
+});
+$('#resetPalette').onclick=()=>{state.paletteActive=new Set([1,2,3,4,5,6,7,8,9]);state.paletteJoins.clear();updatePaletteUI();queueKeyEditor()};
+
+/* Keep the manual paint corrections available to the optional source foundation. */
 function paletteLuminance(c,p){
  let lum=c.smooth[p];const forced=state.correctMask?.[p],base=c.nested.base;
- if(forced===0 && lum>base)lum=base;
- else if(forced===1 && lum<=base)lum=base+1;
+ if(forced===0&&lum>base)lum=base;else if(forced===1&&lum<=base)lum=base+1;
  return lum;
 }
 function renderPalette(){
- updatePaletteUI();const c=state.cache;if(!c)return;
- const reference=$('#advancedNine'),result=$('#advancedPalette');
- reference.width=result.width=c.w;reference.height=result.height=c.h;
- const ungroup=reference.getContext('2d').createImageData(c.w,c.h),grouped=result.getContext('2d').createImageData(c.w,c.h);
- const {active,group,families}=paletteFamilies();
- const map=[],bounds={high:[0,255],medium:[55,200],low:[100,165]}[state.contrast];
- for(let i=1;i<=9;i++){
-  const effective=active.reduce((best,k)=>Math.abs(k-i)<Math.abs(best-i)?k:best,active[0]);
-  const members=families.find(f=>f.key===group[effective]).members;
-  const mean=members.reduce((s,k)=>s+k,0)/members.length;
-  map[i]=Math.round(bounds[0]+((9-mean)/8)*(bounds[1]-bounds[0]));
- }
+ const c=state.cache;if(!c)return;
+ const nine=$('#advancedNine');nine.width=c.w;nine.height=c.h;
+ const ctx=nine.getContext('2d');const im=ctx.createImageData(c.w,c.h);
  for(let p=0;p<c.smooth.length;p++){
-  const index=limit(Math.round((255-paletteLuminance(c,p))*8/255)+1,1,9),base=Math.round((9-index)*255/8),value=map[index],off=4*p;
-  ungroup.data[off]=ungroup.data[off+1]=ungroup.data[off+2]=base;
-  grouped.data[off]=grouped.data[off+1]=grouped.data[off+2]=value;
-  ungroup.data[off+3]=grouped.data[off+3]=255;
+  const i=Math.max(1,Math.min(9,Math.round((255-paletteLuminance(c,p))*8/255)+1));const v=Math.round((9-i)*255/8),off=4*p;
+  im.data[off]=im.data[off+1]=im.data[off+2]=v;im.data[off+3]=255;
  }
- reference.getContext('2d').putImageData(ungroup,0,0);result.getContext('2d').putImageData(grouped,0,0);
- $('#paletteResultNote').textContent=`${families.length} active tonal families at ${state.contrast} contrast. Every toggle and join updates this image immediately.`;
- queueKeyMatrix();
+ ctx.putImageData(im,0,0);queueKeyMatrix();
 }
-$('#savePalettePNG').onclick=()=>downloadCanvas($('#advancedPalette'),`${state.filename}-tonal-palette-v16.png`);
 
-/* NMA-style 3 by 3 matrix. Changes in major key use rank-based remapping.
-   A fine secondary brightness tie-break allows variations even when the chosen
-   grouping contains few discrete gray levels. Those results are studies, not
-   assertions that the manually grouped boundaries remain unchanged. */
-const KEY_MAJOR=['High','Medium','Low'],KEY_MINOR=['High','Medium','Low'];
-const KEY_MOOD=[['Bright / uplifting','Bold / rich','Threatening'],['Overexposed','Melancholic','Foreboding'],['Dreamlike','Moody','Murky']];
-for(let r=0;r<3;r++){
- const rh=document.createElement('div');rh.className='keyRowHead';rh.textContent=`${KEY_MINOR[r]} minor key · ${KEY_MINOR[r].toLowerCase()} contrast`;$('#keyMatrix').append(rh);
- for(let c=0;c<3;c++){
-  const n=r*3+c,b=document.createElement('button');b.type='button';b.className='keyCell';b.dataset.keyIndex=String(n);b.setAttribute('aria-pressed',String(n===0));
-  const cv=document.createElement('canvas');cv.width=220;cv.height=160;b.append(cv);
-  const title=document.createElement('strong');title.textContent=KEY_MOOD[r][c];b.append(title);
-  const label=document.createElement('small');label.textContent=`Major: ${KEY_MAJOR[c]} light/dark proportion · Minor: ${KEY_MINOR[r]} contrast`;b.append(label);
-  b.setAttribute('aria-label',`${KEY_MOOD[r][c]}. Major key ${KEY_MAJOR[c]} proportion of light versus dark. Minor key ${KEY_MINOR[r]} contrast range.`);
-  $('#keyMatrix').append(b);
+function setupKeyMatrix(){
+ for(let r=0;r<3;r++){
+  const row=document.createElement('div');row.className='keyRowHead';row.innerHTML=`<b>${KEY_MINOR[r]}</b><small>contrast range</small>`;$('#keyMatrix').append(row);
+  for(let c=0;c<3;c++){
+   const id=r*3+c,b=document.createElement('button');b.type='button';b.className='keyCell';b.dataset.keyIndex=String(id);
+   b.setAttribute('aria-pressed',String(id===0));
+   const cv=document.createElement('canvas');cv.width=140;cv.height=160;b.append(cv);
+   const mood=document.createElement('strong');mood.textContent=KEY_MOOD[r][c];b.append(mood);
+   const status=document.createElement('span');status.className='keyUsedLabel';status.textContent='Calculating values…';b.append(status);
+   const chips=document.createElement('span');chips.className='v17MiniSteps';chips.setAttribute('aria-label','Values present in this treatment');b.append(chips);
+   b.setAttribute('aria-label',`${KEY_MOOD[r][c]}, ${KEY_MAJOR[c]} major key (light/dark proportion), ${KEY_MINOR[r]} minor key (contrast range). Select to edit.`);
+   $('#keyMatrix').append(b);
+  }
  }
 }
-function keySelect(index){state.keySelected=index;
- $('#keyMatrix').querySelectorAll('button[data-key-index]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.keyIndex)===index)));
- const cv=state.keyImages[index];if(!cv)return;
- const dst=$('#keyFocusCanvas');dst.width=cv.width;dst.height=cv.height;dst.getContext('2d').drawImage(cv,0,0);
- const r=Math.floor(index/3),c=index%3;
- $('#keyFocusTitle').textContent=`${KEY_MAJOR[c]} major key (light/dark proportion) · ${KEY_MINOR[r]} minor key (contrast range)`;
- $('#keyFocusNote').textContent=`${KEY_MOOD[r][c]} · alternative tonal interpretation of the current matrix input.`;
+setupKeyMatrix();
+const clipStep=i=>Math.min(9,Math.max(1,i));
+const stepFromGray=v=>clipStep(Math.round((255-v)*8/255)+1);
+const grayFromStep=i=>Math.round((9-i)*255/8);
+
+// Source cache built once per photo/crop/edited foundation, and shared by all nine presets.
+function keySourceCache(maxEdge=430,updatePreview=true){
+ const source=state.keySource==='corrected'?$('#advancedNine'):$('#out-gray');
+ const size=Math.min(1,maxEdge/Math.max(source.width,source.height));
+ const w=Math.max(1,Math.round(source.width*size)),h=Math.max(1,Math.round(source.height*size));
+ const cv=document.createElement('canvas');cv.width=w;cv.height=h;const ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,w,h);
+ const src=ctx.getImageData(0,0,w,h),v=src.data,n=w*h;
+ const bcv=document.createElement('canvas');bcv.width=w;bcv.height=h;
+ bcv.getContext('2d').drawImage($('#advancedBlur'),0,0,w,h);
+ const aux=bcv.getContext('2d').getImageData(0,0,w,h).data;
+ const scores=new Uint16Array(n),hist=new Uint32Array(65536);
+ let min=65535,max=0;
+ for(let p=0;p<n;p++){
+  const off=4*p,lum=Math.round(.2126*v[off]+.7152*v[off+1]+.0722*v[off+2]);
+  const score=Math.min(65535,lum*256+aux[off]);scores[p]=score;hist[score]++;
+  if(score<min)min=score;if(score>max)max=score;
+ }
+ if(updatePreview){const input=$('#keyInputPreview');input.width=w;input.height=h;input.getContext('2d').putImageData(src,0,0);}
+ return {w,h,n,scores,hist,min,max,src};
 }
-$('#keyMatrix').addEventListener('click',e=>{const b=e.target.closest('button[data-key-index]');if(b)keySelect(Number(b.dataset.keyIndex))});
-$('#keyFromGrouped').onclick=()=>{state.keySource='grouped';queueKeyMatrix()};
+function thresholdFor(cache,lightPercent){
+ const target=Math.max(0,Math.min(cache.n-1,Math.floor((1-lightPercent/100)*cache.n)));
+ let below=0;
+ for(let s=cache.min;s<=cache.max;s++){
+  const count=cache.hist[s];if(!count)continue;
+  if(below+count>target){
+   // Flat regions may occupy many pixels. Never arbitrarily dither an entire
+   // flat value into new light/dark patches merely to hit a numeric target.
+   // Assign the whole tied region to whichever side is closer to the target.
+   const more=(cache.n-below)/cache.n,less=(cache.n-below-count)/cache.n,want=lightPercent/100;
+   return {score:s,tieLight:Math.abs(more-want)<=Math.abs(less-want)};
+  }
+  below+=count;
+ }
+ return {score:cache.max,tieLight:true};
+}
+function buildTonalCanvas(cache,major,minor){
+ const threshold=thresholdFor(cache,major),q=threshold.score,span=minor*255/100,lo=(255-span)/2;
+ const tiedLight=Math.min(1,Math.max(.51,(143-lo)/span+.016));
+ const tiedDark=Math.max(0,Math.min(.49,(112-lo)/span-.016));
+ const cv=document.createElement('canvas');cv.width=cache.w;cv.height=cache.h;
+ const g=cv.getContext('2d');const im=g.createImageData(cache.w,cache.h);
+ const pixels=new Uint8Array(cache.n),counts=new Uint32Array(10);
+ let light=0,dark=0;
+ for(let p=0;p<cache.n;p++){
+  const k=cache.scores[p];
+  let t=k<q?(q===cache.min?0:(k-cache.min)/(q-cache.min)*.5):
+        k>q?(q===cache.max?1:.5+.5*(k-q)/(cache.max-q)):
+        (threshold.tieLight?tiedLight:tiedDark);
+  if(!Number.isFinite(t))t=.5;
+  const step=stepFromGray(lo+span*t),v=grayFromStep(step),off=p*4;
+  pixels[p]=step;counts[step]++;if(v>128)light++;else if(v<128)dark++;
+  im.data[off]=im.data[off+1]=im.data[off+2]=v;im.data[off+3]=255;
+ }
+ g.putImageData(im,0,0);
+ return {canvas:cv,steps:pixels,counts,lightPercent:Math.round(light*100/cache.n),darkPercent:Math.round(dark*100/cache.n)};
+}
+function makeStepLegend(counts){
+ const frag=document.createDocumentFragment();
+ for(let i=1;i<=9;i++){
+  const s=document.createElement('span');s.textContent=i;s.className=counts[i]?'present':'absent';
+  const g=grayFromStep(i);s.style.background=`rgb(${g},${g},${g})`;s.style.color=g<130?'white':'#243438';s.title=`Value ${i}: ${counts[i]?'present in this image':'not present in this image'}`;frag.append(s);
+ }
+ return frag;
+}
+function loadKey(index){
+ state.keySelected=index;
+ const row=Math.floor(index/3),col=index%3;
+ state.keyLiveMajor=MAJOR_PRESET[col];state.keyLiveMinor=MINOR_PRESET[row];
+ state.paletteActive=new Set([1,2,3,4,5,6,7,8,9]);state.paletteJoins.clear();
+ $('#keyMajorSlider').value=state.keyLiveMajor;$('#keyMinorSlider').value=state.keyLiveMinor;
+ $('#keyMajorSliderOut').textContent=state.keyLiveMajor+'%';$('#keyMinorSliderOut').textContent=state.keyLiveMinor+'%';
+ $('#keyMatrix').querySelectorAll('[data-key-index]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.keyIndex===index)));
+ $('#keyFocusTitle').textContent=`${KEY_MOOD[row][col]} · ${KEY_MAJOR[col]} major (light/dark proportion) / ${KEY_MINOR[row]} minor (contrast range)`;
+ updatePaletteUI();queueKeyEditor();
+ if(window.matchMedia('(max-width:790px)').matches)$('#keyFocusTitle').scrollIntoView({block:'start',behavior:'smooth'});
+}
+$('#keyMatrix').addEventListener('click',e=>{const b=e.target.closest('[data-key-index]');if(b)loadKey(+b.dataset.keyIndex)});
+$('#keyResetSelected').onclick=()=>loadKey(state.keySelected);
+$('#keyMajorSlider').oninput=e=>{state.keyLiveMajor=+e.target.value;$('#keyMajorSliderOut').textContent=e.target.value+'%';queueKeyEditor()};
+$('#keyMinorSlider').oninput=e=>{state.keyLiveMinor=+e.target.value;$('#keyMinorSliderOut').textContent=e.target.value+'%';queueKeyEditor()};
 $('#keyFromOriginal').onclick=()=>{state.keySource='original';queueKeyMatrix()};
-for(const [id,key] of [['keyMajorHigh','keyLightHigh'],['keyMajorLow','keyLightLow'],['keyMinorMedium','keyMediumContrast'],['keyMinorLow','keyLowContrast']]){
- $('#'+id).oninput=e=>{state[key]=Number(e.target.value);$('#'+id+'Out').textContent=e.target.value+'%';queueKeyMatrix()};
-}
-let keyFrame=0;
+$('#keyFromGrouped').onclick=()=>{state.keySource='corrected';queueKeyMatrix()};
 function queueKeyMatrix(){if(state.tab!=='tonal')return;if(keyFrame)cancelAnimationFrame(keyFrame);keyFrame=requestAnimationFrame(()=>{keyFrame=0;renderKeyMatrix()})}
 function renderKeyMatrix(){
  if(!state.cache)return;
- const source=state.keySource==='grouped'?$('#advancedPalette'):$('#out-gray');
- const scale=Math.min(1,460/Math.max(source.width,source.height)),w=Math.max(1,Math.round(source.width*scale)),h=Math.max(1,Math.round(source.height*scale));
- const tmp=document.createElement('canvas');tmp.width=w;tmp.height=h;
- const g=tmp.getContext('2d',{willReadFrequently:true});g.drawImage(source,0,0,w,h);
- const src=g.getImageData(0,0,w,h),data=src.data,n=w*h,aux=document.createElement('canvas');aux.width=w;aux.height=h;
- aux.getContext('2d').drawImage($('#advancedBlur'),0,0,w,h);const auxd=aux.getContext('2d').getImageData(0,0,w,h).data;
- const hist=new Uint32Array(65536),scores=new Uint16Array(n),gray=new Uint8Array(n);
- let min=65535,max=0;
- for(let p=0;p<n;p++){
-  const off=4*p,v=Math.round(.2126*data[off]+.7152*data[off+1]+.0722*data[off+2]),score=Math.min(65535,v*256+auxd[off]);
-  gray[p]=v;scores[p]=score;hist[score]++;if(score<min)min=score;if(score>max)max=score;
- }
- const baseline=$('#keyInputPreview');baseline.width=w;baseline.height=h;baseline.getContext('2d').putImageData(src,0,0);
- const majorShares=[state.keyLightHigh/100,.50,state.keyLightLow/100],contrasts=[1,state.keyMediumContrast/100,state.keyLowContrast/100];
- state.keyImages=[];
+ keyCache=keySourceCache();state.keyImages=[];
  for(let r=0;r<3;r++)for(let c=0;c<3;c++){
-  const target=Math.max(0,Math.min(n-1,Math.floor((1-majorShares[c])*n)));let total=0,q=max;
-  for(let i=min;i<=max;i++){total+=hist[i];if(total>target){q=i;break;}}
-  const contrast=contrasts[r],span=contrast*255,lo=(255-span)/2,out=g.createImageData(w,h);
-  for(let p=0;p<n;p++){
-   const k=scores[p],t=k<=q?(q===min?0:(k-min)/(q-min)*.5):(q===max?1:.5+.5*(k-q)/(max-q));
-   const value=Math.round(lo+span*t),off=4*p;
-   out.data[off]=out.data[off+1]=out.data[off+2]=value;out.data[off+3]=255;
-  }
-  const v=document.createElement('canvas');v.width=w;v.height=h;v.getContext('2d').putImageData(out,0,0);
-  const nidx=r*3+c;state.keyImages[nidx]=v;
-  const tile=$(`#keyMatrix button[data-key-index="${nidx}"] canvas`);tile.width=w;tile.height=h;tile.getContext('2d').drawImage(v,0,0);
+  const idx=r*3+c,res=buildTonalCanvas(keyCache,MAJOR_PRESET[c],MINOR_PRESET[r]);state.keyImages[idx]=res;
+  const cell=$(`#keyMatrix [data-key-index="${idx}"]`),cv=cell.querySelector('canvas');cv.width=res.canvas.width;cv.height=res.canvas.height;cv.getContext('2d').drawImage(res.canvas,0,0);
+  const count=Array.from(res.counts).filter(Boolean).length;
+  cell.querySelector('.keyUsedLabel').textContent=`${count} values · L${res.lightPercent}% / D${res.darkPercent}%`;
+  cell.querySelector('.v17MiniSteps').replaceChildren(makeStepLegend(res.counts));
  }
- $('#keyFromGrouped').setAttribute('aria-pressed',String(state.keySource==='grouped'));
  $('#keyFromOriginal').setAttribute('aria-pressed',String(state.keySource==='original'));
- $('#keyInputNote').textContent=state.keySource==='grouped'?'Your live grouped result, including any painted light/dark corrections.':'Original grayscale before grouping or manual value corrections.';
- $('#keyStatus').textContent=`9 studies generated from ${state.keySource==='grouped'?'your grouped result':'the original grayscale'} (${w} × ${h} preview pixels). Major key changes light/dark proportion; minor key changes contrast range.`;
- keySelect(state.keySelected);
+ $('#keyFromGrouped').setAttribute('aria-pressed',String(state.keySource==='corrected'));
+ $('#keyStatus').textContent='Numbered chips: values present in each preset; dimmed = absent. L/D = pixels lighter/darker than middle gray (5). Choose a tile to edit it on the right.';
+ queueKeyEditor();
 }
-$('#saveKeySelected').onclick=()=>{const c=state.keyImages[state.keySelected];if(!c)return;const r=Math.floor(state.keySelected/3),m=state.keySelected%3;downloadCanvas(c,`${state.filename}-major-${KEY_MAJOR[m].toLowerCase()}-minor-${KEY_MINOR[r].toLowerCase()}-v16.png`)};
+function queueKeyEditor(){if(state.tab!=='tonal'||!keyCache)return;if(editedKeyFrame)cancelAnimationFrame(editedKeyFrame);editedKeyFrame=requestAnimationFrame(()=>{editedKeyFrame=0;renderKeyEditor()})}
+function composeWorkingImage(cache,major,minor){
+ const r=buildTonalCanvas(cache,major,minor),{active,labels,families}=paletteFamilies();
+ const mapping=new Uint8Array(10);
+ for(let i=1;i<=9;i++){
+  let nearest=active[0];for(const v of active)if(Math.abs(v-i)<Math.abs(nearest-i))nearest=v;
+  const fam=families.find(x=>x.id===labels[nearest]);
+  mapping[i]=Math.max(0,Math.min(255,Math.round(fam.members.reduce((sum,v)=>sum+grayFromStep(v),0)/fam.members.length)));
+ }
+ const cv=document.createElement('canvas');cv.width=cache.w;cv.height=cache.h;
+ const ctx=cv.getContext('2d');const img=ctx.createImageData(cache.w,cache.h);
+ const originalSteps=new Set(),tones=new Set();let light=0,dark=0;
+ for(let p=0;p<r.steps.length;p++){
+  const step=r.steps[p],shade=mapping[step],off=4*p;
+  originalSteps.add(step);tones.add(shade);if(shade>128)light++;else if(shade<128)dark++;
+  img.data[off]=img.data[off+1]=img.data[off+2]=shade;img.data[off+3]=255;
+ }
+ ctx.putImageData(img,0,0);
+ return {canvas:cv,originalSteps,tones,actualLight:Math.round(light*100/r.steps.length),actualDark:Math.round(dark*100/r.steps.length)};
+}
+function renderKeyEditor(){
+ if(!keyCache)return;
+ const res=composeWorkingImage(keyCache,state.keyLiveMajor,state.keyLiveMinor);
+ const target=$('#keyFocusCanvas');target.width=res.canvas.width;target.height=res.canvas.height;
+ target.getContext('2d').drawImage(res.canvas,0,0);
+ const present=Array.from(res.originalSteps).sort((a,b)=>a-b).join(', ');
+ const row=Math.floor(state.keySelected/3),col=state.keySelected%3,active=state.paletteActive;
+ const customized=state.keyLiveMajor!==MAJOR_PRESET[col]||state.keyLiveMinor!==MINOR_PRESET[row]||active.size!==9||state.paletteJoins.size>0;
+ $('#keyFocusNote').textContent=`${customized?'Customized from ':'Selected preset: '}${KEY_MOOD[row][col]}. Major key targets ${state.keyLiveMajor}% light area; minor key uses ${state.keyLiveMinor}% contrast range. Actual image: ~${res.actualLight}% light, ~${res.actualDark}% dark, rest middle gray (value 5).${Math.abs(res.actualLight-state.keyLiveMajor)>12?' Broad uniform regions stay together rather than being split just to hit the target.':''}`;
+ $('#keyUsedSteps').innerHTML=`<strong>Before manual grouping:</strong> steps ${present}. <strong>After edits:</strong> ${res.tones.size} distinct displayed grays. (Muted matrix chips mean absent, not switched off.)`;
+}
+$('#saveKeySelected').onclick=()=>{
+ if(!keyCache)return;
+ const full=keySourceCache(1200,false);
+ const render=composeWorkingImage(full,state.keyLiveMajor,state.keyLiveMinor);
+ downloadCanvas(render.canvas,`${state.filename}-tonal-worked-${KEY_MOOD[Math.floor(state.keySelected/3)][state.keySelected%3].toLowerCase().replace(/[^a-z]+/g,'-')}-v17.png`);
+};
 $('#saveKeySheet').onclick=()=>{
  if(state.keyImages.length!==9)return;
- const gap=20,left=155,top=175,tileW=365,cellH=425,labelH=95;
+ const gap=20,left=145,top=163,tileW=315,cellH=385,labelH=82;
  const W=left+3*(tileW+gap)+gap,H=top+3*(cellH+gap)+gap;
- const out=document.createElement('canvas');out.width=W;out.height=H;const g=out.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,W,H);
- g.fillStyle='#233738';g.font='bold 28px system-ui';g.fillText('MAJOR × MINOR TONAL KEYS',25,43);
- g.font='18px system-ui';g.fillText('Major key = proportion of light versus dark  ·  Minor key = contrast range',25,76);
- g.font='15px system-ui';g.fillText(`Source: ${state.keySource==='grouped'?'current grouped study':'original grayscale'} · illustrative interpretations`,25,107);
- for(let c=0;c<3;c++){g.font='bold 20px system-ui';g.fillText(`${KEY_MAJOR[c]} major`,left+c*(tileW+gap)+7,top-34);
-  g.font='14px system-ui';g.fillText(c===0?'mostly light':c===1?'balanced':'mostly dark',left+c*(tileW+gap)+7,top-12);}
+ const out=document.createElement('canvas');out.width=W;out.height=H;
+ const g=out.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,W,H);
+ g.fillStyle='#243839';g.font='bold 25px system-ui';g.fillText('3 × 3 MAJOR / MINOR TONAL-KEY STUDIES',24,43);
+ g.font='16px system-ui';g.fillText('Major key = proportion of light/dark    |    Minor key = contrast range',24,72);
+ g.font='14px system-ui';g.fillText(`Source: ${state.keySource==='corrected'?'edited value foundation':'original grayscale'}. Mood names are illustrative.`,24,104);
+ for(let c=0;c<3;c++){g.font='bold 17px system-ui';g.fillText(`${KEY_MAJOR[c]} major`,left+c*(tileW+gap)+8,top-31);g.font='13px system-ui';g.fillText(c===0?'Mostly light':c===1?'Balanced':'Mostly dark',left+c*(tileW+gap)+8,top-10)}
  for(let r=0;r<3;r++){
-  g.save();g.translate(49,top+r*(cellH+gap)+cellH-40);g.rotate(-Math.PI/2);g.font='bold 19px system-ui';g.fillText(`${KEY_MINOR[r]} minor · contrast range`,0,0);g.restore();
+  g.save();g.translate(47,top+r*(cellH+gap)+cellH-25);g.rotate(-Math.PI/2);g.font='bold 18px system-ui';g.fillText(`${KEY_MINOR[r]} minor · contrast range`,0,0);g.restore();
   for(let c=0;c<3;c++){
-   const x=left+c*(tileW+gap),y=top+r*(cellH+gap),v=state.keyImages[r*3+c];
-   g.fillStyle='#f3f7f6';g.fillRect(x,y,tileW,cellH);
-   const s=Math.min((tileW-14)/v.width,(cellH-labelH-14)/v.height),pw=v.width*s,ph=v.height*s;
-   g.drawImage(v,x+(tileW-pw)/2,y+(cellH-labelH-ph)/2,pw,ph);
-   g.fillStyle='#233738';g.font='bold 18px system-ui';g.fillText(KEY_MOOD[r][c],x+12,y+cellH-49);
-   g.font='13px system-ui';g.fillText(`Major: ${KEY_MAJOR[c]} proportion · Minor: ${KEY_MINOR[r]} contrast`,x+12,y+cellH-20);
+   const res=state.keyImages[r*3+c],x=left+c*(tileW+gap),y=top+r*(cellH+gap),cv=res.canvas;
+   g.fillStyle='#f1f6f5';g.fillRect(x,y,tileW,cellH);
+   const scl=Math.min((tileW-20)/cv.width,(cellH-labelH-17)/cv.height),pw=cv.width*scl,ph=cv.height*scl;
+   g.drawImage(cv,x+(tileW-pw)/2,y+(cellH-labelH-ph)/2,pw,ph);
+   g.fillStyle='#233738';g.font='bold 16px system-ui';g.fillText(KEY_MOOD[r][c],x+12,y+cellH-52);
+   g.font='12px system-ui';let on=[];for(let v=1;v<=9;v++)if(res.counts[v])on.push(v);
+   g.fillText('Present steps: '+on.join(', '),x+12,y+cellH-30);
+   g.fillText(`${KEY_MAJOR[c]} major / ${KEY_MINOR[r]} minor`,x+12,y+cellH-12);
   }
  }
- downloadCanvas(out,`${state.filename}-tonal-keys-3x3-v16.png`);
+ downloadCanvas(out,`${state.filename}-tonal-matrix-3x3-v17.png`);
 };
+updatePaletteUI();
 
 syncSelection();
 let enterCount=0;
@@ -1228,7 +1378,7 @@ window.addEventListener('load',async()=>{
  status.setAttribute('role','status');
  status.style.cssText='position:fixed;bottom:10px;right:10px;z-index:45;background:#163c40;color:white;border:1px solid #37676a;border-radius:22px;padding:7px 12px;font:600 12px system-ui;box-shadow:0 2px 10px #0003;max-width:calc(100vw - 30px)';
  status.textContent='Checking offline access…';document.body.appendChild(status);
- const key='art-tools-value-study-v16';
+ const key='art-tools-value-study-v17';
  async function check(){
   try{
    const cache=await caches.open(key);
